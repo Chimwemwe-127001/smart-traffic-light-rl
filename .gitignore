@@ -1,0 +1,17 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+.pytest_cache/
+
+# SUMO runtime outputs
+*.out.xml
+det_out.xml
+tripinfo*.xml
+
+# Local helper scripts (screenshots), not part of the published project
+tools/
+
+# OS
+.DS_Store
+Thumbs.db
