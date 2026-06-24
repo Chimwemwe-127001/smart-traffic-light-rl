@@ -1,0 +1,10 @@
+<additional>
+    <!-- Lane-area (E2) detectors: the "cameras" that feed the RL state.
+         Each covers about 105 m of its approach lane. -->
+    <laneAreaDetector id="Node1_2_EB_0" lane="Node1_2_EB_0" pos="80" endPos="185" friendlyPos="true" file="/dev/null" period="1000"/>
+    <laneAreaDetector id="Node1_2_EB_1" lane="Node1_2_EB_1" pos="80" endPos="185" friendlyPos="true" file="/dev/null" period="1000"/>
+    <laneAreaDetector id="Node1_2_EB_2" lane="Node1_2_EB_2" pos="80" endPos="185" friendlyPos="true" file="/dev/null" period="1000"/>
+    <laneAreaDetector id="Node2_7_SB_0" lane="Node2_7_SB_0" pos="80" endPos="185" friendlyPos="true" file="/dev/null" period="1000"/>
+    <laneAreaDetector id="Node2_7_SB_1" lane="Node2_7_SB_1" pos="80" endPos="185" friendlyPos="true" file="/dev/null" period="1000"/>
+    <laneAreaDetector id="Node2_7_SB_2" lane="Node2_7_SB_2" pos="80" endPos="185" friendlyPos="true" file="/dev/null" period="1000"/>
+</additional>
