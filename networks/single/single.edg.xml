@@ -1,0 +1,8 @@
+<edges>
+    <!-- Eastbound approach and exit (3 lanes) -->
+    <edge id="Node1_2_EB" from="Node1" to="Node2" numLanes="3" speed="13.89"/>
+    <edge id="Node2_3_EB" from="Node2" to="Node3" numLanes="3" speed="13.89"/>
+    <!-- Southbound approach and exit (3 lanes) -->
+    <edge id="Node2_7_SB" from="Node7" to="Node2" numLanes="3" speed="13.89"/>
+    <edge id="Node2_8_SB" from="Node2" to="Node8" numLanes="3" speed="13.89"/>
+</edges>
