@@ -1,0 +1,12 @@
+<edges>
+    <!-- Eastbound mainline (3 lanes) -->
+    <edge id="Node1_2_EB" from="Node1" to="Node2" numLanes="3" speed="13.89"/>
+    <edge id="Node2_5_EB" from="Node2" to="Node5" numLanes="3" speed="13.89"/>
+    <edge id="Node5_6_EB" from="Node5" to="Node6" numLanes="3" speed="13.89"/>
+    <!-- Southbound cross street at Node2 (2 lanes) -->
+    <edge id="Node7_2_SB" from="Node7" to="Node2" numLanes="2" speed="13.89"/>
+    <edge id="Node2_8_SB" from="Node2" to="Node8" numLanes="2" speed="13.89"/>
+    <!-- Southbound cross street at Node5 (2 lanes) -->
+    <edge id="Node9_5_SB" from="Node9" to="Node5" numLanes="2" speed="13.89"/>
+    <edge id="Node5_10_SB" from="Node5" to="Node10" numLanes="2" speed="13.89"/>
+</edges>
