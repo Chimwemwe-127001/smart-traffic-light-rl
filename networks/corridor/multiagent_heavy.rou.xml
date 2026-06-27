@@ -1,0 +1,10 @@
+﻿<routes>
+    <vType id="car" accel="2.6" decel="4.5" sigma="0.5" length="5" minGap="2.5" maxSpeed="13.89" guiShape="passenger"/>
+
+    <!-- Heavy demand, random arrivals. EB 1400 veh/h, SB 550 veh/h at each
+         intersection. Close to saturation, where the literature expects
+         neighbor coordination to pay off. -->
+    <flow id="f_EB"   type="car" begin="0" end="3600" probability="0.3889" from="Node1_2_EB" to="Node5_6_EB" departLane="random"/>
+    <flow id="f_SB_2" type="car" begin="0" end="3600" probability="0.1528" from="Node7_2_SB" to="Node2_8_SB" departLane="random"/>
+    <flow id="f_SB_5" type="car" begin="0" end="3600" probability="0.1528" from="Node9_5_SB" to="Node5_10_SB" departLane="random"/>
+</routes>

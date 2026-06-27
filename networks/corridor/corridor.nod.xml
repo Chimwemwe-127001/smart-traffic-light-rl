@@ -1,0 +1,12 @@
+<nodes>
+    <!-- EB mainline: Node1 -> Node2(TL) -> Node5(TL) -> Node6 -->
+    <node id="Node1" x="-400" y="0" type="priority"/>
+    <node id="Node2" x="0" y="0" type="traffic_light" tl="Node2"/>
+    <node id="Node5" x="300" y="0" type="traffic_light" tl="Node5"/>
+    <node id="Node6" x="700" y="0" type="priority"/>
+    <!-- North/South cross streets -->
+    <node id="Node7" x="0" y="200" type="priority"/>
+    <node id="Node8" x="0" y="-200" type="priority"/>
+    <node id="Node9" x="300" y="200" type="priority"/>
+    <node id="Node10" x="300" y="-200" type="priority"/>
+</nodes>

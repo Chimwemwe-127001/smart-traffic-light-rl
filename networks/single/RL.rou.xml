@@ -1,0 +1,13 @@
+﻿<routes>
+    <vType id="car" accel="2.6" decel="4.5" sigma="0.5" length="5" minGap="2.5" maxSpeed="13.89" guiShape="passenger"/>
+
+    <!-- Random arrivals (probability per second), so every seed is different traffic.
+         Demand shifts over the episode so a fixed plan cannot fit all of it:
+         0-400 s EB heavy, 400-800 s balanced, 800-1200 s SB heavy. -->
+    <flow id="EB_1" type="car" begin="0"   end="400"  probability="0.4167" from="Node1_2_EB" to="Node2_3_EB" departLane="random"/>
+    <flow id="SB_1" type="car" begin="0"   end="400"  probability="0.1389" from="Node2_7_SB" to="Node2_8_SB" departLane="random"/>
+    <flow id="EB_2" type="car" begin="400" end="800"  probability="0.2778" from="Node1_2_EB" to="Node2_3_EB" departLane="random"/>
+    <flow id="SB_2" type="car" begin="400" end="800"  probability="0.2778" from="Node2_7_SB" to="Node2_8_SB" departLane="random"/>
+    <flow id="EB_3" type="car" begin="800" end="1200" probability="0.1389" from="Node1_2_EB" to="Node2_3_EB" departLane="random"/>
+    <flow id="SB_3" type="car" begin="800" end="1200" probability="0.4167" from="Node2_7_SB" to="Node2_8_SB" departLane="random"/>
+</routes>
