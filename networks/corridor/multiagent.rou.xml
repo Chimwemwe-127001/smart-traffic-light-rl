@@ -1,0 +1,10 @@
+﻿<routes>
+    <vType id="car" accel="2.6" decel="4.5" sigma="0.5" length="5" minGap="2.5" maxSpeed="13.89" guiShape="passenger"/>
+
+    <!-- Moderate demand, random arrivals. EB platoons released by Node2 arrive at
+         Node5, so the two signals affect each other.
+         EB 900 veh/h, SB 400 veh/h at each intersection. -->
+    <flow id="f_EB"   type="car" begin="0" end="3600" probability="0.2500" from="Node1_2_EB" to="Node5_6_EB" departLane="random"/>
+    <flow id="f_SB_2" type="car" begin="0" end="3600" probability="0.1111" from="Node7_2_SB" to="Node2_8_SB" departLane="random"/>
+    <flow id="f_SB_5" type="car" begin="0" end="3600" probability="0.1111" from="Node9_5_SB" to="Node5_10_SB" departLane="random"/>
+</routes>
