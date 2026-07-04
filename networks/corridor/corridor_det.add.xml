@@ -1,15 +1,15 @@
 <additional>
-    <!-- Lane-area (E2) detectors, about 105 m on each approach lane. -->
+    <!-- Lane-area (E2) detectors, last 105 m of each approach lane, ending at the stop line. -->
     <!-- Node2 approaches -->
-    <laneAreaDetector id="Node1_2_EB_0" lane="Node1_2_EB_0" pos="270" endPos="380" friendlyPos="true" file="/dev/null" period="1000"/>
-    <laneAreaDetector id="Node1_2_EB_1" lane="Node1_2_EB_1" pos="270" endPos="380" friendlyPos="true" file="/dev/null" period="1000"/>
-    <laneAreaDetector id="Node1_2_EB_2" lane="Node1_2_EB_2" pos="270" endPos="380" friendlyPos="true" file="/dev/null" period="1000"/>
-    <laneAreaDetector id="Node7_2_SB_0" lane="Node7_2_SB_0" pos="80" endPos="180" friendlyPos="true" file="/dev/null" period="1000"/>
-    <laneAreaDetector id="Node7_2_SB_1" lane="Node7_2_SB_1" pos="80" endPos="180" friendlyPos="true" file="/dev/null" period="1000"/>
+    <laneAreaDetector id="Node1_2_EB_0" lane="Node1_2_EB_0" pos="284.6" endPos="389.5" friendlyPos="true" file="/dev/null" period="1000"/>
+    <laneAreaDetector id="Node1_2_EB_1" lane="Node1_2_EB_1" pos="284.6" endPos="389.5" friendlyPos="true" file="/dev/null" period="1000"/>
+    <laneAreaDetector id="Node1_2_EB_2" lane="Node1_2_EB_2" pos="284.6" endPos="389.5" friendlyPos="true" file="/dev/null" period="1000"/>
+    <laneAreaDetector id="Node7_2_SB_0" lane="Node7_2_SB_0" pos="91.0" endPos="195.9" friendlyPos="true" file="/dev/null" period="1000"/>
+    <laneAreaDetector id="Node7_2_SB_1" lane="Node7_2_SB_1" pos="91.0" endPos="195.9" friendlyPos="true" file="/dev/null" period="1000"/>
     <!-- Node5 approaches -->
-    <laneAreaDetector id="Node2_5_EB_0" lane="Node2_5_EB_0" pos="170" endPos="270" friendlyPos="true" file="/dev/null" period="1000"/>
-    <laneAreaDetector id="Node2_5_EB_1" lane="Node2_5_EB_1" pos="170" endPos="270" friendlyPos="true" file="/dev/null" period="1000"/>
-    <laneAreaDetector id="Node2_5_EB_2" lane="Node2_5_EB_2" pos="170" endPos="270" friendlyPos="true" file="/dev/null" period="1000"/>
-    <laneAreaDetector id="Node9_5_SB_0" lane="Node9_5_SB_0" pos="80" endPos="180" friendlyPos="true" file="/dev/null" period="1000"/>
-    <laneAreaDetector id="Node9_5_SB_1" lane="Node9_5_SB_1" pos="80" endPos="180" friendlyPos="true" file="/dev/null" period="1000"/>
+    <laneAreaDetector id="Node2_5_EB_0" lane="Node2_5_EB_0" pos="180.6" endPos="285.5" friendlyPos="true" file="/dev/null" period="1000"/>
+    <laneAreaDetector id="Node2_5_EB_1" lane="Node2_5_EB_1" pos="180.6" endPos="285.5" friendlyPos="true" file="/dev/null" period="1000"/>
+    <laneAreaDetector id="Node2_5_EB_2" lane="Node2_5_EB_2" pos="180.6" endPos="285.5" friendlyPos="true" file="/dev/null" period="1000"/>
+    <laneAreaDetector id="Node9_5_SB_0" lane="Node9_5_SB_0" pos="91.0" endPos="195.9" friendlyPos="true" file="/dev/null" period="1000"/>
+    <laneAreaDetector id="Node9_5_SB_1" lane="Node9_5_SB_1" pos="91.0" endPos="195.9" friendlyPos="true" file="/dev/null" period="1000"/>
 </additional>
