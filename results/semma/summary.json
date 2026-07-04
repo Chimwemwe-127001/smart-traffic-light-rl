@@ -1,0 +1,52 @@
+{
+  "single_approach_count": {
+    "mean": 5.697870370370371,
+    "median": 4.0,
+    "p90": 12.0,
+    "max": 34.0,
+    "share_zero": 0.050555555555555555
+  },
+  "corridor_approach_count": {
+    "mean": 3.100347222222222,
+    "median": 2.0,
+    "p90": 7.0,
+    "max": 22.0,
+    "share_zero": 0.1731712962962963
+  },
+  "corridor_heavy_approach_count": {
+    "mean": 5.169884259259259,
+    "median": 4.0,
+    "p90": 12.0,
+    "max": 29.0,
+    "share_zero": 0.1094212962962963
+  },
+  "lane_corr_within_approach": 0.7752314810686433,
+  "lane_corr_across_approach": -0.3655408709445687,
+  "single_detector_coverage": 1.1580022701475596,
+  "corridor_detector_coverage": 1.13304738902307,
+  "corridor_heavy_detector_coverage": 1.151603328871559,
+  "single_fixed_mean_queue_per_intersection": 6.841388888888889,
+  "single_actuated_mean_queue_per_intersection": 2.418888888888889,
+  "single_random_mean_queue_per_intersection": 4.1994444444444445,
+  "corridor_fixed_mean_queue_per_intersection": 3.707361111111111,
+  "corridor_actuated_mean_queue_per_intersection": 0.94,
+  "corridor_random_mean_queue_per_intersection": 2.0231944444444445,
+  "corridor_heavy_fixed_mean_queue_per_intersection": 6.5183333333333335,
+  "corridor_heavy_actuated_mean_queue_per_intersection": 1.6018055555555555,
+  "corridor_heavy_random_mean_queue_per_intersection": 3.8125,
+  "modify": {
+    "count_bin_edges": [
+      2,
+      4,
+      7,
+      11
+    ],
+    "lane_scale": 8.0,
+    "queue_scale": 19.0,
+    "green_time_edges": [
+      20,
+      40
+    ]
+  },
+  "n_rows": 54000
+}

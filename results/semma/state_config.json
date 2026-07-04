@@ -1,0 +1,14 @@
+{
+  "count_bin_edges": [
+    2,
+    4,
+    7,
+    11
+  ],
+  "lane_scale": 8.0,
+  "queue_scale": 19.0,
+  "green_time_edges": [
+    20,
+    40
+  ]
+}
