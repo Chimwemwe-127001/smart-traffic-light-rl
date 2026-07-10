@@ -36,8 +36,10 @@ def run_episode(scenario, controller, seed, explore=False, learn=False,
                         if loss is not None:
                             losses.append(loss)
                 actions[tls] = controller.act(tls, obs, explore)
-                last[tls] = (obs, actions[tls])
+            decision_obs = obs
             ready, obs, done = env.step(actions)
+            for tls, applied in env.applied.items():       # learn from what was really done
+                last[tls] = (decision_obs, applied)
 
     metrics = env.close()
     metrics['total_reward'] = float(np.sum(rewards)) if rewards else float('nan')
