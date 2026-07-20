@@ -1,0 +1,1278 @@
+{
+  "summary": {
+    "single": {
+      "Fixed-time": {
+        "avg_queue": [
+          6.859916666666666,
+          6.662995833333333,
+          7.047502083333335
+        ],
+        "avg_wait_s": [
+          12.060931235401927,
+          11.884363832011433,
+          12.262998061080676
+        ],
+        "avg_travel_s": [
+          48.729575669227884,
+          48.51027489310933,
+          48.97119110952909
+        ],
+        "throughput": [
+          649.8,
+          637.7,
+          661.6
+        ],
+        "backlog": [
+          0.1,
+          0.0,
+          0.3
+        ],
+        "switches": [
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      "Actuated": {
+        "avg_queue": [
+          2.3818333333333337,
+          2.2536666666666667,
+          2.50100625
+        ],
+        "avg_wait_s": [
+          4.161250121342486,
+          3.973613755015173,
+          4.3269190782218
+        ],
+        "avg_travel_s": [
+          39.65030169307652,
+          39.44544468524106,
+          39.83383027379186
+        ],
+        "throughput": [
+          657.0,
+          641.9,
+          671.2
+        ],
+        "backlog": [
+          0.1,
+          0.0,
+          0.3
+        ],
+        "switches": [
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      "Random": {
+        "avg_queue": [
+          4.3565000000000005,
+          3.8735833333333334,
+          4.941504166666666
+        ],
+        "avg_wait_s": [
+          7.665755531671669,
+          6.793273392276867,
+          8.716863730479547
+        ],
+        "avg_travel_s": [
+          44.80108787080432,
+          43.54895376936066,
+          46.322058150112724
+        ],
+        "throughput": [
+          652.8,
+          640.0,
+          665.7
+        ],
+        "backlog": [
+          0.1,
+          0.0,
+          0.3
+        ],
+        "switches": [
+          66.6,
+          64.9,
+          68.2
+        ]
+      },
+      "Q-learning (untrained)": {
+        "avg_queue": [
+          9.797416666666667,
+          9.450649999999998,
+          10.214583333333334
+        ],
+        "avg_wait_s": [
+          17.243671098064304,
+          16.81965902775259,
+          17.74076264873868
+        ],
+        "avg_travel_s": [
+          54.13219609134976,
+          53.602696810326414,
+          54.78792296784817
+        ],
+        "throughput": [
+          653.8,
+          639.7,
+          666.8
+        ],
+        "backlog": [
+          0.1,
+          0.0,
+          0.3
+        ],
+        "switches": [
+          19.0,
+          19.0,
+          19.0
+        ]
+      },
+      "Q-learning (trained)": {
+        "avg_queue": [
+          2.019416666666667,
+          1.9508312499999998,
+          2.0935020833333335
+        ],
+        "avg_wait_s": [
+          3.5218419191888315,
+          3.4370467863057614,
+          3.609266146245591
+        ],
+        "avg_travel_s": [
+          38.92981988139548,
+          38.798093690640435,
+          39.06313797520363
+        ],
+        "throughput": [
+          655.4,
+          641.3975,
+          668.9
+        ],
+        "backlog": [
+          0.1,
+          0.0,
+          0.3
+        ],
+        "switches": [
+          72.8,
+          71.2,
+          74.3
+        ]
+      },
+      "DQN (untrained)": {
+        "avg_queue": [
+          2.10225,
+          2.0214958333333333,
+          2.1966666666666663
+        ],
+        "avg_wait_s": [
+          3.6804048117522017,
+          3.5559074757098434,
+          3.803323772959459
+        ],
+        "avg_travel_s": [
+          39.877141775553255,
+          39.61343255505997,
+          40.149695540970285
+        ],
+        "throughput": [
+          656.6,
+          642.7,
+          669.9
+        ],
+        "backlog": [
+          0.2,
+          0.0,
+          0.5
+        ],
+        "switches": [
+          92.0,
+          92.0,
+          92.0
+        ]
+      },
+      "DQN (trained)": {
+        "avg_queue": [
+          1.8941666666666666,
+          1.82533125,
+          1.9729166666666669
+        ],
+        "avg_wait_s": [
+          3.3019548059591743,
+          3.196149193150782,
+          3.4094747636533995
+        ],
+        "avg_travel_s": [
+          38.84691261503642,
+          38.67303323349218,
+          39.0627082310944
+        ],
+        "throughput": [
+          656.5,
+          642.2,
+          670.0
+        ],
+        "backlog": [
+          0.1,
+          0.0,
+          0.3
+        ],
+        "switches": [
+          79.0,
+          77.6,
+          80.6
+        ]
+      }
+    },
+    "corridor": {
+      "Fixed-time": {
+        "avg_queue": [
+          7.65425,
+          7.427329166666666,
+          7.8917520833333334
+        ],
+        "avg_wait_s": [
+          16.087297650231182,
+          15.733797600760335,
+          16.462984400301767
+        ],
+        "avg_travel_s": [
+          80.58602782012565,
+          79.38020799480633,
+          81.77411998254955
+        ],
+        "throughput": [
+          538.3,
+          525.3,
+          551.2
+        ],
+        "backlog": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "switches": [
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      "Actuated": {
+        "avg_queue": [
+          1.7039166666666667,
+          1.5900833333333335,
+          1.82425
+        ],
+        "avg_wait_s": [
+          3.554481781114729,
+          3.358152398248382,
+          3.7520630906996093
+        ],
+        "avg_travel_s": [
+          67.27672700115129,
+          66.29675790697236,
+          68.23331614709937
+        ],
+        "throughput": [
+          537.6,
+          525.8,
+          550.0024999999999
+        ],
+        "backlog": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "switches": [
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      "Random": {
+        "avg_queue": [
+          3.847333333333333,
+          3.657416666666667,
+          4.0335833333333335
+        ],
+        "avg_wait_s": [
+          8.074855321431636,
+          7.71577224201117,
+          8.421572448436466
+        ],
+        "avg_travel_s": [
+          73.27738938855107,
+          72.4696829265409,
+          74.03312212321121
+        ],
+        "throughput": [
+          533.4,
+          521.1,
+          545.9
+        ],
+        "backlog": [
+          0.1,
+          0.0,
+          0.3
+        ],
+        "switches": [
+          134.2,
+          131.9,
+          136.10249999999996
+        ]
+      },
+      "Independent QL (untrained)": {
+        "avg_queue": [
+          9.767833333333332,
+          9.493750000000002,
+          10.043916666666666
+        ],
+        "avg_wait_s": [
+          20.55729548629684,
+          19.972763575862224,
+          21.127505384593494
+        ],
+        "avg_travel_s": [
+          84.09404177762174,
+          82.69557954613829,
+          85.33502612243156
+        ],
+        "throughput": [
+          532.4,
+          519.8,
+          545.4
+        ],
+        "backlog": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "switches": [
+          38.0,
+          38.0,
+          38.0
+        ]
+      },
+      "Independent QL (trained)": {
+        "avg_queue": [
+          1.7179166666666668,
+          1.6326666666666667,
+          1.8064999999999998
+        ],
+        "avg_wait_s": [
+          3.5879904190336447,
+          3.457731676053047,
+          3.71587406607655
+        ],
+        "avg_travel_s": [
+          67.17541966736033,
+          66.28790198981515,
+          68.05754996000935
+        ],
+        "throughput": [
+          537.4,
+          525.6,
+          549.5
+        ],
+        "backlog": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "switches": [
+          152.3,
+          149.0,
+          155.8
+        ]
+      },
+      "Coordinated QL (untrained)": {
+        "avg_queue": [
+          9.767833333333332,
+          9.493750000000002,
+          10.043916666666666
+        ],
+        "avg_wait_s": [
+          20.55729548629684,
+          19.972763575862224,
+          21.127505384593494
+        ],
+        "avg_travel_s": [
+          84.09404177762174,
+          82.69557954613829,
+          85.33502612243156
+        ],
+        "throughput": [
+          532.4,
+          519.8,
+          545.4
+        ],
+        "backlog": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "switches": [
+          38.0,
+          38.0,
+          38.0
+        ]
+      },
+      "Coordinated QL (trained)": {
+        "avg_queue": [
+          2.29975,
+          2.15083125,
+          2.459752083333333
+        ],
+        "avg_wait_s": [
+          4.814239010165686,
+          4.475347001544189,
+          5.169239277556102
+        ],
+        "avg_travel_s": [
+          68.7527645506372,
+          67.87699638082024,
+          69.5728640310852
+        ],
+        "throughput": [
+          535.1,
+          521.7,
+          549.0024999999999
+        ],
+        "backlog": [
+          0.1,
+          0.0,
+          0.3
+        ],
+        "switches": [
+          137.8,
+          135.0,
+          140.0
+        ]
+      }
+    },
+    "corridor_heavy": {
+      "Fixed-time": {
+        "avg_queue": [
+          13.305833333333334,
+          13.055829166666667,
+          13.5615
+        ],
+        "avg_wait_s": [
+          19.052306216062668,
+          18.621554076504577,
+          19.461863473844527
+        ],
+        "avg_travel_s": [
+          86.28418082502817,
+          85.29868462655257,
+          87.19854024839253
+        ],
+        "throughput": [
+          785.8,
+          775.5,
+          794.7
+        ],
+        "backlog": [
+          0.1,
+          0.0,
+          0.3
+        ],
+        "switches": [
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      "Actuated": {
+        "avg_queue": [
+          3.2950833333333334,
+          3.1061645833333333,
+          3.5069291666666667
+        ],
+        "avg_wait_s": [
+          4.6921551537003605,
+          4.439472679025031,
+          4.965188535835139
+        ],
+        "avg_travel_s": [
+          71.03176464387452,
+          70.45660820263352,
+          71.60769722856199
+        ],
+        "throughput": [
+          786.8,
+          778.3,
+          795.4
+        ],
+        "backlog": [
+          0.3,
+          0.0,
+          0.6
+        ],
+        "switches": [
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      "Random": {
+        "avg_queue": [
+          7.116916666666667,
+          6.634075,
+          7.618752083333334
+        ],
+        "avg_wait_s": [
+          10.174420557002783,
+          9.506694432469793,
+          10.889977489071477
+        ],
+        "avg_travel_s": [
+          78.74811806595875,
+          77.35013943595064,
+          80.11880610557284
+        ],
+        "throughput": [
+          780.2,
+          768.8975,
+          791.2
+        ],
+        "backlog": [
+          0.3,
+          0.0,
+          0.6
+        ],
+        "switches": [
+          134.2,
+          131.9,
+          136.10249999999996
+        ]
+      },
+      "Independent QL (untrained)": {
+        "avg_queue": [
+          15.790083333333333,
+          15.41806875,
+          16.16641666666667
+        ],
+        "avg_wait_s": [
+          22.61068962935847,
+          22.08911441711459,
+          23.095201868463715
+        ],
+        "avg_travel_s": [
+          88.91460576571822,
+          87.85644342715256,
+          89.76123870976564
+        ],
+        "throughput": [
+          779.3,
+          770.0,
+          788.1
+        ],
+        "backlog": [
+          0.2,
+          0.0,
+          0.5
+        ],
+        "switches": [
+          38.0,
+          38.0,
+          38.0
+        ]
+      },
+      "Independent QL (trained)": {
+        "avg_queue": [
+          2.8339166666666666,
+          2.697414583333333,
+          2.9873354166666664
+        ],
+        "avg_wait_s": [
+          4.030739943240826,
+          3.854899825239895,
+          4.234758011570186
+        ],
+        "avg_travel_s": [
+          70.39362965679933,
+          69.86762906192614,
+          70.86233565301649
+        ],
+        "throughput": [
+          788.7,
+          779.6,
+          797.4
+        ],
+        "backlog": [
+          0.3,
+          0.0,
+          0.6
+        ],
+        "switches": [
+          144.3,
+          141.79750000000004,
+          147.0
+        ]
+      },
+      "Coordinated QL (untrained)": {
+        "avg_queue": [
+          15.790083333333333,
+          15.41806875,
+          16.16641666666667
+        ],
+        "avg_wait_s": [
+          22.61068962935847,
+          22.08911441711459,
+          23.095201868463715
+        ],
+        "avg_travel_s": [
+          88.91460576571822,
+          87.85644342715256,
+          89.76123870976564
+        ],
+        "throughput": [
+          779.3,
+          770.0,
+          788.1
+        ],
+        "backlog": [
+          0.2,
+          0.0,
+          0.5
+        ],
+        "switches": [
+          38.0,
+          38.0,
+          38.0
+        ]
+      },
+      "Coordinated QL (trained)": {
+        "avg_queue": [
+          3.769416666666667,
+          3.6020833333333337,
+          3.9433354166666663
+        ],
+        "avg_wait_s": [
+          5.373875829727172,
+          5.116634618351953,
+          5.646395975104647
+        ],
+        "avg_travel_s": [
+          71.87601068460727,
+          71.26669884280264,
+          72.4475596969628
+        ],
+        "throughput": [
+          786.1,
+          777.4,
+          794.1
+        ],
+        "backlog": [
+          0.2,
+          0.0,
+          0.5
+        ],
+        "switches": [
+          136.1,
+          133.0,
+          139.0
+        ]
+      }
+    }
+  },
+  "before_after": [
+    {
+      "scenario": "single",
+      "learner": "Q-learning",
+      "avg_queue": {
+        "before": 9.797416666666667,
+        "after": 2.019416666666667,
+        "change_pct": -79.38827411987855,
+        "diff_ci": [
+          -7.7780000000000005,
+          -8.136258333333334,
+          -7.48065625
+        ]
+      },
+      "avg_wait_s": {
+        "before": 17.243671098064304,
+        "after": 3.5218419191888315,
+        "change_pct": -79.57603169788958,
+        "diff_ci": [
+          -13.721829178875472,
+          -14.169034653595443,
+          -13.34110123045684
+        ]
+      },
+      "avg_travel_s": {
+        "before": 54.13219609134976,
+        "after": 38.92981988139548,
+        "change_pct": -28.08379727343742,
+        "diff_ci": [
+          -15.202376209954277,
+          -15.782532107474548,
+          -14.719858646156455
+        ]
+      }
+    },
+    {
+      "scenario": "single",
+      "learner": "DQN",
+      "avg_queue": {
+        "before": 2.10225,
+        "after": 1.8941666666666666,
+        "change_pct": -9.898125024775055,
+        "diff_ci": [
+          -0.20808333333333326,
+          -0.3050937499999999,
+          -0.12274999999999998
+        ]
+      },
+      "avg_wait_s": {
+        "before": 3.6804048117522017,
+        "after": 3.3019548059591743,
+        "change_pct": -10.282836403880564,
+        "diff_ci": [
+          -0.3784500057930265,
+          -0.5441152260234289,
+          -0.23067461522349028
+        ]
+      },
+      "avg_travel_s": {
+        "before": 39.877141775553255,
+        "after": 38.84691261503642,
+        "change_pct": -2.5835080315320287,
+        "diff_ci": [
+          -1.0302291605168237,
+          -1.3297112840130587,
+          -0.7424523175285355
+        ]
+      }
+    },
+    {
+      "scenario": "corridor",
+      "learner": "Independent QL",
+      "avg_queue": {
+        "before": 9.767833333333332,
+        "after": 1.7179166666666668,
+        "change_pct": -82.41251045097,
+        "diff_ci": [
+          -8.049916666666666,
+          -8.305916666666667,
+          -7.790410416666667
+        ]
+      },
+      "avg_wait_s": {
+        "before": 20.55729548629684,
+        "after": 3.5879904190336447,
+        "change_pct": -82.54638884076293,
+        "diff_ci": [
+          -16.969305067263196,
+          -17.555218842370238,
+          -16.347554774678603
+        ]
+      },
+      "avg_travel_s": {
+        "before": 84.09404177762174,
+        "after": 67.17541966736033,
+        "change_pct": -20.1186930163269,
+        "diff_ci": [
+          -16.918622110261413,
+          -17.591371425502295,
+          -16.181908817804896
+        ]
+      }
+    },
+    {
+      "scenario": "corridor",
+      "learner": "Coordinated QL",
+      "avg_queue": {
+        "before": 9.767833333333332,
+        "after": 2.29975,
+        "change_pct": -76.45588410940672,
+        "diff_ci": [
+          -7.468083333333334,
+          -7.774670833333333,
+          -7.174495833333333
+        ]
+      },
+      "avg_wait_s": {
+        "before": 20.55729548629684,
+        "after": 4.814239010165686,
+        "change_pct": -76.58136006570135,
+        "diff_ci": [
+          -15.743056476131153,
+          -16.31439334953364,
+          -15.131918594775213
+        ]
+      },
+      "avg_travel_s": {
+        "before": 84.09404177762174,
+        "after": 68.7527645506372,
+        "change_pct": -18.243001409722954,
+        "diff_ci": [
+          -15.341277226984541,
+          -16.108108602967576,
+          -14.517255816110808
+        ]
+      }
+    },
+    {
+      "scenario": "corridor_heavy",
+      "learner": "Independent QL",
+      "avg_queue": {
+        "before": 15.790083333333333,
+        "after": 2.8339166666666666,
+        "change_pct": -82.0525540819396,
+        "diff_ci": [
+          -12.956166666666666,
+          -13.276350000000003,
+          -12.658079166666665
+        ]
+      },
+      "avg_wait_s": {
+        "before": 22.61068962935847,
+        "after": 4.030739943240826,
+        "change_pct": -82.17329940256586,
+        "diff_ci": [
+          -18.57994968611764,
+          -19.01316693186885,
+          -18.129497650102582
+        ]
+      },
+      "avg_travel_s": {
+        "before": 88.91460576571822,
+        "after": 70.39362965679933,
+        "change_pct": -20.83007167317364,
+        "diff_ci": [
+          -18.520976108918894,
+          -19.017189968617185,
+          -17.929949784215307
+        ]
+      }
+    },
+    {
+      "scenario": "corridor_heavy",
+      "learner": "Coordinated QL",
+      "avg_queue": {
+        "before": 15.790083333333333,
+        "after": 3.769416666666667,
+        "change_pct": -76.12794950417192,
+        "diff_ci": [
+          -12.020666666666667,
+          -12.45550208333333,
+          -11.62990625
+        ]
+      },
+      "avg_wait_s": {
+        "before": 22.61068962935847,
+        "after": 5.373875829727172,
+        "change_pct": -76.23302996141456,
+        "diff_ci": [
+          -17.236813799631296,
+          -17.803477007048222,
+          -16.729833412980085
+        ]
+      },
+      "avg_travel_s": {
+        "before": 88.91460576571822,
+        "after": 71.87601068460727,
+        "change_pct": -19.16287536156442,
+        "diff_ci": [
+          -17.038595081110962,
+          -17.632987390657252,
+          -16.43998316256534
+        ]
+      }
+    }
+  ],
+  "probes": {
+    "Q-learning": [
+      {
+        "probe": "SB busy, EB empty, EB has green",
+        "expected": "switch",
+        "seen": true,
+        "q_keep": -15.617033356553327,
+        "q_switch": -16.020450618203068,
+        "ok": false
+      },
+      {
+        "probe": "EB busy, SB empty, SB has green",
+        "expected": "switch",
+        "seen": true,
+        "q_keep": -15.193862597076787,
+        "q_switch": -15.223047788137603,
+        "ok": false
+      },
+      {
+        "probe": "EB busy, SB empty, EB has green",
+        "expected": "keep",
+        "seen": false,
+        "q_keep": 0.0,
+        "q_switch": 0.0,
+        "ok": false
+      },
+      {
+        "probe": "SB busy, EB empty, SB has green",
+        "expected": "keep",
+        "seen": false,
+        "q_keep": 0.0,
+        "q_switch": 0.0,
+        "ok": false
+      }
+    ],
+    "DQN": [
+      {
+        "probe": "SB busy, EB empty, EB has green",
+        "expected": "switch",
+        "seen": true,
+        "q_keep": -1.9328290663573204,
+        "q_switch": -1.2762999311594505,
+        "ok": true
+      },
+      {
+        "probe": "EB busy, SB empty, SB has green",
+        "expected": "switch",
+        "seen": true,
+        "q_keep": -1.9324136688913764,
+        "q_switch": -1.2472935485129368,
+        "ok": true
+      },
+      {
+        "probe": "EB busy, SB empty, EB has green",
+        "expected": "keep",
+        "seen": true,
+        "q_keep": -1.0685703201616465,
+        "q_switch": -1.7938343619114183,
+        "ok": true
+      },
+      {
+        "probe": "SB busy, EB empty, SB has green",
+        "expected": "keep",
+        "seen": true,
+        "q_keep": -0.9643216144260779,
+        "q_switch": -1.7502002685762275,
+        "ok": true
+      }
+    ]
+  },
+  "td_loss": {
+    "q_learning_single": [
+      15.9514953831255,
+      6.549435067947309
+    ],
+    "dqn_single": [
+      0.010517058331985227,
+      0.002807412146158392
+    ],
+    "q_learning_corridor": [
+      6.986929314524839,
+      1.5696262444683318
+    ],
+    "coordinated_corridor": [
+      17.05280871738208,
+      9.70607040031425
+    ],
+    "q_learning_corridor_heavy": [
+      19.85412834713728,
+      3.250613619356087
+    ],
+    "coordinated_corridor_heavy": [
+      55.59733194785154,
+      27.242680091141686
+    ]
+  },
+  "rubric": [
+    {
+      "criterion": "Q-learning learned (single)",
+      "measure": "avg wait, trained minus untrained, 95% CI",
+      "threshold": "CI below 0",
+      "result": "-13.7 s [-14.2, -13.3]",
+      "pass": true
+    },
+    {
+      "criterion": "DQN learned (single)",
+      "measure": "avg wait, trained minus untrained, 95% CI",
+      "threshold": "CI below 0",
+      "result": "-0.4 s [-0.5, -0.2]",
+      "pass": true
+    },
+    {
+      "criterion": "Independent QL learned (corridor)",
+      "measure": "avg wait, trained minus untrained, 95% CI",
+      "threshold": "CI below 0",
+      "result": "-17.0 s [-17.6, -16.3]",
+      "pass": true
+    },
+    {
+      "criterion": "Coordinated QL learned (corridor)",
+      "measure": "avg wait, trained minus untrained, 95% CI",
+      "threshold": "CI below 0",
+      "result": "-15.7 s [-16.3, -15.1]",
+      "pass": true
+    },
+    {
+      "criterion": "Independent QL learned (corridor_heavy)",
+      "measure": "avg wait, trained minus untrained, 95% CI",
+      "threshold": "CI below 0",
+      "result": "-18.6 s [-19.0, -18.1]",
+      "pass": true
+    },
+    {
+      "criterion": "Coordinated QL learned (corridor_heavy)",
+      "measure": "avg wait, trained minus untrained, 95% CI",
+      "threshold": "CI below 0",
+      "result": "-17.2 s [-17.8, -16.7]",
+      "pass": true
+    },
+    {
+      "criterion": "Q-learning beats Fixed-time (single)",
+      "measure": "avg wait, trained minus Fixed-time, 95% CI",
+      "threshold": "CI below 0",
+      "result": "-8.5 s [-8.7, -8.4]",
+      "pass": true
+    },
+    {
+      "criterion": "Q-learning beats Random (single)",
+      "measure": "avg wait, trained minus Random, 95% CI",
+      "threshold": "CI below 0",
+      "result": "-4.1 s [-5.2, -3.3]",
+      "pass": true
+    },
+    {
+      "criterion": "DQN beats Fixed-time (single)",
+      "measure": "avg wait, trained minus Fixed-time, 95% CI",
+      "threshold": "CI below 0",
+      "result": "-8.8 s [-9.0, -8.6]",
+      "pass": true
+    },
+    {
+      "criterion": "DQN beats Random (single)",
+      "measure": "avg wait, trained minus Random, 95% CI",
+      "threshold": "CI below 0",
+      "result": "-4.4 s [-5.4, -3.5]",
+      "pass": true
+    },
+    {
+      "criterion": "Independent QL beats Fixed-time (corridor)",
+      "measure": "avg wait, trained minus Fixed-time, 95% CI",
+      "threshold": "CI below 0",
+      "result": "-12.5 s [-12.9, -12.1]",
+      "pass": true
+    },
+    {
+      "criterion": "Independent QL beats Random (corridor)",
+      "measure": "avg wait, trained minus Random, 95% CI",
+      "threshold": "CI below 0",
+      "result": "-4.5 s [-4.9, -4.1]",
+      "pass": true
+    },
+    {
+      "criterion": "Coordinated QL beats Fixed-time (corridor)",
+      "measure": "avg wait, trained minus Fixed-time, 95% CI",
+      "threshold": "CI below 0",
+      "result": "-11.3 s [-11.9, -10.7]",
+      "pass": true
+    },
+    {
+      "criterion": "Coordinated QL beats Random (corridor)",
+      "measure": "avg wait, trained minus Random, 95% CI",
+      "threshold": "CI below 0",
+      "result": "-3.3 s [-3.6, -2.9]",
+      "pass": true
+    },
+    {
+      "criterion": "Independent QL beats Fixed-time (corridor_heavy)",
+      "measure": "avg wait, trained minus Fixed-time, 95% CI",
+      "threshold": "CI below 0",
+      "result": "-15.0 s [-15.5, -14.5]",
+      "pass": true
+    },
+    {
+      "criterion": "Independent QL beats Random (corridor_heavy)",
+      "measure": "avg wait, trained minus Random, 95% CI",
+      "threshold": "CI below 0",
+      "result": "-6.1 s [-6.8, -5.5]",
+      "pass": true
+    },
+    {
+      "criterion": "Coordinated QL beats Fixed-time (corridor_heavy)",
+      "measure": "avg wait, trained minus Fixed-time, 95% CI",
+      "threshold": "CI below 0",
+      "result": "-13.7 s [-14.1, -13.2]",
+      "pass": true
+    },
+    {
+      "criterion": "Coordinated QL beats Random (corridor_heavy)",
+      "measure": "avg wait, trained minus Random, 95% CI",
+      "threshold": "CI below 0",
+      "result": "-4.8 s [-5.6, -4.0]",
+      "pass": true
+    },
+    {
+      "criterion": "Q-learning competitive with Actuated (single)",
+      "measure": "avg wait vs Actuated",
+      "threshold": "within +10%",
+      "result": "-15.4%",
+      "pass": true
+    },
+    {
+      "criterion": "DQN competitive with Actuated (single)",
+      "measure": "avg wait vs Actuated",
+      "threshold": "within +10%",
+      "result": "-20.6%",
+      "pass": true
+    },
+    {
+      "criterion": "Independent QL competitive with Actuated (corridor)",
+      "measure": "avg wait vs Actuated",
+      "threshold": "within +10%",
+      "result": "+0.9%",
+      "pass": true
+    },
+    {
+      "criterion": "Coordinated QL competitive with Actuated (corridor)",
+      "measure": "avg wait vs Actuated",
+      "threshold": "within +10%",
+      "result": "+35.4%",
+      "pass": false
+    },
+    {
+      "criterion": "Independent QL competitive with Actuated (corridor_heavy)",
+      "measure": "avg wait vs Actuated",
+      "threshold": "within +10%",
+      "result": "-14.1%",
+      "pass": true
+    },
+    {
+      "criterion": "Coordinated QL competitive with Actuated (corridor_heavy)",
+      "measure": "avg wait vs Actuated",
+      "threshold": "within +10%",
+      "result": "+14.5%",
+      "pass": false
+    },
+    {
+      "criterion": "Q-learning learned traffic logic",
+      "measure": "hand-made probe states answered correctly",
+      "threshold": "4 of 4",
+      "result": "0 of 4",
+      "pass": false
+    },
+    {
+      "criterion": "DQN learned traffic logic",
+      "measure": "hand-made probe states answered correctly",
+      "threshold": "4 of 4",
+      "result": "4 of 4",
+      "pass": true
+    },
+    {
+      "criterion": "Stable learning (q_learning_single)",
+      "measure": "TD loss, last 20 vs first 20 episodes",
+      "threshold": "last <= 1.5 x first",
+      "result": "15.9515 -> 6.5494",
+      "pass": true
+    },
+    {
+      "criterion": "Stable learning (dqn_single)",
+      "measure": "TD loss, last 20 vs first 20 episodes",
+      "threshold": "last <= 1.5 x first",
+      "result": "0.0105 -> 0.0028",
+      "pass": true
+    },
+    {
+      "criterion": "Stable learning (q_learning_corridor)",
+      "measure": "TD loss, last 20 vs first 20 episodes",
+      "threshold": "last <= 1.5 x first",
+      "result": "6.9869 -> 1.5696",
+      "pass": true
+    },
+    {
+      "criterion": "Stable learning (coordinated_corridor)",
+      "measure": "TD loss, last 20 vs first 20 episodes",
+      "threshold": "last <= 1.5 x first",
+      "result": "17.0528 -> 9.7061",
+      "pass": true
+    },
+    {
+      "criterion": "Stable learning (q_learning_corridor_heavy)",
+      "measure": "TD loss, last 20 vs first 20 episodes",
+      "threshold": "last <= 1.5 x first",
+      "result": "19.8541 -> 3.2506",
+      "pass": true
+    },
+    {
+      "criterion": "Stable learning (coordinated_corridor_heavy)",
+      "measure": "TD loss, last 20 vs first 20 episodes",
+      "threshold": "last <= 1.5 x first",
+      "result": "55.5973 -> 27.2427",
+      "pass": true
+    },
+    {
+      "criterion": "Coordination helps (corridor)",
+      "measure": "avg wait, coordinated minus independent, 95% CI",
+      "threshold": "CI below 0",
+      "result": "+1.2 s [+0.8, +1.7]",
+      "pass": false
+    },
+    {
+      "criterion": "Coordination helps (corridor_heavy)",
+      "measure": "avg wait, coordinated minus independent, 95% CI",
+      "threshold": "CI below 0",
+      "result": "+1.3 s [+1.1, +1.7]",
+      "pass": false
+    },
+    {
+      "criterion": "Q-learning serves all demand (single)",
+      "measure": "vehicles completed vs Fixed-time",
+      "threshold": "at least 98%",
+      "result": "100.9%",
+      "pass": true
+    },
+    {
+      "criterion": "DQN serves all demand (single)",
+      "measure": "vehicles completed vs Fixed-time",
+      "threshold": "at least 98%",
+      "result": "101.0%",
+      "pass": true
+    },
+    {
+      "criterion": "Independent QL serves all demand (corridor)",
+      "measure": "vehicles completed vs Fixed-time",
+      "threshold": "at least 98%",
+      "result": "99.8%",
+      "pass": true
+    },
+    {
+      "criterion": "Coordinated QL serves all demand (corridor)",
+      "measure": "vehicles completed vs Fixed-time",
+      "threshold": "at least 98%",
+      "result": "99.4%",
+      "pass": true
+    },
+    {
+      "criterion": "Independent QL serves all demand (corridor_heavy)",
+      "measure": "vehicles completed vs Fixed-time",
+      "threshold": "at least 98%",
+      "result": "100.4%",
+      "pass": true
+    },
+    {
+      "criterion": "Coordinated QL serves all demand (corridor_heavy)",
+      "measure": "vehicles completed vs Fixed-time",
+      "threshold": "at least 98%",
+      "result": "100.0%",
+      "pass": true
+    }
+  ],
+  "eval_seeds": [
+    1000,
+    1001,
+    1002,
+    1003,
+    1004,
+    1005,
+    1006,
+    1007,
+    1008,
+    1009
+  ]
+}

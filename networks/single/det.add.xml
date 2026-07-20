@@ -1,0 +1,11 @@
+<additional>
+    <!-- Lane-area (E2) detectors: the "cameras" that feed the RL state.
+         Each covers the last 105 m of its lane and ends at the stop line,
+         so the first vehicles in a queue are always seen. -->
+    <laneAreaDetector id="Node1_2_EB_0" lane="Node1_2_EB_0" pos="81.4" endPos="186.3" friendlyPos="true" file="/dev/null" period="1000"/>
+    <laneAreaDetector id="Node1_2_EB_1" lane="Node1_2_EB_1" pos="81.4" endPos="186.3" friendlyPos="true" file="/dev/null" period="1000"/>
+    <laneAreaDetector id="Node1_2_EB_2" lane="Node1_2_EB_2" pos="81.4" endPos="186.3" friendlyPos="true" file="/dev/null" period="1000"/>
+    <laneAreaDetector id="Node2_7_SB_0" lane="Node2_7_SB_0" pos="91.0" endPos="195.9" friendlyPos="true" file="/dev/null" period="1000"/>
+    <laneAreaDetector id="Node2_7_SB_1" lane="Node2_7_SB_1" pos="91.0" endPos="195.9" friendlyPos="true" file="/dev/null" period="1000"/>
+    <laneAreaDetector id="Node2_7_SB_2" lane="Node2_7_SB_2" pos="91.0" endPos="195.9" friendlyPos="true" file="/dev/null" period="1000"/>
+</additional>

@@ -1,0 +1,11 @@
+<configuration>
+    <input>
+        <net-file value="corridor.net.xml"/>
+        <route-files value="multiagent.rou.xml"/>
+        <additional-files value="corridor_det.add.xml"/>
+    </input>
+    <report>
+        <no-step-log value="true"/>
+        <duration-log.disable value="true"/>
+    </report>
+</configuration>

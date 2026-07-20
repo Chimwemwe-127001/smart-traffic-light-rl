@@ -1,0 +1,7 @@
+eclipse-sumo>=1.27
+traci>=1.27
+sumolib>=1.27
+libsumo>=1.27
+numpy>=1.26
+matplotlib>=3.8
+pytest>=8

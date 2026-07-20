@@ -1,0 +1,13 @@
+<additional>
+    <!-- Gap-based actuated control: a green is extended while vehicles keep
+         arriving and ends when the gap between them exceeds max-gap.
+         This is the common real-world upgrade over fixed-time plans. -->
+    <tlLogic id="Node2" type="actuated" programID="actuated" offset="0">
+        <param key="max-gap" value="3.0"/>
+        <param key="detector-gap" value="2.0"/>
+        <phase duration="30" minDur="10" maxDur="60" state="GGGGGrrrr"/>
+        <phase duration="3"  state="yyyyyrrrr"/>
+        <phase duration="30" minDur="10" maxDur="60" state="rrrrrGGGG"/>
+        <phase duration="3"  state="rrrrryyyy"/>
+    </tlLogic>
+</additional>
