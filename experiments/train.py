@@ -10,7 +10,9 @@ Every training episode is a new random traffic draw (seed = episode number).
 Exploration epsilon decays from 1.0 to 0.05 over the first 60% of episodes.
 Every VAL_EVERY episodes the greedy policy is scored on 3 validation seeds;
 the checkpoint with the lowest validation queue is kept as the final model.
-Evaluation seeds (evaluate.py) are never used here.
+
+Seed ranges never overlap: training 0-599, validation 700-702,
+SEMMA sample 900-902, final evaluation 1000-1009.
 
 Outputs:
     results/logs/train_<agent>_<scenario>.csv   one row per training episode
@@ -35,7 +37,7 @@ from traffic_rl.runner import run_episode
 REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 LOGS = os.path.join(REPO, 'results', 'logs')
 MODELS = os.path.join(REPO, 'results', 'models')
-VAL_SEEDS = [500, 501, 502]
+VAL_SEEDS = [700, 701, 702]         # outside the training range (at most 600 episodes)
 VAL_EVERY = 10
 EPS_END = 0.05
 
@@ -55,7 +57,10 @@ def model_path(name, scenario):
 
 
 def validate(scenario, agent):
-    runs = [run_episode(scenario, agent, seed=s) for s in VAL_SEEDS]
+    """Score the greedy policy. Runs on a copy: acting adds unseen states to a
+    Q-table, and validation must not change the agent being trained."""
+    probe = copy.deepcopy(agent)
+    runs = [run_episode(scenario, probe, seed=s) for s in VAL_SEEDS]
     return {k: float(np.mean([r[k] for r in runs])) for k in ('avg_queue', 'avg_wait_s', 'avg_travel_s')}
 
 
@@ -66,6 +71,8 @@ def main():
     ap.add_argument('--episodes', type=int, default=200)
     ap.add_argument('--seed', type=int, default=0)
     args = ap.parse_args()
+    if args.episodes > min(VAL_SEEDS):
+        sys.exit(f'Training seeds 0-{args.episodes - 1} would overlap the validation seeds {VAL_SEEDS}.')
     if args.agent == 'dqn' and args.scenario != 'single':
         sys.exit('The DQN input layer is sized for the single intersection.')
 
