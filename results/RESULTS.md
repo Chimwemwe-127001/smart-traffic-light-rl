@@ -6,91 +6,104 @@ Held-out evaluation on 10 traffic seeds (1000-1009), never seen in training. Val
 
 | Controller | Avg queue (veh) | Avg wait (s) | Avg travel time (s) | Throughput (veh) | Switches |
 |---|---|---|---|---|---|
-| Fixed-time | 6.86 ± 0.19 | 12.06 ± 0.19 | 48.73 ± 0.23 | 650 ± 12 | 0 ± 0 |
-| Actuated | 2.38 ± 0.12 | 4.16 ± 0.18 | 39.65 ± 0.19 | 657 ± 15 | 0 ± 0 |
+| Fixed-time | 6.86 ± 0.19 | 12.06 ± 0.19 | 48.73 ± 0.23 | 650 ± 12 | n/a |
+| Actuated | 2.38 ± 0.12 | 4.16 ± 0.18 | 39.65 ± 0.19 | 657 ± 15 | n/a |
 | Random | 4.36 ± 0.53 | 7.67 ± 0.96 | 44.80 ± 1.39 | 653 ± 13 | 67 ± 2 |
 | Q-learning (untrained) | 9.80 ± 0.38 | 17.24 ± 0.46 | 54.13 ± 0.59 | 654 ± 14 | 19 ± 0 |
-| Q-learning (trained) | 2.02 ± 0.07 | 3.52 ± 0.09 | 38.93 ± 0.13 | 655 ± 14 | 73 ± 2 |
+| Q-learning (trained) | 2.03 ± 0.09 | 3.54 ± 0.11 | 39.05 ± 0.22 | 657 ± 14 | 74 ± 2 |
 | DQN (untrained) | 2.10 ± 0.09 | 3.68 ± 0.12 | 39.88 ± 0.27 | 657 ± 14 | 92 ± 0 |
-| DQN (trained) | 1.89 ± 0.07 | 3.30 ± 0.11 | 38.85 ± 0.19 | 656 ± 14 | 79 ± 2 |
+| DQN (trained) | 1.88 ± 0.08 | 3.28 ± 0.11 | 38.71 ± 0.23 | 656 ± 14 | 75 ± 2 |
 
 ## Corridor, 2 intersections, normal demand
 
 | Controller | Avg queue (veh) | Avg wait (s) | Avg travel time (s) | Throughput (veh) | Switches |
 |---|---|---|---|---|---|
-| Fixed-time | 7.65 ± 0.23 | 16.09 ± 0.36 | 80.59 ± 1.20 | 538 ± 13 | 0 ± 0 |
-| Actuated | 1.70 ± 0.12 | 3.55 ± 0.20 | 67.28 ± 0.97 | 538 ± 12 | 0 ± 0 |
+| Fixed-time | 7.65 ± 0.23 | 16.09 ± 0.36 | 80.59 ± 1.20 | 538 ± 13 | n/a |
+| Actuated | 1.70 ± 0.12 | 3.55 ± 0.20 | 67.28 ± 0.97 | 538 ± 12 | n/a |
 | Random | 3.85 ± 0.19 | 8.07 ± 0.35 | 73.28 ± 0.78 | 533 ± 12 | 134 ± 2 |
 | Independent QL (untrained) | 9.77 ± 0.28 | 20.56 ± 0.58 | 84.09 ± 1.32 | 532 ± 13 | 38 ± 0 |
-| Independent QL (trained) | 1.72 ± 0.09 | 3.59 ± 0.13 | 67.18 ± 0.88 | 537 ± 12 | 152 ± 3 |
+| Independent QL (trained) | 1.71 ± 0.07 | 3.57 ± 0.12 | 67.08 ± 0.88 | 538 ± 12 | 152 ± 3 |
 | Coordinated QL (untrained) | 9.77 ± 0.28 | 20.56 ± 0.58 | 84.09 ± 1.32 | 532 ± 13 | 38 ± 0 |
-| Coordinated QL (trained) | 2.30 ± 0.15 | 4.81 ± 0.35 | 68.75 ± 0.85 | 535 ± 14 | 138 ± 2 |
+| Coordinated QL (trained) | 2.33 ± 0.22 | 4.86 ± 0.42 | 68.64 ± 0.89 | 537 ± 13 | 132 ± 4 |
 
 ## Corridor, 2 intersections, heavy demand
 
 | Controller | Avg queue (veh) | Avg wait (s) | Avg travel time (s) | Throughput (veh) | Switches |
 |---|---|---|---|---|---|
-| Fixed-time | 13.31 ± 0.25 | 19.05 ± 0.42 | 86.28 ± 0.95 | 786 ± 10 | 0 ± 0 |
-| Actuated | 3.30 ± 0.20 | 4.69 ± 0.26 | 71.03 ± 0.58 | 787 ± 9 | 0 ± 0 |
+| Fixed-time | 13.31 ± 0.25 | 19.05 ± 0.42 | 86.28 ± 0.95 | 786 ± 10 | n/a |
+| Actuated | 3.30 ± 0.20 | 4.69 ± 0.26 | 71.03 ± 0.58 | 787 ± 9 | n/a |
 | Random | 7.12 ± 0.49 | 10.17 ± 0.69 | 78.75 ± 1.38 | 780 ± 11 | 134 ± 2 |
 | Independent QL (untrained) | 15.79 ± 0.37 | 22.61 ± 0.50 | 88.91 ± 0.95 | 779 ± 9 | 38 ± 0 |
 | Independent QL (trained) | 2.83 ± 0.14 | 4.03 ± 0.19 | 70.39 ± 0.50 | 789 ± 9 | 144 ± 3 |
 | Coordinated QL (untrained) | 15.79 ± 0.37 | 22.61 ± 0.50 | 88.91 ± 0.95 | 779 ± 9 | 38 ± 0 |
-| Coordinated QL (trained) | 3.77 ± 0.17 | 5.37 ± 0.26 | 71.88 ± 0.59 | 786 ± 8 | 136 ± 3 |
+| Coordinated QL (trained) | 3.50 ± 0.27 | 4.98 ± 0.36 | 71.49 ± 0.49 | 788 ± 8 | 139 ± 4 |
 
 ## Before vs after training
 
 | Scenario | Learner | Wait before (s) | Wait after (s) | Change | Queue before | Queue after | Change |
 |---|---|---|---|---|---|---|---|
-| single | Q-learning | 17.2 | 3.5 | -80% | 9.80 | 2.02 | -79% |
-| single | DQN | 3.7 | 3.3 | -10% | 2.10 | 1.89 | -10% |
-| corridor | Independent QL | 20.6 | 3.6 | -83% | 9.77 | 1.72 | -82% |
-| corridor | Coordinated QL | 20.6 | 4.8 | -77% | 9.77 | 2.30 | -76% |
+| single | Q-learning | 17.2 | 3.5 | -79% | 9.80 | 2.03 | -79% |
+| single | DQN | 3.7 | 3.3 | -11% | 2.10 | 1.88 | -11% |
+| corridor | Independent QL | 20.6 | 3.6 | -83% | 9.77 | 1.71 | -83% |
+| corridor | Coordinated QL | 20.6 | 4.9 | -76% | 9.77 | 2.33 | -76% |
 | corridor_heavy | Independent QL | 22.6 | 4.0 | -82% | 15.79 | 2.83 | -82% |
-| corridor_heavy | Coordinated QL | 22.6 | 5.4 | -76% | 15.79 | 3.77 | -76% |
+| corridor_heavy | Coordinated QL | 22.6 | 5.0 | -78% | 15.79 | 3.50 | -78% |
+
+## Trained learners vs Actuated control
+
+Paired difference per seed (learner minus Actuated), mean and 95% bootstrap CI. Negative is better for the learner. "tie" means the CI includes zero.
+
+| Scenario | Learner | Wait (s) | Travel time (s) | Queue (veh) |
+|---|---|---|---|---|
+| single | Q-learning | -0.62 [-0.81, -0.45] better | -0.60 [-0.75, -0.46] better | -0.35 [-0.46, -0.25] better |
+| single | DQN | -0.89 [-1.02, -0.75] better | -0.94 [-1.08, -0.81] better | -0.50 [-0.58, -0.42] better |
+| corridor | Independent QL | +0.02 [-0.23, +0.24] tie | -0.20 [-0.70, +0.23] tie | +0.00 [-0.12, +0.11] tie |
+| corridor | Coordinated QL | +1.30 [+0.91, +1.78] worse | +1.37 [+0.83, +2.05] worse | +0.62 [+0.43, +0.85] worse |
+| corridor_heavy | Independent QL | -0.66 [-1.06, -0.26] better | -0.64 [-1.13, -0.10] better | -0.46 [-0.74, -0.18] better |
+| corridor_heavy | Coordinated QL | +0.29 [-0.05, +0.66] tie | +0.46 [-0.07, +1.00] tie | +0.21 [-0.04, +0.46] tie |
 
 ## Q-value probes (single intersection)
 
 | Agent | Probe | Expected | Q(keep) | Q(switch) | Correct |
 |---|---|---|---|---|---|
-| Q-learning | SB busy, EB empty, EB has green | switch | -15.617 | -16.020 | no |
-| Q-learning | EB busy, SB empty, SB has green | switch | -15.194 | -15.223 | no |
+| Q-learning | SB busy, EB empty, EB has green | switch | -15.617 | -15.195 | yes |
+| Q-learning | EB busy, SB empty, SB has green | switch | -15.194 | -14.492 | yes |
 | Q-learning | EB busy, SB empty, EB has green | keep | 0.000 | 0.000 | no (state never visited) |
 | Q-learning | SB busy, EB empty, SB has green | keep | 0.000 | 0.000 | no (state never visited) |
-| DQN | SB busy, EB empty, EB has green | switch | -1.933 | -1.276 | yes |
-| DQN | EB busy, SB empty, SB has green | switch | -1.932 | -1.247 | yes |
-| DQN | EB busy, SB empty, EB has green | keep | -1.069 | -1.794 | yes |
-| DQN | SB busy, EB empty, SB has green | keep | -0.964 | -1.750 | yes |
+| DQN | SB busy, EB empty, EB has green | switch | -1.960 | -1.341 | yes |
+| DQN | EB busy, SB empty, SB has green | switch | -1.973 | -1.289 | yes |
+| DQN | EB busy, SB empty, EB has green | keep | -0.997 | -1.714 | yes |
+| DQN | SB busy, EB empty, SB has green | keep | -0.907 | -1.735 | yes |
 
 ## Rubric
 
 | Criterion | Measure | Threshold | Result | Pass |
 |---|---|---|---|---|
 | Q-learning learned (single) | avg wait, trained minus untrained, 95% CI | CI below 0 | -13.7 s [-14.2, -13.3] | PASS |
-| DQN learned (single) | avg wait, trained minus untrained, 95% CI | CI below 0 | -0.4 s [-0.5, -0.2] | PASS |
+| DQN learned (single) | avg wait, trained minus untrained, 95% CI | CI below 0 | -0.4 s [-0.5, -0.3] | PASS |
 | Independent QL learned (corridor) | avg wait, trained minus untrained, 95% CI | CI below 0 | -17.0 s [-17.6, -16.3] | PASS |
-| Coordinated QL learned (corridor) | avg wait, trained minus untrained, 95% CI | CI below 0 | -15.7 s [-16.3, -15.1] | PASS |
+| Coordinated QL learned (corridor) | avg wait, trained minus untrained, 95% CI | CI below 0 | -15.7 s [-16.5, -14.8] | PASS |
 | Independent QL learned (corridor_heavy) | avg wait, trained minus untrained, 95% CI | CI below 0 | -18.6 s [-19.0, -18.1] | PASS |
-| Coordinated QL learned (corridor_heavy) | avg wait, trained minus untrained, 95% CI | CI below 0 | -17.2 s [-17.8, -16.7] | PASS |
-| Q-learning beats Fixed-time (single) | avg wait, trained minus Fixed-time, 95% CI | CI below 0 | -8.5 s [-8.7, -8.4] | PASS |
-| Q-learning beats Random (single) | avg wait, trained minus Random, 95% CI | CI below 0 | -4.1 s [-5.2, -3.3] | PASS |
+| Coordinated QL learned (corridor_heavy) | avg wait, trained minus untrained, 95% CI | CI below 0 | -17.6 s [-18.2, -16.9] | PASS |
+| Q-learning beats Fixed-time (single) | avg wait, trained minus Fixed-time, 95% CI | CI below 0 | -8.5 s [-8.8, -8.3] | PASS |
+| Q-learning beats Random (single) | avg wait, trained minus Random, 95% CI | CI below 0 | -4.1 s [-5.2, -3.2] | PASS |
 | DQN beats Fixed-time (single) | avg wait, trained minus Fixed-time, 95% CI | CI below 0 | -8.8 s [-9.0, -8.6] | PASS |
-| DQN beats Random (single) | avg wait, trained minus Random, 95% CI | CI below 0 | -4.4 s [-5.4, -3.5] | PASS |
-| Independent QL beats Fixed-time (corridor) | avg wait, trained minus Fixed-time, 95% CI | CI below 0 | -12.5 s [-12.9, -12.1] | PASS |
+| DQN beats Random (single) | avg wait, trained minus Random, 95% CI | CI below 0 | -4.4 s [-5.5, -3.5] | PASS |
+| Independent QL beats Fixed-time (corridor) | avg wait, trained minus Fixed-time, 95% CI | CI below 0 | -12.5 s [-12.9, -12.2] | PASS |
 | Independent QL beats Random (corridor) | avg wait, trained minus Random, 95% CI | CI below 0 | -4.5 s [-4.9, -4.1] | PASS |
-| Coordinated QL beats Fixed-time (corridor) | avg wait, trained minus Fixed-time, 95% CI | CI below 0 | -11.3 s [-11.9, -10.7] | PASS |
-| Coordinated QL beats Random (corridor) | avg wait, trained minus Random, 95% CI | CI below 0 | -3.3 s [-3.6, -2.9] | PASS |
+| Coordinated QL beats Fixed-time (corridor) | avg wait, trained minus Fixed-time, 95% CI | CI below 0 | -11.2 s [-11.8, -10.7] | PASS |
+| Coordinated QL beats Random (corridor) | avg wait, trained minus Random, 95% CI | CI below 0 | -3.2 s [-3.7, -2.7] | PASS |
 | Independent QL beats Fixed-time (corridor_heavy) | avg wait, trained minus Fixed-time, 95% CI | CI below 0 | -15.0 s [-15.5, -14.5] | PASS |
 | Independent QL beats Random (corridor_heavy) | avg wait, trained minus Random, 95% CI | CI below 0 | -6.1 s [-6.8, -5.5] | PASS |
-| Coordinated QL beats Fixed-time (corridor_heavy) | avg wait, trained minus Fixed-time, 95% CI | CI below 0 | -13.7 s [-14.1, -13.2] | PASS |
-| Coordinated QL beats Random (corridor_heavy) | avg wait, trained minus Random, 95% CI | CI below 0 | -4.8 s [-5.6, -4.0] | PASS |
-| Q-learning competitive with Actuated (single) | avg wait vs Actuated | within +10% | -15.4% | PASS |
-| DQN competitive with Actuated (single) | avg wait vs Actuated | within +10% | -20.6% | PASS |
-| Independent QL competitive with Actuated (corridor) | avg wait vs Actuated | within +10% | +0.9% | PASS |
-| Coordinated QL competitive with Actuated (corridor) | avg wait vs Actuated | within +10% | +35.4% | FAIL |
-| Independent QL competitive with Actuated (corridor_heavy) | avg wait vs Actuated | within +10% | -14.1% | PASS |
-| Coordinated QL competitive with Actuated (corridor_heavy) | avg wait vs Actuated | within +10% | +14.5% | FAIL |
-| Q-learning learned traffic logic | hand-made probe states answered correctly | 4 of 4 | 0 of 4 | FAIL |
+| Coordinated QL beats Fixed-time (corridor_heavy) | avg wait, trained minus Fixed-time, 95% CI | CI below 0 | -14.1 s [-14.7, -13.4] | PASS |
+| Coordinated QL beats Random (corridor_heavy) | avg wait, trained minus Random, 95% CI | CI below 0 | -5.2 s [-5.8, -4.5] | PASS |
+| Q-learning competitive with Actuated (single) | avg wait vs Actuated, paired 95% CI | within +10% | -14.9% (-0.62 s [-0.81, -0.45]) | PASS |
+| DQN competitive with Actuated (single) | avg wait vs Actuated, paired 95% CI | within +10% | -21.3% (-0.89 s [-1.02, -0.75]) | PASS |
+| Independent QL competitive with Actuated (corridor) | avg wait vs Actuated, paired 95% CI | within +10% | +0.4% (+0.02 s [-0.23, +0.24]) | PASS |
+| Coordinated QL competitive with Actuated (corridor) | avg wait vs Actuated, paired 95% CI | within +10% | +36.7% (+1.30 s [+0.91, +1.78]) | FAIL |
+| Independent QL competitive with Actuated (corridor_heavy) | avg wait vs Actuated, paired 95% CI | within +10% | -14.1% (-0.66 s [-1.06, -0.26]) | PASS |
+| Coordinated QL competitive with Actuated (corridor_heavy) | avg wait vs Actuated, paired 95% CI | within +10% | +6.2% (+0.29 s [-0.05, +0.66]) | PASS |
+| Q-learning learned traffic logic | hand-made probe states answered correctly | 4 of 4 | 2 of 4 | FAIL |
 | DQN learned traffic logic | hand-made probe states answered correctly | 4 of 4 | 4 of 4 | PASS |
 | Stable learning (q_learning_single) | TD loss, last 20 vs first 20 episodes | last <= 1.5 x first | 15.9515 -> 6.5494 | PASS |
 | Stable learning (dqn_single) | TD loss, last 20 vs first 20 episodes | last <= 1.5 x first | 0.0105 -> 0.0028 | PASS |
@@ -98,13 +111,13 @@ Held-out evaluation on 10 traffic seeds (1000-1009), never seen in training. Val
 | Stable learning (coordinated_corridor) | TD loss, last 20 vs first 20 episodes | last <= 1.5 x first | 17.0528 -> 9.7061 | PASS |
 | Stable learning (q_learning_corridor_heavy) | TD loss, last 20 vs first 20 episodes | last <= 1.5 x first | 19.8541 -> 3.2506 | PASS |
 | Stable learning (coordinated_corridor_heavy) | TD loss, last 20 vs first 20 episodes | last <= 1.5 x first | 55.5973 -> 27.2427 | PASS |
-| Coordination helps (corridor) | avg wait, coordinated minus independent, 95% CI | CI below 0 | +1.2 s [+0.8, +1.7] | FAIL |
-| Coordination helps (corridor_heavy) | avg wait, coordinated minus independent, 95% CI | CI below 0 | +1.3 s [+1.1, +1.7] | FAIL |
-| Q-learning serves all demand (single) | vehicles completed vs Fixed-time | at least 98% | 100.9% | PASS |
-| DQN serves all demand (single) | vehicles completed vs Fixed-time | at least 98% | 101.0% | PASS |
-| Independent QL serves all demand (corridor) | vehicles completed vs Fixed-time | at least 98% | 99.8% | PASS |
-| Coordinated QL serves all demand (corridor) | vehicles completed vs Fixed-time | at least 98% | 99.4% | PASS |
+| Coordination helps (corridor) | avg wait, coordinated minus independent, 95% CI | CI below 0 | +1.3 s [+0.9, +1.8] | FAIL |
+| Coordination helps (corridor_heavy) | avg wait, coordinated minus independent, 95% CI | CI below 0 | +1.0 s [+0.5, +1.4] | FAIL |
+| Q-learning serves all demand (single) | vehicles completed vs Fixed-time | at least 98% | 101.1% | PASS |
+| DQN serves all demand (single) | vehicles completed vs Fixed-time | at least 98% | 100.9% | PASS |
+| Independent QL serves all demand (corridor) | vehicles completed vs Fixed-time | at least 98% | 99.9% | PASS |
+| Coordinated QL serves all demand (corridor) | vehicles completed vs Fixed-time | at least 98% | 99.8% | PASS |
 | Independent QL serves all demand (corridor_heavy) | vehicles completed vs Fixed-time | at least 98% | 100.4% | PASS |
-| Coordinated QL serves all demand (corridor_heavy) | vehicles completed vs Fixed-time | at least 98% | 100.0% | PASS |
+| Coordinated QL serves all demand (corridor_heavy) | vehicles completed vs Fixed-time | at least 98% | 100.3% | PASS |
 
-**35 of 40 rubric checks pass.**
+**36 of 40 rubric checks pass.**
