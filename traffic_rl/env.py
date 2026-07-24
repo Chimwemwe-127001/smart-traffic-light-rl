@@ -7,14 +7,15 @@ keep/switch decision on its current green:
     switch -> 3 s yellow, then the other approach gets at least MIN_GREEN_S of green
 
 The agent is only asked when a switch is actually allowed (minimum green has
-passed), so every action it takes has a real effect. A green is never held
-longer than MAX_GREEN_S: at that point a keep is turned into a switch, the same
-way a real controller caps green time. Without this cap a trained tabular
-agent could get stuck keeping one green forever in a rarely visited state
-(see the README, "What did not work"). This is the usual
+passed), so every action it takes has a real effect. This is the usual
 decision model in traffic signal RL (e.g. Wei et al. 2018, Alegre 2019
 sumo-rl) and fixes the problem we hit with 0.1 s per-step decisions, where
 keep and switch were indistinguishable to the learner.
+
+A green is never held longer than MAX_GREEN_S: at that point a keep is turned
+into a switch, the same way a real controller caps green time. Without this
+cap a trained tabular agent could get stuck keeping one green forever in a
+rarely visited state (see the README, "What did not work").
 
 Agents decide asynchronously: after a switch an agent is busy for 13 s, after a
 keep only 5 s. step() applies the actions of the agents that were asked, then
@@ -44,7 +45,8 @@ import sumolib
 
 # libsumo runs SUMO inside this Python process: several times faster than the
 # TraCI socket and safe to run in parallel (no ports to collide). It cannot open
-# sumo-gui, so the GUI screenshot tool sets LIBSUMO=0 to use TraCI instead.
+# sumo-gui, so set the environment variable LIBSUMO=0 to use TraCI when you
+# want to watch a run with gui=True.
 if os.environ.get('LIBSUMO', '1') == '1':
     try:
         import libsumo as traci

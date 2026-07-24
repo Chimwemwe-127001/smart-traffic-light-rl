@@ -9,7 +9,7 @@ the agents have never seen.
 | Scenario | Fixed-time wait | Best learner | Its wait | vs Fixed-time | vs Actuated |
 |---|---|---|---|---|---|
 | Single intersection, shifting demand | 12.1 s | DQN | **3.3 s** | **-73%** | **-21%** |
-| Corridor, 2 intersections, normal demand | 16.1 s | Independent Q-learning | **3.6 s** | **-78%** | +1% (tie) |
+| Corridor, 2 intersections, normal demand | 16.1 s | Independent Q-learning | **3.6 s** | **-78%** | +0.4% (tie) |
 | Corridor, 2 intersections, heavy demand | 19.1 s | Independent Q-learning | **4.0 s** | **-79%** | **-14%** |
 
 *Average waiting time per vehicle over 10 held-out traffic seeds. All differences
@@ -73,7 +73,7 @@ controller's before it is ever given control.
 flowchart LR
     A[Build networks<br/>and demand] --> B[SEMMA data study<br/>Sample, Explore, Modify]
     B -->|bins and scales| C[Train agents<br/>seeds 0 to 599]
-    C -->|best checkpoint on<br/>validation seeds 500 to 502| D[Evaluate on held-out<br/>seeds 1000 to 1009]
+    C -->|best checkpoint on<br/>validation seeds 700 to 702| D[Evaluate on held-out<br/>seeds 1000 to 1009]
     D --> E[Before vs after,<br/>head to head, probes]
     E --> F[Rubric<br/>pass or fail]
     B -.->|found detector bug| A
@@ -148,8 +148,9 @@ smart-traffic-light-rl/
 | `corridor_heavy` | same | EB 1400, SB 550 at each junction (veh/h) | 1200 s |
 
 Arrivals are random (a probability of a new car every second), so each seed
-is different traffic. Seeds 0 to 599 are for training, 500 to 502 for
-validation and 1000 to 1009 for the final test.
+is different traffic. The seed ranges never overlap: 0 to 199 (single) or
+0 to 599 (corridor) for training, 700 to 702 for validation, 900 to 902 for
+the SEMMA sample and 1000 to 1009 for the final test.
 
 **The decision problem (a Markov Decision Process):**
 
@@ -230,19 +231,19 @@ travel time, which they never optimized directly.
 
 | Scenario | Learner | Wait before | Wait after | Change |
 |---|---|---|---|---|
-| Single | Q-learning | 17.2 s | 3.5 s | **-80%** |
-| Single | DQN | 3.7 s | 3.3 s | **-10%** |
+| Single | Q-learning | 17.2 s | 3.5 s | **-79%** |
+| Single | DQN | 3.7 s | 3.3 s | **-11%** |
 | Corridor | Independent QL | 20.6 s | 3.6 s | **-83%** |
-| Corridor | Coordinated QL | 20.6 s | 4.8 s | **-77%** |
+| Corridor | Coordinated QL | 20.6 s | 4.9 s | **-76%** |
 | Corridor heavy | Independent QL | 22.6 s | 4.0 s | **-82%** |
-| Corridor heavy | Coordinated QL | 22.6 s | 5.4 s | **-76%** |
+| Corridor heavy | Coordinated QL | 22.6 s | 5.0 s | **-78%** |
 
 An untrained Q-table has all values at zero, so it always keeps the green
 until the 60 s maximum forces a switch. That is a slow fixed cycle, worse than
 the 42 s fixed-time plan. The untrained DQN starts from random weights, which
 happen to switch often, and that is already a decent policy at this demand.
-So its gain from training is smaller (-10%) but still significant (95% CI of
-the paired difference: -0.5 to -0.2 s).
+So its gain from training is smaller (-11%) but still significant (95% CI of
+the paired difference: -0.5 to -0.3 s).
 
 ### Learning curves
 
@@ -264,36 +265,41 @@ way it can in a table.
 | Actuated (SUMO) | 4.2 s | 3.6 s | 4.7 s |
 | Q-learning / Independent QL | 3.5 s | 3.6 s | **4.0 s** |
 | DQN | **3.3 s** | | |
-| Coordinated QL | | 4.8 s | 5.4 s |
+| Coordinated QL | | 4.9 s | 5.0 s |
 
 *Average waiting time per vehicle. Travel time and queue length give the same
-ranking; see [results/RESULTS.md](results/RESULTS.md). Every learner serves the
-full demand (99.4% to 101% of fixed-time throughput).*
+ranking, except that independent QL and actuated control are tied on every
+metric on the normal corridor. Paired confidence intervals for each learner
+against actuated control are in the
+[vs Actuated table](results/RESULTS.md#trained-learners-vs-actuated-control).
+Every learner serves the full demand (99.8% to 101.1% of fixed-time throughput).*
 
 **DQN vs Q-learning.** On the single intersection the DQN is slightly better
 (3.3 vs 3.5 s) and much more robust. The Q-value probes below show why: the DQN
-answers 4 of 4 hand-made traffic situations correctly, and the Q-table answers
-0 of 4, because two of those states never occurred during its training and a
-table cannot generalize to them. This is the "huge knowledge space" argument
-for deep RL made concrete.
+answers 4 of 4 hand-made traffic situations correctly. The Q-table gets the two
+"switch" cases right, but it never visited the two "keep" states during
+training and has no answer for them, because a table cannot generalize to
+states it has not seen. This is the "huge knowledge space" argument for deep
+RL made concrete.
 
 | Probe state | Right answer | Q-learning | DQN |
 |---|---|---|---|
-| SB busy, EB empty, EB has green | switch | keep (wrong) | switch |
-| EB busy, SB empty, SB has green | switch | keep (wrong) | switch |
+| SB busy, EB empty, EB has green | switch | switch | switch |
+| EB busy, SB empty, SB has green | switch | switch | switch |
 | EB busy, SB empty, EB has green | keep | never visited | keep |
 | SB busy, EB empty, SB has green | keep | never visited | keep |
 
 **Independent vs coordinated.** This is the research question from the
 write-up, and the honest answer here is **no, coordination did not help**.
-Coordinated agents were 1.2 to 1.3 s slower than independent ones on both
-demand levels (95% CI excludes zero). We trained all four corridor agents for
-600 episodes instead of 200 to test whether coordination simply needed more
-data. Both improved, but the gap stayed. The likely reasons:
+Coordinated agents were 1.3 s (normal) and 1.0 s (heavy) slower than
+independent ones (95% CI excludes zero). Under heavy demand they did at least
+match actuated control (+0.3 s, CI -0.05 to +0.66, a tie). We trained all four
+corridor agents for 600 episodes instead of 200 to test whether coordination
+simply needed more data. Both improved, but the gap stayed. The likely reasons:
 
 - *State explosion.* The neighbor information multiplies the table size by
-  about 10 (2,300 to 2,400 states vs 210 to 235, see the growth curve below). Each state
-  is visited far less often, so its value estimate stays noisier.
+  about 10 (about 2,200 to 2,400 states vs 200 to 230, see the growth curve
+  below). Each state is visited far less often, so its value estimate stays noisier.
 - *The neighbor signal is weak here.* The two signals are 285 m apart and
   platoons disperse on the way, so the neighbor's current phase says little
   about arrivals in the next 5 seconds.
@@ -310,17 +316,17 @@ to cope with the larger state. That is the natural next step (section 10).
 
 ## 8. Rubric
 
-Scored automatically by `experiments/evaluate.py`. **35 of 40 checks pass.**
+Scored automatically by `experiments/evaluate.py`. **36 of 40 checks pass.**
 
 | Criterion | Measure | Threshold | Result |
 |---|---|---|---|
 | Every learner learned (6 checks) | avg wait, trained minus untrained, paired 95% CI | CI below 0 | **6 of 6 PASS** |
 | Every learner beats fixed-time (6) | avg wait, paired 95% CI | CI below 0 | **6 of 6 PASS** |
 | Every learner beats random switching (6) | avg wait, paired 95% CI | CI below 0 | **6 of 6 PASS** |
-| Competitive with actuated control (6) | avg wait vs actuated | within +10% | 4 of 6 (coordinated: +35%, +15%) |
-| Learned traffic logic (2) | 4 hand-made probe states | 4 of 4 | DQN PASS, Q-learning FAIL (0 of 4) |
+| Competitive with actuated control (6) | avg wait vs actuated, paired 95% CI | within +10% | 5 of 6 (coordinated on the normal corridor: +37%) |
+| Learned traffic logic (2) | 4 hand-made probe states | 4 of 4 | DQN PASS, Q-learning FAIL (2 of 4) |
 | Stable learning (6) | TD loss, last 20 vs first 20 episodes | last at most 1.5 x first | **6 of 6 PASS** (all fell) |
-| Coordination helps (2) | coordinated minus independent wait, 95% CI | CI below 0 | 0 of 2 (+1.2 s, +1.3 s) |
+| Coordination helps (2) | coordinated minus independent wait, 95% CI | CI below 0 | 0 of 2 (+1.3 s, +1.0 s) |
 | Serves all demand (6) | vehicles completed vs fixed-time | at least 98% | **6 of 6 PASS** |
 
 Every row with the per-check numbers is in [results/RESULTS.md](results/RESULTS.md#rubric).
@@ -373,7 +379,7 @@ Python 3.10 or newer. SUMO installs through pip; no separate install is needed.
 
 ```bash
 python -m venv .venv
-.venv/Scripts/activate          # Windows (on Linux/macOS: source .venv/bin/activate)
+source .venv/Scripts/activate   # Windows Git Bash (Linux/macOS: source .venv/bin/activate)
 pip install -r requirements.txt
 ```
 

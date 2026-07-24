@@ -146,9 +146,17 @@ def main():
           ['q_learning_single', 'dqn_single', 'q_learning_corridor', 'coordinated_corridor',
            'q_learning_corridor_heavy', 'coordinated_corridor_heavy']}
 
+    # Every trained learner against the strongest baseline, seed by seed
+    vs_actuated = []
+    for sc, name in learners:
+        row = {'scenario': sc, 'learner': name}
+        for k in ('avg_wait_s', 'avg_travel_s', 'avg_queue'):
+            row[k] = paired_difference(runs[sc][f'{name} (trained)'][k], runs[sc]['Actuated'][k])
+        vs_actuated.append(row)
+
     rubric = score_rubric(runs, probes, td)
-    out = {'summary': summary, 'before_after': before_after, 'probes': probes, 'td_loss': td,
-           'rubric': rubric, 'eval_seeds': EVAL_SEEDS}
+    out = {'summary': summary, 'before_after': before_after, 'vs_actuated': vs_actuated, 'probes': probes,
+           'td_loss': td, 'rubric': rubric, 'eval_seeds': EVAL_SEEDS}
     with open(os.path.join(RESULTS, 'summary.json'), 'w') as f:
         json.dump(out, f, indent=2)
     write_markdown(out)
@@ -180,11 +188,12 @@ def score_rubric(runs, probes, td):
             add(f'{name} beats {base} ({sc})', f'avg wait, trained minus {base}, 95% CI',
                 'CI below 0', f'{m:+.1f} s [{lo:+.1f}, {hi:+.1f}]', hi < 0)
     for sc, name in trained:
-        a = np.mean(runs[sc][f'{name} (trained)']['avg_wait_s'])
-        act = np.mean(runs[sc]['Actuated']['avg_wait_s'])
-        pct = percent_change(a, act)
-        add(f'{name} competitive with Actuated ({sc})', 'avg wait vs Actuated',
-            'within +10%', f'{pct:+.1f}%', pct <= 10)
+        a = runs[sc][f'{name} (trained)']['avg_wait_s']
+        act = runs[sc]['Actuated']['avg_wait_s']
+        pct = percent_change(np.mean(a), np.mean(act))
+        m, lo, hi = paired_difference(a, act)
+        add(f'{name} competitive with Actuated ({sc})', 'avg wait vs Actuated, paired 95% CI',
+            'within +10%', f'{pct:+.1f}% ({m:+.2f} s [{lo:+.2f}, {hi:+.2f}])', pct <= 10)
     for name, res in probes.items():
         n = sum(p['ok'] for p in res)
         add(f'{name} learned traffic logic', 'hand-made probe states answered correctly',
@@ -227,8 +236,13 @@ def write_markdown(out):
         L += [f'## {titles[sc]}', '', '| Controller | ' + ' | '.join(LABELS[c] for c in cols) + ' |',
               '|---|' + '---|' * len(cols)]
         for name, d in table.items():
-            L.append(f'| {name} | ' + ' | '.join(fmt(d[c], 0 if c in ('throughput', 'switches') else 2)
-                                                  for c in cols) + ' |')
+            cells = []
+            for c in cols:
+                if c == 'switches' and name in ('Fixed-time', 'Actuated'):
+                    cells.append('n/a')          # SUMO runs these programs; switches are not counted
+                else:
+                    cells.append(fmt(d[c], 0 if c in ('throughput', 'switches') else 2))
+            L.append(f'| {name} | ' + ' | '.join(cells) + ' |')
         L.append('')
     L += ['## Before vs after training', '',
           '| Scenario | Learner | Wait before (s) | Wait after (s) | Change | Queue before | Queue after | Change |',
@@ -237,6 +251,18 @@ def write_markdown(out):
         w, q = r['avg_wait_s'], r['avg_queue']
         L.append(f'| {r["scenario"]} | {r["learner"]} | {w["before"]:.1f} | {w["after"]:.1f} | '
                  f'{w["change_pct"]:+.0f}% | {q["before"]:.2f} | {q["after"]:.2f} | {q["change_pct"]:+.0f}% |')
+    L += ['', '## Trained learners vs Actuated control', '',
+          'Paired difference per seed (learner minus Actuated), mean and 95% bootstrap CI. '
+          'Negative is better for the learner. "tie" means the CI includes zero.', '',
+          '| Scenario | Learner | Wait (s) | Travel time (s) | Queue (veh) |', '|---|---|---|---|---|']
+
+    def verdict(ci):
+        m, lo, hi = ci
+        tag = 'better' if hi < 0 else ('worse' if lo > 0 else 'tie')
+        return f'{m:+.2f} [{lo:+.2f}, {hi:+.2f}] {tag}'
+    for r in out['vs_actuated']:
+        L.append(f'| {r["scenario"]} | {r["learner"]} | {verdict(r["avg_wait_s"])} | '
+                 f'{verdict(r["avg_travel_s"])} | {verdict(r["avg_queue"])} |')
     L += ['', '## Q-value probes (single intersection)', '',
           '| Agent | Probe | Expected | Q(keep) | Q(switch) | Correct |', '|---|---|---|---|---|---|']
     for agent, res in out['probes'].items():
