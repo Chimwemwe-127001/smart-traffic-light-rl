@@ -1,29 +1,34 @@
 """SUMO environment for one or more signalized intersections.
 
-Time runs in 1 s simulation steps. Every intersection is an agent that makes a
-keep/switch decision on its current green:
+Time runs in 1 s simulation steps. Every intersection is an agent. Each of its
+approaches ("arms") gets green in its own phase, and the agent decides which
+arm is served:
 
-    keep   -> hold the green for another DECISION_S seconds
-    switch -> 3 s yellow, then the other approach gets at least MIN_GREEN_S of green
+    'switch' mode (2 arms): action 0 keeps the green, action 1 switches to the other arm
+    'select' mode (any number of arms, split phasing): action k gives green to arm k,
+                  choosing the arm that already has green means keep
 
-The agent is only asked when a switch is actually allowed (minimum green has
+A keep holds the green for another DECISION_S seconds. A change shows 3 s of
+yellow on the current arm, then the new arm gets at least MIN_GREEN_S of green.
+
+The agent is only asked when a change is actually allowed (minimum green has
 passed), so every action it takes has a real effect. This is the usual
 decision model in traffic signal RL (e.g. Wei et al. 2018, Alegre 2019
 sumo-rl) and fixes the problem we hit with 0.1 s per-step decisions, where
 keep and switch were indistinguishable to the learner.
 
 A green is never held longer than MAX_GREEN_S: at that point a keep is turned
-into a switch, the same way a real controller caps green time. Without this
-cap a trained tabular agent could get stuck keeping one green forever in a
-rarely visited state (see the README, "What did not work").
+into a change to the next arm, the same way a real controller caps green time.
+Without this cap a trained tabular agent could get stuck keeping one green
+forever in a rarely visited state (see the README, "What did not work").
 
-Agents decide asynchronously: after a switch an agent is busy for 13 s, after a
+Agents decide asynchronously: after a change an agent is busy for 13 s, after a
 keep only 5 s. step() applies the actions of the agents that were asked, then
 runs the simulation until the next agent is ready.
 
 Programs:
-    'agent'    - RL agents own the signal, greens are held until switched
-    'fixed'    - the default 42 s / 3 s / 42 s / 3 s cycle in the .net.xml
+    'agent'    - RL agents own the signal, greens are held until changed
+    'fixed'    - the fixed cycle stored in the .net.xml
     'actuated' - SUMO's gap-based actuated control (the common real-world upgrade)
 """
 import os
@@ -62,19 +67,29 @@ MAX_GREEN_S = 60            # same cap as the actuated baseline (maxDur)
 YELLOW_S = 3
 DECISION_S = 5
 KEEP, SWITCH = 0, 1
-DIRECTIONS = ('EB', 'SB')
 
 
 class TrafficEnv:
-    def __init__(self, scenario, program='agent', episode_s=1200, gui=False, record=False):
+    def __init__(self, scenario, program='agent', episode_s=1200, gui=False, record=False, routes=None):
         self.name = scenario
         self.sc = SCENARIOS[scenario]
         self.ids = list(self.sc['intersections'])
+        self.mode = self.sc['action_mode']
         self.program = program
         self.episode_s = episode_s
         self.gui = gui
+        self.routes = routes or self.sc['routes']     # override for demand sweeps
         self.record = record          # keep a per-second log of observations (used by SEMMA)
         self.records = []
+        # static layout per intersection: arm names, detectors and edges in arm order
+        self._arms, self._dets, self._edges, self._edge_arm = {}, {}, {}, {}
+        for tls, cfg in self.sc['intersections'].items():
+            self._arms[tls] = list(cfg['approaches'])
+            self._dets[tls] = [d for a in cfg['approaches'].values() for d in a['detectors']]
+            self._edges[tls] = [e for a in cfg['approaches'].values() for e in a['edges']]
+            for k, a in enumerate(cfg['approaches'].values()):
+                for e in a['edges']:
+                    self._edge_arm[e] = (tls, k)
 
     # ------------------------------------------------------------------ setup
 
@@ -87,7 +102,7 @@ class TrafficEnv:
         if self.program == 'actuated':
             additional.append(self.sc['actuated'])
         cmd = [sumolib.checkBinary('sumo-gui' if self.gui else 'sumo'),
-               '-c', self.sc['cfg'], '-r', self.sc['routes'], '-a', ','.join(additional),
+               '-c', self.sc['cfg'], '-r', self.routes, '-a', ','.join(additional),
                '--seed', str(seed), '--step-length', '1', '--time-to-teleport', '-1',
                '--no-warnings', '--no-step-log',
                '--tripinfo-output', self._tripinfo, '--tripinfo-output.write-unfinished']
@@ -98,7 +113,9 @@ class TrafficEnv:
         self.t = 0
         self.queue_trace = []
         self.switches = 0
-        self._green_dir = {}
+        self._green_dir = {}          # tls -> {green phase index: arm index}
+        self._arm_phase = {}          # tls -> {arm index: green phase index}
+        self._pending = {}            # tls -> (time, green phase to show after the yellow)
         self._next_decision = {}
         self._green_since = {}
         self._acc = {i: {j: 0.0 for j in self.ids} for i in self.ids}
@@ -107,6 +124,7 @@ class TrafficEnv:
             if self.program == 'actuated':
                 traci.trafficlight.setProgram(tls, 'actuated')
             self._green_dir[tls] = self._map_green_phases(tls)
+            self._arm_phase[tls] = {a: p for p, a in self._green_dir[tls].items()}
             self._next_decision[tls] = MIN_GREEN_S
             self._green_since[tls] = 0
 
@@ -115,12 +133,11 @@ class TrafficEnv:
         return self._run_until_ready()
 
     def _map_green_phases(self, tls):
-        """Find which green phase serves EB and which serves SB, from the signal program itself.
+        """Find which arm each green phase serves, from the signal program itself.
 
         Never hardcode phase numbers: netconvert decides the order."""
         logic = traci.trafficlight.getAllProgramLogics(tls)[0]
         links = traci.trafficlight.getControlledLinks(tls)
-        edges = self.sc['intersections'][tls]['edges']
         mapping = {}
         for idx, phase in enumerate(logic.phases):
             if 'y' in phase.state or 'G' not in phase.state:
@@ -128,43 +145,46 @@ class TrafficEnv:
             first_green = phase.state.index('G')
             in_lane = links[first_green][0][0]
             edge = in_lane.rsplit('_', 1)[0]
-            mapping[idx] = edges.index(edge)
+            mapping[idx] = self._edge_arm[edge][1]
         return mapping
 
     # ----------------------------------------------------------- observation
 
-    def _detectors(self, tls):
-        cfg = self.sc['intersections'][tls]
-        return cfg['EB'] + cfg['SB']
-
     def _queue(self, tls):
         """Stopped vehicles seen by this intersection's detectors (the reward signal)."""
-        return sum(traci.lanearea.getLastStepHaltingNumber(d) for d in self._detectors(tls))
+        return sum(traci.lanearea.getLastStepHaltingNumber(d) for d in self._dets[tls])
 
     def observe(self):
         """What each intersection's cameras report right now."""
         obs = {}
         for tls in self.ids:
-            cfg = self.sc['intersections'][tls]
-            lanes = np.array([traci.lanearea.getLastStepVehicleNumber(d) for d in self._detectors(tls)],
+            approaches = self.sc['intersections'][tls]['approaches']
+            lanes = np.array([traci.lanearea.getLastStepVehicleNumber(d) for d in self._dets[tls]],
                              dtype=float)
+            counts, start = [], 0
+            for a in approaches.values():
+                counts.append(float(lanes[start:start + len(a['detectors'])].sum()))
+                start += len(a['detectors'])
             phase = traci.trafficlight.getPhase(tls)
-            obs[tls] = {
+            o = {
                 'lanes': lanes,
-                'EB': float(lanes[:len(cfg['EB'])].sum()),
-                'SB': float(lanes[len(cfg['EB']):].sum()),
-                'green': self._green_dir[tls].get(phase, -1),   # 0 EB, 1 SB, -1 yellow
+                'counts': counts,                                # vehicles seen per arm, in arm order
+                'green': self._green_dir[tls].get(phase, -1),   # arm with green, -1 during yellow
                 'green_time': float(self.t - self._green_since[tls]),
                 'queue': float(self._queue(tls)),
             }
+            o.update(zip(approaches, counts))                    # also by name, e.g. o['EB']
+            obs[tls] = o
         return obs
 
     # ------------------------------------------------------------------ step
 
     def _tick(self):
         for tls in self.ids:
+            if tls in self._pending and self.t >= self._pending[tls][0]:
+                traci.trafficlight.setPhase(tls, self._pending.pop(tls)[1])   # yellow over: show chosen green
             if self.program == 'agent' and traci.trafficlight.getPhase(tls) in self._green_dir[tls]:
-                traci.trafficlight.setPhaseDuration(tls, 10_000)   # hold green until the agent switches
+                traci.trafficlight.setPhaseDuration(tls, 10_000)   # hold green until the agent changes it
         traci.simulationStep()
         self.t += 1
         queues = {tls: self._queue(tls) for tls in self.ids}
@@ -173,14 +193,15 @@ class TrafficEnv:
                 self._acc[i][j] += queues[j]
             self._acc_n[i] += 1
         self.queue_trace.append(sum(traci.edge.getLastStepHaltingNumber(e)
-                                    for tls in self.ids
-                                    for e in self.sc['intersections'][tls]['edges']))
+                                    for tls in self.ids for e in self._edges[tls]))
         if self.record:
             for tls, o in self.observe().items():
-                edge_queue = sum(traci.edge.getLastStepHaltingNumber(e)
-                                 for e in self.sc['intersections'][tls]['edges'])
-                self.records.append({'t': self.t, 'tls': tls, 'EB': o['EB'], 'SB': o['SB'],
-                                     'green': o['green'], 'queue': o['queue'], 'edge_queue': edge_queue,
+                edge_queue = sum(traci.edge.getLastStepHaltingNumber(e) for e in self._edges[tls])
+                arm_queue = {f'queue_{name}': sum(traci.edge.getLastStepHaltingNumber(e) for e in a['edges'])
+                             for name, a in self.sc['intersections'][tls]['approaches'].items()}
+                self.records.append({'t': self.t, 'tls': tls, 'green': o['green'], 'queue': o['queue'],
+                                     'edge_queue': edge_queue, **arm_queue,
+                                     **{name: c for name, c in zip(self._arms[tls], o['counts'])},
                                      **{f'lane_{k}': v for k, v in enumerate(o['lanes'])}})
 
     def done(self):
@@ -199,6 +220,15 @@ class TrafficEnv:
         n = max(1, self._acc_n[tls])
         return {j: self._acc[tls][j] / n for j in self.ids}
 
+    def _change(self, tls, target_phase):
+        """3 s yellow on the current green, then target_phase (set in _tick)."""
+        traci.trafficlight.setPhase(tls, traci.trafficlight.getPhase(tls) + 1)   # its yellow
+        if self.mode == 'select':
+            self._pending[tls] = (self.t + YELLOW_S, target_phase)
+        self._next_decision[tls] = self.t + YELLOW_S + MIN_GREEN_S
+        self._green_since[tls] = self.t + YELLOW_S
+        self.switches += 1
+
     def step(self, actions):
         """Apply {tls: action} for the ready agents, then run until the next decision.
 
@@ -208,16 +238,23 @@ class TrafficEnv:
         which is what the agents should learn from."""
         self.applied = {}
         for tls, action in actions.items():
-            if self.t - self._green_since[tls] + DECISION_S > MAX_GREEN_S:
-                action = SWITCH
-            self.applied[tls] = action
-            if action == SWITCH:
-                traci.trafficlight.setPhase(tls, traci.trafficlight.getPhase(tls) + 1)   # yellow
-                self._next_decision[tls] = self.t + YELLOW_S + MIN_GREEN_S
-                self._green_since[tls] = self.t + YELLOW_S
-                self.switches += 1
+            too_long = self.t - self._green_since[tls] + DECISION_S > MAX_GREEN_S
+            if self.mode == 'switch':
+                if too_long:
+                    action = SWITCH
+                if action == SWITCH:
+                    self._change(tls, None)
+                else:
+                    self._next_decision[tls] = self.t + DECISION_S
             else:
-                self._next_decision[tls] = self.t + DECISION_S
+                current = self._green_dir[tls][traci.trafficlight.getPhase(tls)]
+                if too_long and action == current:
+                    action = (current + 1) % len(self._arms[tls])
+                if action == current:
+                    self._next_decision[tls] = self.t + DECISION_S
+                else:
+                    self._change(tls, self._arm_phase[tls][action])
+            self.applied[tls] = action
             self._acc[tls] = {j: 0.0 for j in self.ids}
             self._acc_n[tls] = 0
         self._tick()
@@ -240,6 +277,13 @@ class TrafficEnv:
         wait = [float(t.get('waitingTime')) for t in trips]
         travel = [float(t.get('duration')) for t in trips]
         arrived = sum(1 for t in trips if float(t.get('arrival')) >= 0)
+        # average wait per arm, by the edge each vehicle entered on
+        arm_wait = {}
+        for t in trips:
+            key = self._edge_arm.get(t.get('departLane', '').rsplit('_', 1)[0])
+            if key is not None:
+                arm_wait.setdefault(f'{key[0]}:{self._arms[key[0]][key[1]]}', []).append(
+                    float(t.get('waitingTime')))
         return {
             'avg_queue': float(np.mean(self.queue_trace)),
             'avg_wait_s': float(np.mean(wait)) if wait else 0.0,
@@ -247,4 +291,6 @@ class TrafficEnv:
             'throughput': arrived,
             'backlog': backlog,
             'switches': self.switches,
+            'max_wait_s': float(max(wait)) if wait else 0.0,
+            'arm_wait': {k: float(np.mean(v)) for k, v in arm_wait.items()},
         }

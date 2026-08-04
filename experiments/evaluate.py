@@ -63,7 +63,8 @@ def controllers(scenario):
 
 def probe_obs(eb, sb, green):
     per_lane = lambda n: [n / 3] * 3
-    return {'Node2': {'lanes': np.array(per_lane(eb) + per_lane(sb)), 'EB': float(eb), 'SB': float(sb),
+    return {'Node2': {'lanes': np.array(per_lane(eb) + per_lane(sb)), 'counts': [float(eb), float(sb)],
+                      'EB': float(eb), 'SB': float(sb),
                       'green': green, 'green_time': 20.0, 'queue': float(eb + sb)}}
 
 
