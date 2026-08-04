@@ -17,10 +17,18 @@ update is visible, and there is no framework to install.
 import numpy as np
 
 from traffic_rl.baselines import queue_reward
-from traffic_rl.state import feature_vector, load_config
+from traffic_rl.scenarios import SCENARIOS, n_actions
+from traffic_rl.state import feature_vector, load_config, n_features
 
-N_FEATURES = 9          # 6 lane counts + 2 green one-hot + green age (single intersection)
+N_FEATURES = 9          # v1 single intersection: 6 lane counts + 2 green one-hot + green age
 HIDDEN = 32
+
+
+def input_size(scenario):
+    """Lanes + arms + 1 for the (single) intersection of a scenario."""
+    inter = next(iter(SCENARIOS[scenario]['intersections'].values()))
+    lanes = sum(len(a['detectors']) for a in inter['approaches'].values())
+    return n_features(lanes, len(inter['approaches']))
 
 
 class MLP:
@@ -99,14 +107,16 @@ class DQN:
     WARMUP = 500
     SYNC_EVERY = 250
 
-    def __init__(self, gamma=0.9, epsilon=1.0, lr=1e-3, seed=0):
+    def __init__(self, gamma=0.9, epsilon=1.0, lr=1e-3, seed=0, scenario='single'):
         self.gamma = gamma
         self.epsilon = epsilon
-        self.cfg = load_config()
-        self.net = MLP(lr=lr, seed=seed)
-        self.target = MLP(seed=seed)
+        self.cfg = load_config(scenario)
+        self.n_actions = n_actions(scenario)
+        n_in = input_size(scenario)
+        self.net = MLP(n_in=n_in, n_out=self.n_actions, lr=lr, seed=seed)
+        self.target = MLP(n_in=n_in, n_out=self.n_actions, seed=seed)
         self.target.copy_from(self.net)
-        self.buffer = ReplayBuffer(seed=seed)
+        self.buffer = ReplayBuffer(n_features=n_in, seed=seed)
         self.rng = np.random.default_rng(seed)
         self.updates = 0
 
@@ -118,7 +128,7 @@ class DQN:
 
     def act(self, tls, obs, explore=False):
         if explore and self.rng.random() < self.epsilon:
-            return int(self.rng.integers(2))
+            return int(self.rng.integers(self.n_actions))
         return int(np.argmax(self.net.predict(self.features(tls, obs))[0]))
 
     def learn(self, tls, obs, action, queues, next_obs):

@@ -17,7 +17,7 @@ from traffic_rl.state import count_bin, discrete_state, feature_vector, DEFAULT_
 
 def obs(eb=0, sb=0, green=0, green_time=15, tls='Node2'):
     lanes = np.array([eb / 3] * 3 + [sb / 3] * 3)
-    return {tls: {'lanes': lanes, 'EB': eb, 'SB': sb, 'green': green,
+    return {tls: {'lanes': lanes, 'counts': [eb, sb], 'EB': eb, 'SB': sb, 'green': green,
                   'green_time': green_time, 'queue': eb + sb}}
 
 
