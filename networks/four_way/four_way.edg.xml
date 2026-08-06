@@ -1,0 +1,11 @@
+<edges>
+    <!-- Every road is two-way with one lane in each direction, 50 km/h -->
+    <edge id="N2C" from="N" to="C" numLanes="1" speed="13.89"/>
+    <edge id="C2N" from="C" to="N" numLanes="1" speed="13.89"/>
+    <edge id="E2C" from="E" to="C" numLanes="1" speed="13.89"/>
+    <edge id="C2E" from="C" to="E" numLanes="1" speed="13.89"/>
+    <edge id="S2C" from="S" to="C" numLanes="1" speed="13.89"/>
+    <edge id="C2S" from="C" to="S" numLanes="1" speed="13.89"/>
+    <edge id="W2C" from="W" to="C" numLanes="1" speed="13.89"/>
+    <edge id="C2W" from="C" to="W" numLanes="1" speed="13.89"/>
+</edges>

@@ -1,0 +1,41 @@
+<routes>
+    <vType id="car" accel="2.6" decel="4.5" sigma="0.5" length="5" minGap="2.5" maxSpeed="13.89" guiShape="passenger"/>
+    <!-- Random arrivals. Turning split 60% straight, 20% left, 20% right.
+         0-400 s N-S heavy, 400-800 s balanced, 800-1200 s E-W heavy. -->
+    <flow id="N_straight_0" type="car" begin="0" end="400" probability="0.0750" from="N2C" to="C2S" departLane="best"/>
+    <flow id="N_left_0" type="car" begin="0" end="400" probability="0.0250" from="N2C" to="C2E" departLane="best"/>
+    <flow id="N_right_0" type="car" begin="0" end="400" probability="0.0250" from="N2C" to="C2W" departLane="best"/>
+    <flow id="E_straight_0" type="car" begin="0" end="400" probability="0.0250" from="E2C" to="C2W" departLane="best"/>
+    <flow id="E_left_0" type="car" begin="0" end="400" probability="0.0083" from="E2C" to="C2S" departLane="best"/>
+    <flow id="E_right_0" type="car" begin="0" end="400" probability="0.0083" from="E2C" to="C2N" departLane="best"/>
+    <flow id="S_straight_0" type="car" begin="0" end="400" probability="0.0583" from="S2C" to="C2N" departLane="best"/>
+    <flow id="S_left_0" type="car" begin="0" end="400" probability="0.0194" from="S2C" to="C2W" departLane="best"/>
+    <flow id="S_right_0" type="car" begin="0" end="400" probability="0.0194" from="S2C" to="C2E" departLane="best"/>
+    <flow id="W_straight_0" type="car" begin="0" end="400" probability="0.0250" from="W2C" to="C2E" departLane="best"/>
+    <flow id="W_left_0" type="car" begin="0" end="400" probability="0.0083" from="W2C" to="C2N" departLane="best"/>
+    <flow id="W_right_0" type="car" begin="0" end="400" probability="0.0083" from="W2C" to="C2S" departLane="best"/>
+    <flow id="N_straight_400" type="car" begin="400" end="800" probability="0.0458" from="N2C" to="C2S" departLane="best"/>
+    <flow id="N_left_400" type="car" begin="400" end="800" probability="0.0153" from="N2C" to="C2E" departLane="best"/>
+    <flow id="N_right_400" type="car" begin="400" end="800" probability="0.0153" from="N2C" to="C2W" departLane="best"/>
+    <flow id="E_straight_400" type="car" begin="400" end="800" probability="0.0458" from="E2C" to="C2W" departLane="best"/>
+    <flow id="E_left_400" type="car" begin="400" end="800" probability="0.0153" from="E2C" to="C2S" departLane="best"/>
+    <flow id="E_right_400" type="car" begin="400" end="800" probability="0.0153" from="E2C" to="C2N" departLane="best"/>
+    <flow id="S_straight_400" type="car" begin="400" end="800" probability="0.0458" from="S2C" to="C2N" departLane="best"/>
+    <flow id="S_left_400" type="car" begin="400" end="800" probability="0.0153" from="S2C" to="C2W" departLane="best"/>
+    <flow id="S_right_400" type="car" begin="400" end="800" probability="0.0153" from="S2C" to="C2E" departLane="best"/>
+    <flow id="W_straight_400" type="car" begin="400" end="800" probability="0.0458" from="W2C" to="C2E" departLane="best"/>
+    <flow id="W_left_400" type="car" begin="400" end="800" probability="0.0153" from="W2C" to="C2N" departLane="best"/>
+    <flow id="W_right_400" type="car" begin="400" end="800" probability="0.0153" from="W2C" to="C2S" departLane="best"/>
+    <flow id="N_straight_800" type="car" begin="800" end="1200" probability="0.0250" from="N2C" to="C2S" departLane="best"/>
+    <flow id="N_left_800" type="car" begin="800" end="1200" probability="0.0083" from="N2C" to="C2E" departLane="best"/>
+    <flow id="N_right_800" type="car" begin="800" end="1200" probability="0.0083" from="N2C" to="C2W" departLane="best"/>
+    <flow id="E_straight_800" type="car" begin="800" end="1200" probability="0.0750" from="E2C" to="C2W" departLane="best"/>
+    <flow id="E_left_800" type="car" begin="800" end="1200" probability="0.0250" from="E2C" to="C2S" departLane="best"/>
+    <flow id="E_right_800" type="car" begin="800" end="1200" probability="0.0250" from="E2C" to="C2N" departLane="best"/>
+    <flow id="S_straight_800" type="car" begin="800" end="1200" probability="0.0250" from="S2C" to="C2N" departLane="best"/>
+    <flow id="S_left_800" type="car" begin="800" end="1200" probability="0.0083" from="S2C" to="C2W" departLane="best"/>
+    <flow id="S_right_800" type="car" begin="800" end="1200" probability="0.0083" from="S2C" to="C2E" departLane="best"/>
+    <flow id="W_straight_800" type="car" begin="800" end="1200" probability="0.0583" from="W2C" to="C2E" departLane="best"/>
+    <flow id="W_left_800" type="car" begin="800" end="1200" probability="0.0194" from="W2C" to="C2N" departLane="best"/>
+    <flow id="W_right_800" type="car" begin="800" end="1200" probability="0.0194" from="W2C" to="C2S" departLane="best"/>
+</routes>

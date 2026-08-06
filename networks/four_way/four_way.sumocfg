@@ -1,0 +1,11 @@
+<configuration>
+    <input>
+        <net-file value="four_way.net.xml"/>
+        <route-files value="four_way.rou.xml"/>
+        <additional-files value="det.add.xml"/>
+    </input>
+    <report>
+        <no-step-log value="true"/>
+        <duration-log.disable value="true"/>
+    </report>
+</configuration>

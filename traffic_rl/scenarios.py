@@ -70,6 +70,23 @@ SCENARIOS['corridor_heavy'] = dict(
 )
 
 
+# A realistic four-way junction: every road two-way, one lane each direction,
+# left-hand traffic, split phasing (the agent picks which arm gets green).
+# Built by networks/build_networks.py.
+SCENARIOS['four_way'] = {
+    'cfg': os.path.join(NETWORKS, 'four_way', 'four_way.sumocfg'),
+    'routes': os.path.join(NETWORKS, 'four_way', 'four_way.rou.xml'),
+    'actuated': os.path.join(NETWORKS, 'four_way', 'actuated.add.xml'),
+    'action_mode': 'select',
+    'intersections': {
+        'C': {
+            'approaches': {a: arm([f'{a}2C_0'], [f'{a}2C']) for a in ('N', 'E', 'S', 'W')},
+            'neighbor': None,
+        },
+    },
+}
+
+
 def arms(scenario, tls):
     return list(SCENARIOS[scenario]['intersections'][tls]['approaches'])
 
