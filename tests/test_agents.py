@@ -117,6 +117,30 @@ def test_dqn_learns_after_warmup():
     assert losses[0] is None and losses[-1] is not None
 
 
+def four_way_obs(counts=(0, 0, 0, 0), green=0, green_time=15):
+    return {'C': {'lanes': np.array(counts, dtype=float), 'counts': list(counts), 'green': green,
+                  'green_time': green_time, 'queue': sum(counts)}}
+
+
+def test_agents_get_one_action_per_arm_on_the_four_way():
+    ql, dqn = QLearning(scenario='four_way'), DQN(scenario='four_way')
+    assert ql.n_actions == dqn.n_actions == 4
+    o = four_way_obs((6, 0, 1, 0), green=1)
+    assert ql.state('C', o) == (2, 0, 0, 0, 1, 0)             # 4 arm bins, green arm, green age bin
+    assert dqn.features('C', o).shape == (9,)                 # 4 lanes + 4 one-hot + age
+    assert dqn.net.predict(dqn.features('C', o)).shape == (1, 4)
+    ql.q('C', ql.state('C', o))[:] = [-3.0, -9.0, -1.0, -5.0]
+    assert ql.act('C', o) == 2
+    assert {ql.act('C', o, explore=True) for _ in range(200)} == {0, 1, 2, 3}   # epsilon = 1 explores all arms
+
+
+def test_v1_state_is_unchanged_by_the_arm_generalization():
+    o = obs(eb=6, sb=0, green=1, green_time=45)['Node2']
+    assert discrete_state(o, DEFAULT_CONFIG) == (2, 0, 1, 2)
+    assert QLearning().n_actions == DQN().n_actions == 2
+    assert DQN().net.params[0].shape == (9, 32)
+
+
 def test_bootstrap_and_paired_difference():
     m, lo, hi = bootstrap_ci([1.0, 2.0, 3.0, 4.0])
     assert m == 2.5 and lo < m < hi

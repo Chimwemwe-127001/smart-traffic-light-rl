@@ -33,6 +33,7 @@ from traffic_rl.dqn import DQN
 from traffic_rl.multi_agent import CoordinatedQLearning
 from traffic_rl.q_learning import QLearning
 from traffic_rl.runner import run_episode
+from traffic_rl.scenarios import SCENARIOS
 
 REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 LOGS = os.path.join(REPO, 'results', 'logs')
@@ -44,9 +45,9 @@ EPS_END = 0.05
 
 def make_agent(name, scenario, seed=0):
     if name == 'q_learning':
-        return QLearning(seed=seed)
+        return QLearning(seed=seed, scenario=scenario)
     if name == 'dqn':
-        return DQN(seed=seed)
+        return DQN(seed=seed, scenario=scenario)
     if name == 'coordinated':
         return CoordinatedQLearning(scenario=scenario, seed=seed)
     raise ValueError(name)
@@ -67,14 +68,16 @@ def validate(scenario, agent):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('--agent', choices=['q_learning', 'dqn', 'coordinated'], required=True)
-    ap.add_argument('--scenario', choices=['single', 'corridor', 'corridor_heavy'], required=True)
+    ap.add_argument('--scenario', choices=list(SCENARIOS), required=True)
     ap.add_argument('--episodes', type=int, default=200)
     ap.add_argument('--seed', type=int, default=0)
     args = ap.parse_args()
     if args.episodes > min(VAL_SEEDS):
         sys.exit(f'Training seeds 0-{args.episodes - 1} would overlap the validation seeds {VAL_SEEDS}.')
-    if args.agent == 'dqn' and args.scenario != 'single':
-        sys.exit('The DQN input layer is sized for the single intersection.')
+    if args.agent == 'dqn' and len(SCENARIOS[args.scenario]['intersections']) != 1:
+        sys.exit('The DQN controls one intersection; use a single-junction scenario.')
+    if args.agent == 'coordinated' and len(SCENARIOS[args.scenario]['intersections']) < 2:
+        sys.exit('Coordination needs a scenario with neighboring intersections.')
 
     os.makedirs(LOGS, exist_ok=True)
     os.makedirs(MODELS, exist_ok=True)
