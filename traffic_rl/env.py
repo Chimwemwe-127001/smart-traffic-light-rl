@@ -133,14 +133,21 @@ class TrafficEnv:
         return self._run_until_ready()
 
     def _map_green_phases(self, tls):
-        """Find which arm each green phase serves, from the signal program itself.
+        """Give every green phase an index, read from the signal program itself.
 
-        Never hardcode phase numbers: netconvert decides the order."""
+        greens='arm' (default): the index is the arm the phase serves. Never
+        hardcode phase numbers: netconvert decides the order.
+        greens='order': the index is the phase's position among the greens, for
+        programs where one phase serves several arms (e.g. both directions of a
+        main road)."""
         logic = traci.trafficlight.getAllProgramLogics(tls)[0]
         links = traci.trafficlight.getControlledLinks(tls)
         mapping = {}
         for idx, phase in enumerate(logic.phases):
             if 'y' in phase.state or 'G' not in phase.state:
+                continue
+            if self.sc.get('greens') == 'order':
+                mapping[idx] = len(mapping)
                 continue
             first_green = phase.state.index('G')
             in_lane = links[first_green][0][0]
@@ -169,7 +176,8 @@ class TrafficEnv:
             o = {
                 'lanes': lanes,
                 'counts': counts,                                # vehicles seen per arm, in arm order
-                'green': self._green_dir[tls].get(phase, -1),   # arm with green, -1 during yellow
+                'green': self._green_dir[tls].get(phase, -1),   # index of the green shown, -1 during yellow
+                'n_greens': len(self._green_dir[tls]),
                 'green_time': float(self.t - self._green_since[tls]),
                 'queue': float(self._queue(tls)),
             }
@@ -249,7 +257,7 @@ class TrafficEnv:
             else:
                 current = self._green_dir[tls][traci.trafficlight.getPhase(tls)]
                 if too_long and action == current:
-                    action = (current + 1) % len(self._arms[tls])
+                    action = (current + 1) % len(self._green_dir[tls])
                 if action == current:
                     self._next_decision[tls] = self.t + DECISION_S
                 else:

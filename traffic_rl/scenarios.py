@@ -96,4 +96,10 @@ def n_actions(scenario):
     sc = SCENARIOS[scenario]
     if sc['action_mode'] == 'switch':
         return 2
-    return max(len(i['approaches']) for i in sc['intersections'].values())
+    return n_greens(scenario)
+
+
+def n_greens(scenario):
+    """Number of green phases: one per arm, unless the scenario's program says otherwise."""
+    sc = SCENARIOS[scenario]
+    return sc.get('n_greens') or max(len(i['approaches']) for i in sc['intersections'].values())
