@@ -87,6 +87,33 @@ SCENARIOS['four_way'] = {
 }
 
 
+# Great East Road / Lufubu Road, Lusaka: the signalized crossroads rebuilt on its
+# real OpenStreetMap geometry. Three greens chosen by position in the program:
+# 0 main road (right turns yield), 1 protected main-road right turns, 2 side roads.
+LUSAKA = os.path.join(NETWORKS, 'lusaka')
+SCENARIOS['lusaka'] = {
+    'cfg': os.path.join(LUSAKA, 'lusaka.sumocfg'),
+    'routes': os.path.join(LUSAKA, 'lusaka.rou.xml'),
+    'actuated': os.path.join(LUSAKA, 'actuated.add.xml'),
+    'action_mode': 'select',
+    'greens': 'order',
+    'n_greens': 3,
+    'phase_arms': [['W', 'E'], ['W', 'E'], ['N', 'S']],     # arms each green serves (used by LQF)
+    'demand_sweep': {s: os.path.join(LUSAKA, f'lusaka_x{s:.2f}.rou.xml') for s in (0.75, 1.25)},
+    'intersections': {
+        'C': {
+            'approaches': {
+                'W': arm(['W2C_0', 'W2C_1'], ['W2C']),     # Great East Road, eastbound
+                'E': arm(['E2C_0', 'E2C_1'], ['E2C']),     # Great East Road, westbound (towards the city)
+                'N': arm(['N2C_0'], ['N2C']),              # Lufubu Road
+                'S': arm(['S2C_0'], ['S2C']),              # East Park Mall access
+            },
+            'neighbor': None,
+        },
+    },
+}
+
+
 def arms(scenario, tls):
     return list(SCENARIOS[scenario]['intersections'][tls]['approaches'])
 
