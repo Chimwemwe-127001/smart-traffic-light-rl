@@ -1,0 +1,14 @@
+<additional>
+    <!-- Same split phases as gap-based actuated control: a green is extended
+         while vehicles keep arriving, from 10 s up to 60 s. -->
+    <tlLogic id="C" type="actuated" programID="actuated" offset="0">
+        <param key="max-gap" value="3.0"/>
+        <param key="detector-gap" value="2.0"/>
+        <phase duration="40" minDur="10" maxDur="60" state="rrrGGGgrrrGGGg"/>
+        <phase duration="3" state="rrryyyyrrryyyy"/>
+        <phase duration="10" minDur="10" maxDur="60" state="rrrrrrGrrrrrrG"/>
+        <phase duration="3" state="rrrrrryrrrrrry"/>
+        <phase duration="20" minDur="10" maxDur="60" state="GGgrrrrGGgrrrr"/>
+        <phase duration="3" state="yyyrrrryyyrrrr"/>
+    </tlLogic>
+</additional>
