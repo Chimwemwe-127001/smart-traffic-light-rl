@@ -1,0 +1,17 @@
+<routes>
+    <vType id="car" accel="2.6" decel="4.5" sigma="0.5" length="5" minGap="2.5" maxSpeed="22.22" guiShape="passenger"/>
+    <!-- Morning peak, random arrivals, demand x0.75. See networks/build_networks.py
+         for how the volumes were derived. -->
+    <flow id="E_straight" type="car" begin="0" end="3600" probability="0.2964" from="E2C" to="C2W" departLane="best"/>
+    <flow id="E_left" type="car" begin="0" end="3600" probability="0.0279" from="E2C" to="C2S" departLane="best"/>
+    <flow id="E_right" type="car" begin="0" end="3600" probability="0.0244" from="E2C" to="C2N" departLane="best"/>
+    <flow id="W_straight" type="car" begin="0" end="3600" probability="0.1976" from="W2C" to="C2E" departLane="best"/>
+    <flow id="W_left" type="car" begin="0" end="3600" probability="0.0186" from="W2C" to="C2N" departLane="best"/>
+    <flow id="W_right" type="car" begin="0" end="3600" probability="0.0163" from="W2C" to="C2S" departLane="best"/>
+    <flow id="N_straight" type="car" begin="0" end="3600" probability="0.0063" from="N2C" to="C2S" departLane="best"/>
+    <flow id="N_left" type="car" begin="0" end="3600" probability="0.0187" from="N2C" to="C2E" departLane="best"/>
+    <flow id="N_right" type="car" begin="0" end="3600" probability="0.0375" from="N2C" to="C2W" departLane="best"/>
+    <flow id="S_straight" type="car" begin="0" end="3600" probability="0.0042" from="S2C" to="C2N" departLane="best"/>
+    <flow id="S_left" type="car" begin="0" end="3600" probability="0.0208" from="S2C" to="C2W" departLane="best"/>
+    <flow id="S_right" type="car" begin="0" end="3600" probability="0.0167" from="S2C" to="C2E" departLane="best"/>
+</routes>

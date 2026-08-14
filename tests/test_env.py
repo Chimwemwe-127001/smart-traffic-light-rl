@@ -107,16 +107,20 @@ def test_four_way_fixed_plan_gives_each_arm_30_seconds_in_turn():
     assert greens[:4] in ([0, 1, 2, 3], [1, 2, 3, 0], [2, 3, 0, 1], [3, 0, 1, 2])   # N, E, S, W order
 
 
-def test_four_way_network_drives_on_the_left():
+@pytest.mark.parametrize('name', ['four_way', 'lusaka'])
+def test_new_networks_drive_on_the_left(name):
+    """Zambia drives on the left: on every arm, the incoming lanes sit on the driver's left."""
     import sumolib
     net_file = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
-                            'networks', 'four_way', 'four_way.net.xml')
+                            'networks', name, f'{name}.net.xml')
     net = sumolib.net.readNet(net_file)
-    # Driving south into the junction from N, the left-hand side of the road is east (x > 0).
-    xs = [x for x, _ in net.getLane('N2C_0').getShape()]
-    assert min(xs) > 0
-    with open(net_file) as f:
-        assert 'lefthand="true"' in f.read(2000)
+    for arm in 'NESW':
+        inc, out = net.getEdge(f'{arm}2C'), net.getEdge(f'C2{arm}')
+        (x1, y1), (x2, y2) = inc.getFromNode().getCoord(), inc.getToNode().getCoord()
+        lane_in, lane_out = inc.getLanes()[0].getShape(), out.getLanes()[0].getShape()
+        (xi, yi), (xo, yo) = lane_in[len(lane_in) // 2], lane_out[len(lane_out) // 2]
+        cross = (x2 - x1) * (yi - yo) - (y2 - y1) * (xi - xo)     # > 0: incoming lane is left of travel
+        assert cross > 0, f'{name} arm {arm} drives on the right'
 
 
 def test_same_seed_gives_identical_results():

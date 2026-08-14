@@ -1,0 +1,11 @@
+<tlLogics>
+    <!-- Main road 40 s, protected right turns 10 s, side roads 20 s, 3 s yellow after each -->
+    <tlLogic id="C" type="static" programID="0" offset="0">
+        <phase duration="40" state="rrrGGGgrrrGGGg"/>
+        <phase duration="3" state="rrryyyyrrryyyy"/>
+        <phase duration="10" state="rrrrrrGrrrrrrG"/>
+        <phase duration="3" state="rrrrrryrrrrrry"/>
+        <phase duration="20" state="GGgrrrrGGgrrrr"/>
+        <phase duration="3" state="yyyrrrryyyrrrr"/>
+    </tlLogic>
+</tlLogics>

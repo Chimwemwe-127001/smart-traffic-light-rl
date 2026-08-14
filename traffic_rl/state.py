@@ -39,12 +39,12 @@ def discrete_state(o, cfg):
 
 
 def feature_vector(o, cfg):
-    """DQN input: per-lane counts, one-hot arm with green, green age. All roughly in [0, 1]."""
+    """DQN input: per-lane counts, one-hot green phase, green age. All roughly in [0, 1]."""
     lanes = np.asarray(o['lanes'], dtype=float) / cfg['lane_scale']
-    green = np.array([o['green'] == k for k in range(len(o['counts']))], dtype=float)
+    green = np.array([o['green'] == k for k in range(o.get('n_greens', len(o['counts'])))], dtype=float)
     age = np.array([min(o['green_time'] / 60.0, 1.0)])
     return np.concatenate([lanes, green, age])
 
 
-def n_features(n_lanes, n_arms):
-    return n_lanes + n_arms + 1
+def n_features(n_lanes, n_greens):
+    return n_lanes + n_greens + 1

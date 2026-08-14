@@ -1,0 +1,7 @@
+<nodes>
+    <node id="C" x="0" y="0" type="traffic_light"/>
+    <node id="W" x="-298.2" y="-32.5" type="priority"/>  <!-- Great East Road from the west (eastbound) -->
+    <node id="E" x="292.6" y="66.3" type="priority"/>  <!-- Great East Road from the east (westbound) -->
+    <node id="N" x="2.3" y="300.0" type="priority"/>  <!-- Lufubu Road -->
+    <node id="S" x="10.2" y="-69.1" type="priority"/>  <!-- East Park Mall access -->
+</nodes>

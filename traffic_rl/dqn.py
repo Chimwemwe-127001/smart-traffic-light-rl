@@ -17,7 +17,7 @@ update is visible, and there is no framework to install.
 import numpy as np
 
 from traffic_rl.baselines import queue_reward
-from traffic_rl.scenarios import SCENARIOS, n_actions
+from traffic_rl.scenarios import SCENARIOS, n_actions, n_greens
 from traffic_rl.state import feature_vector, load_config, n_features
 
 N_FEATURES = 9          # v1 single intersection: 6 lane counts + 2 green one-hot + green age
@@ -25,10 +25,10 @@ HIDDEN = 32
 
 
 def input_size(scenario):
-    """Lanes + arms + 1 for the (single) intersection of a scenario."""
+    """Lanes + green phases + 1 for the (single) intersection of a scenario."""
     inter = next(iter(SCENARIOS[scenario]['intersections'].values()))
     lanes = sum(len(a['detectors']) for a in inter['approaches'].values())
-    return n_features(lanes, len(inter['approaches']))
+    return n_features(lanes, n_greens(scenario))
 
 
 class MLP:
