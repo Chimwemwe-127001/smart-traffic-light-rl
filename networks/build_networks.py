@@ -74,15 +74,16 @@ def write_programs(folder, name, tls_id, phases, greens_s, note):
                 + '\n'.join(act) + '\n    </tlLogic>\n</additional>\n')
 
 
-def write_detectors(net, folder, arm_edges):
-    """One detector per approach lane: the last 105 m (or the whole lane if shorter), ending at the stop line."""
+def write_detectors(net, folder, arm_edges, reach=None):
+    """One detector per approach lane: the last 105 m (or the whole lane if shorter), ending at the stop line.
+    reach: optional {edge: metres} for arms that need to see further back."""
     lines, names = [], []
     for edges in arm_edges:
         arm = []
         for e in edges:
             for lane in net.getEdge(e).getLanes():
                 length = lane.getLength()
-                start = max(0.1, length - DETECTOR_M)
+                start = max(0.1, length - (reach or {}).get(e, DETECTOR_M))
                 lines.append(f'    <laneAreaDetector id="{lane.getID()}" lane="{lane.getID()}" pos="{start:.1f}" '
                              f'endPos="{length - 0.1:.1f}" friendlyPos="true" file="/dev/null" period="1000"/>')
                 arm.append(lane.getID())
@@ -191,6 +192,10 @@ LUSAKA_ARMS = {
 }
 MAIN_ARMS, SIDE_ARMS = ('W', 'E'), ('N', 'S')
 SIDE_ROAD_SPEED_KMH = 40            # assumption: no maxspeed tag on the side roads
+# Set by the SEMMA study: with 105 m detectors the Great East Road counts saturated
+# (28 = 2 lanes x 14 cars) and saw only 68% of the queue, so the main road is covered
+# 250 m back, like the advance detectors used on major roads.
+MAIN_ROAD_DETECTOR_M = 250
 # Fixed-time plan: main road 40 s, protected right turns 10 s, side roads 20 s (3 s yellow after each).
 LUSAKA_FIXED_GREENS = [40, 10, 20]
 
@@ -270,7 +275,8 @@ def build_lusaka():
                    'Main road 40 s, protected right turns 10 s, side roads 20 s, 3 s yellow after each')
     netconvert(*base, '--tllogic-files', os.path.join(folder, f'{name}.tll.xml'), '-o', out)   # pass 2
     strip_header(out)
-    detectors = write_detectors(sumolib.net.readNet(out), folder, [[f'{a}2C'] for a in LUSAKA_ARMS])
+    detectors = write_detectors(sumolib.net.readNet(out), folder, [[f'{a}2C'] for a in LUSAKA_ARMS],
+                                reach={f'{a}2C': MAIN_ROAD_DETECTOR_M for a in MAIN_ARMS})
     write_sumocfg(folder, name)
     for scale in DEMAND_SWEEP:
         suffix = '' if scale == 1.0 else f'_x{scale:.2f}'
