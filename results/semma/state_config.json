@@ -1,14 +1,44 @@
 {
-  "count_bin_edges": [
-    2,
-    4,
-    7,
-    11
-  ],
-  "lane_scale": 8.0,
-  "queue_scale": 19.0,
-  "green_time_edges": [
-    20,
-    40
-  ]
+  "default": {
+    "count_bin_edges": [
+      2,
+      4,
+      7,
+      11
+    ],
+    "lane_scale": 8.0,
+    "queue_scale": 19.0,
+    "green_time_edges": [
+      20,
+      40
+    ]
+  },
+  "four_way": {
+    "count_bin_edges": [
+      2,
+      4,
+      8,
+      13
+    ],
+    "lane_scale": 14.0,
+    "queue_scale": 33.0,
+    "green_time_edges": [
+      20,
+      40
+    ]
+  },
+  "lusaka": {
+    "count_bin_edges": [
+      3,
+      11,
+      45,
+      59
+    ],
+    "lane_scale": 34.0,
+    "queue_scale": 137.0,
+    "green_time_edges": [
+      20,
+      40
+    ]
+  }
 }
