@@ -8,6 +8,7 @@ import sys
 import numpy as np
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from traffic_rl.baselines import LongestQueueFirst
 from traffic_rl.dqn import MLP, ReplayBuffer, DQN
 from traffic_rl.metrics import bootstrap_ci, paired_difference
 from traffic_rl.multi_agent import CoordinatedQLearning
@@ -139,6 +140,16 @@ def test_v1_state_is_unchanged_by_the_arm_generalization():
     assert discrete_state(o, DEFAULT_CONFIG) == (2, 0, 1, 2)
     assert QLearning().n_actions == DQN().n_actions == 2
     assert DQN().net.params[0].shape == (9, 32)
+
+
+def test_longest_queue_first_serves_the_busiest_green():
+    lqf = LongestQueueFirst('four_way')
+    assert lqf.act('C', four_way_obs((1, 7, 3, 0), green=0)) == 1
+    lusaka = LongestQueueFirst('lusaka')              # arms W, E, N, S; greens: main, main rights, side
+    o = {'C': {'counts': [10, 12, 4, 1]}}
+    assert lusaka.act('C', o) == 0                    # main road busiest; tie with the rights phase goes to main
+    o = {'C': {'counts': [2, 1, 9, 3]}}
+    assert lusaka.act('C', o) == 2                    # side roads busiest
 
 
 def test_bootstrap_and_paired_difference():
