@@ -15,8 +15,8 @@ from traffic_rl.env import TrafficEnv
 
 
 def run_episode(scenario, controller, seed, explore=False, learn=False,
-                episode_s=1200, gui=False):
-    env = TrafficEnv(scenario, program=controller.program, episode_s=episode_s, gui=gui)
+                episode_s=1200, gui=False, routes=None):
+    env = TrafficEnv(scenario, program=controller.program, episode_s=episode_s, gui=gui, routes=routes)
     ready, obs = env.reset(seed)
     rewards, losses = [], []
 
