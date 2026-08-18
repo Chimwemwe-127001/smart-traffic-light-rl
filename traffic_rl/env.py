@@ -105,7 +105,8 @@ class TrafficEnv:
                '-c', self.sc['cfg'], '-r', self.routes, '-a', ','.join(additional),
                '--seed', str(seed), '--step-length', '1', '--time-to-teleport', '-1',
                '--no-warnings', '--no-step-log',
-               '--tripinfo-output', self._tripinfo, '--tripinfo-output.write-unfinished']
+               '--tripinfo-output', self._tripinfo, '--tripinfo-output.write-unfinished',
+               '--tripinfo-output.write-undeparted']
         if self.gui:
             cmd += ['--start', '--quit-on-end']
         traci.start(cmd)
@@ -280,18 +281,22 @@ class TrafficEnv:
         """End the episode and return its performance metrics."""
         backlog = len(traci.simulation.getPendingVehicles())
         traci.close()
-        trips = ET.parse(self._tripinfo).getroot().findall('tripinfo')
+        all_trips = ET.parse(self._tripinfo).getroot().findall('tripinfo')
         shutil.rmtree(self._tmp, ignore_errors=True)
+        trips = [t for t in all_trips if float(t.get('depart')) >= 0]   # vehicles that got into the network
         wait = [float(t.get('waitingTime')) for t in trips]
         travel = [float(t.get('duration')) for t in trips]
         arrived = sum(1 for t in trips if float(t.get('arrival')) >= 0)
-        # average wait per arm, by the edge each vehicle entered on
-        arm_wait = {}
-        for t in trips:
-            key = self._edge_arm.get(t.get('departLane', '').rsplit('_', 1)[0])
+        # Total delay counts every vehicle, including those still queued outside the network
+        # (depart = -1): time stopped + time waiting to enter. Otherwise a controller that
+        # starves an arm until its cars cannot even enter would look better, not worse.
+        delay, arm_delay = [], {}
+        for t in all_trips:
+            d = float(t.get('waitingTime')) + float(t.get('departDelay', 0))
+            delay.append(d)
+            key = self._trip_arm(t)
             if key is not None:
-                arm_wait.setdefault(f'{key[0]}:{self._arms[key[0]][key[1]]}', []).append(
-                    float(t.get('waitingTime')))
+                arm_delay.setdefault(key, []).append(d)
         return {
             'avg_queue': float(np.mean(self.queue_trace)),
             'avg_wait_s': float(np.mean(wait)) if wait else 0.0,
@@ -299,6 +304,17 @@ class TrafficEnv:
             'throughput': arrived,
             'backlog': backlog,
             'switches': self.switches,
-            'max_wait_s': float(max(wait)) if wait else 0.0,
-            'arm_wait': {k: float(np.mean(v)) for k, v in arm_wait.items()},
+            'avg_delay_s': float(np.mean(delay)) if delay else 0.0,
+            'max_delay_s': float(max(delay)) if delay else 0.0,
+            'arm_delay': {k: float(np.mean(v)) for k, v in arm_delay.items()},
         }
+
+    def _trip_arm(self, t):
+        """'tls:arm' a vehicle entered on: from its lane, or for a vehicle that never
+        entered, from its flow name (flows are named '<arm>_...')."""
+        key = self._edge_arm.get(t.get('departLane', '').rsplit('_', 1)[0])
+        if key is None and len(self.ids) == 1:
+            arm = t.get('id').split('_')[0]
+            if arm in self._arms[self.ids[0]]:
+                key = (self.ids[0], self._arms[self.ids[0]].index(arm))
+        return None if key is None else f'{key[0]}:{self._arms[key[0]][key[1]]}'
