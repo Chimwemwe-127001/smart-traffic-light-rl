@@ -62,7 +62,7 @@ def validate(scenario, agent):
     Q-table, and validation must not change the agent being trained."""
     probe = copy.deepcopy(agent)
     runs = [run_episode(scenario, probe, seed=s) for s in VAL_SEEDS]
-    return {k: float(np.mean([r[k] for r in runs])) for k in ('avg_queue', 'avg_wait_s', 'avg_travel_s')}
+    return {k: float(np.mean([r[k] for r in runs])) for k in ('avg_queue', 'avg_wait_s', 'avg_travel_s', 'avg_delay_s')}
 
 
 def main():
@@ -85,6 +85,9 @@ def main():
     agent = make_agent(args.agent, args.scenario, args.seed)
     decay = EPS_END ** (1 / (0.6 * args.episodes))
 
+    # Checkpoint selection: the new junctions can back up past the network edge, where the
+    # in-network queue would not see it, so they select on total delay instead.
+    select_by = SCENARIOS[args.scenario].get('select_by', 'avg_queue')
     train_rows, val_rows = [], []
     best, best_agent = float('inf'), None
     start = time.time()
@@ -92,12 +95,12 @@ def main():
         if ep % VAL_EVERY == 0 or ep == args.episodes:
             v = validate(args.scenario, agent)
             size = agent.n_states() if hasattr(agent, 'n_states') else ''
-            val_rows.append([ep, v['avg_queue'], v['avg_wait_s'], v['avg_travel_s'], size])
+            val_rows.append([ep, v['avg_queue'], v['avg_wait_s'], v['avg_travel_s'], size, v['avg_delay_s']])
             flag = ''
-            if ep > 0 and v['avg_queue'] < best:
-                best, best_agent, flag = v['avg_queue'], copy.deepcopy(agent), '  <- best'
+            if ep > 0 and v[select_by] < best:
+                best, best_agent, flag = v[select_by], copy.deepcopy(agent), '  <- best'
             print(f'[val] ep {ep:4d}  queue {v["avg_queue"]:6.2f}  wait {v["avg_wait_s"]:6.1f}s  '
-                  f'travel {v["avg_travel_s"]:6.1f}s{flag}', flush=True)
+                  f'delay {v["avg_delay_s"]:6.1f}s  travel {v["avg_travel_s"]:6.1f}s{flag}', flush=True)
         if ep == args.episodes:
             break
 
@@ -106,7 +109,7 @@ def main():
         size = agent.n_states() if hasattr(agent, 'n_states') else ''
         train_rows.append([ep, round(agent.epsilon, 4), m['total_reward'], m['avg_queue'],
                            m['avg_wait_s'], m['avg_travel_s'], m['throughput'], m['switches'],
-                           m['td_loss'], size])
+                           m['td_loss'], size, m['avg_delay_s']])
         print(f'ep {ep:4d}  eps {agent.epsilon:.2f}  reward {m["total_reward"]:9.1f}  '
               f'queue {m["avg_queue"]:6.2f}  wait {m["avg_wait_s"]:6.1f}s  td {m["td_loss"]:.4f}  '
               f'states {size}  [{time.time() - start:.0f}s]', flush=True)
@@ -114,14 +117,14 @@ def main():
     with open(os.path.join(LOGS, f'train_{tag}.csv'), 'w', newline='') as f:
         w = csv.writer(f)
         w.writerow(['episode', 'epsilon', 'total_reward', 'avg_queue', 'avg_wait_s', 'avg_travel_s',
-                    'throughput', 'switches', 'td_loss', 'q_table_states'])
+                    'throughput', 'switches', 'td_loss', 'q_table_states', 'avg_delay_s'])
         w.writerows(train_rows)
     with open(os.path.join(LOGS, f'val_{tag}.csv'), 'w', newline='') as f:
         w = csv.writer(f)
-        w.writerow(['episode', 'avg_queue', 'avg_wait_s', 'avg_travel_s', 'q_table_states'])
+        w.writerow(['episode', 'avg_queue', 'avg_wait_s', 'avg_travel_s', 'q_table_states', 'avg_delay_s'])
         w.writerows(val_rows)
     best_agent.save(model_path(args.agent, args.scenario))
-    print(f'saved {model_path(args.agent, args.scenario)} (best validation queue {best:.2f})')
+    print(f'saved {model_path(args.agent, args.scenario)} (best validation {select_by} {best:.2f})')
 
 
 if __name__ == '__main__':

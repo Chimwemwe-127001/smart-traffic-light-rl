@@ -78,6 +78,7 @@ SCENARIOS['four_way'] = {
     'routes': os.path.join(NETWORKS, 'four_way', 'four_way.rou.xml'),
     'actuated': os.path.join(NETWORKS, 'four_way', 'actuated.add.xml'),
     'action_mode': 'select',
+    'select_by': 'avg_delay_s',       # checkpoint selection metric in train.py
     'intersections': {
         'C': {
             'approaches': {a: arm([f'{a}2C_0'], [f'{a}2C']) for a in ('N', 'E', 'S', 'W')},
@@ -98,6 +99,7 @@ SCENARIOS['lusaka'] = {
     'action_mode': 'select',
     'greens': 'order',
     'n_greens': 3,
+    'select_by': 'avg_delay_s',
     'phase_arms': [['W', 'E'], ['W', 'E'], ['N', 'S']],     # arms each green serves (used by LQF)
     'demand_sweep': {s: os.path.join(LUSAKA, f'lusaka_x{s:.2f}.rou.xml') for s in (0.75, 1.25)},
     'intersections': {
