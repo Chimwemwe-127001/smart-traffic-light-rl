@@ -42,7 +42,7 @@ plt.rcParams.update({'font.size': 10, 'axes.edgecolor': MUTED, 'axes.labelcolor'
                      'grid.linewidth': 0.8, 'axes.axisbelow': True, 'legend.frameon': False})
 
 
-def plain_log_axis(ax, ticks=(2, 3, 4, 6, 10, 15, 20, 30)):
+def plain_log_axis(ax, ticks=(2, 3, 4, 6, 10, 15, 20, 30, 50, 100, 200, 400, 800)):
     ax.set_yscale('log')
     ax.yaxis.set_major_locator(FixedLocator(ticks))
     ax.yaxis.set_major_formatter(ScalarFormatter())
@@ -94,9 +94,12 @@ def before_after(summary):
     fig, ax = plt.subplots(figsize=(2.2 * len(rows), 5))
     x = np.arange(len(rows))
     w = 0.38
+    short = {'single': 'Single\nintersection', 'corridor': 'Corridor\nnormal', 'corridor_heavy': 'Corridor\nheavy',
+             'four_way': 'Four-way\n(delay)', 'lusaka': 'Lusaka\n(delay)'}
     for i, r in enumerate(rows):
         c = COLORS[r['learner']]
-        b, a = r['avg_wait_s']['before'], r['avg_wait_s']['after']
+        metric = 'avg_delay_s' if r['scenario'] in LEARNERS_V11 else 'avg_wait_s'
+        b, a = r[metric]['before'], r[metric]['after']
         ax.bar(i - w / 2 - 0.01, b, w, color=lighten(c), edgecolor='white', linewidth=2)
         ax.bar(i + w / 2 + 0.01, a, w, color=c, edgecolor='white', linewidth=2)
         ax.annotate(f'{b:.1f}s', (i - w / 2, b), xytext=(0, 3), textcoords='offset points',
@@ -104,8 +107,8 @@ def before_after(summary):
         ax.annotate(f'{a:.1f}s', (i + w / 2, a), xytext=(0, 3), textcoords='offset points',
                     ha='center', fontsize=8, color=INK)
     plain_log_axis(ax)
-    ax.set_xticks(x, [f'{r["learner"]}\n{TITLES[r["scenario"]].replace(", ", chr(10))}' for r in rows], fontsize=8.5)
-    ax.set_ylabel('avg waiting time per vehicle (s, log scale)')
+    ax.set_xticks(x, [f'{r["learner"]}\n{short[r["scenario"]]}' for r in rows], fontsize=8.5)
+    ax.set_ylabel('avg wait, or avg delay on the new junctions (s, log scale)')
     ax.legend(handles=[Patch(color='#c3c2b7', label='before training (lighter shade, initial parameters)'),
                        Patch(color=MUTED, label='after training (full color)')],
               loc='lower center', bbox_to_anchor=(0.5, 1.02), ncol=2)
@@ -173,15 +176,13 @@ def validation_curves_v11(summary):
             rows = read_csv(os.path.join(LOGS, f'val_{tag}_{sc}.csv'))
             ax.plot([int(r['episode']) for r in rows], [float(r['avg_wait_s']) for r in rows],
                     '-o', ms=3, lw=2, color=COLORS[label], label=label)
-        for base in ('Fixed-time', 'Actuated', 'Longest queue first'):
+        for base in ('Fixed-time', 'Actuated', 'Longest queue first'):     # in the legend: the lines sit close
             y = summary['summary'][sc][base]['avg_wait_s'][0]
-            ax.axhline(y, color=COLORS[base], lw=1.5, ls='--')
-            ax.annotate(base, (1.0, y), xycoords=('axes fraction', 'data'), xytext=(4, 0),
-                        textcoords='offset points', va='center', fontsize=9, color=MUTED)
-        plain_log_axis(ax, ticks=(3, 5, 10, 20, 40, 80, 150, 300))
+            ax.axhline(y, color=COLORS[base], lw=1.5, ls='--', label=f'{base} (test)')
+        plain_log_axis(ax, ticks=(5, 10, 20, 40, 80, 150, 300, 600))
         ax.set_title(TITLES[sc], color=INK)
         ax.set_xlabel('training episode')
-        ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.18), ncol=2)
+        ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.18), ncol=3, fontsize=9)
     axes[0].set_ylabel('avg waiting time per vehicle (s, log scale)')
     fig.suptitle('Learning curves on the new junctions: greedy policy on validation traffic', color=INK)
     fig.tight_layout()
