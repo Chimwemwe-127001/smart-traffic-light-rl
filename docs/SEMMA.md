@@ -63,6 +63,27 @@ written to `results/semma/state_config.json` and read by the agents at run time.
 The DQN keeps all six lane counts: a neural network can use the lane detail
 that the table cannot afford.
 
+## Part 2: the four-way and Lusaka junctions
+
+The same steps were repeated for the two new junctions
+(`python experiments/semma.py --groups v1.1`, output `detector_samples_v1_1.csv.gz`
+and the `four_way_*` and `lusaka_*` figures). Each junction gets its own config,
+so the v1 bins above are unchanged.
+
+- **Sample:** 21,600 rows: fixed-time, actuated and random control, seeds 900-902, 1,200 s each.
+- **Explore:** at Lusaka the westbound Great East Road arm (towards the city
+  in the morning) holds about 28 stopped cars under both fixed-time and
+  actuated control, against 1 to 9 on the other arms (`lusaka_explore_arm_queue.png`).
+  On the four-way, fixed-time leaves the busy north arm with 8.3 stopped cars
+  against 1.5 under actuated control.
+- **Data quality, again:** the 105 m detectors on Great East Road saturated at
+  28 vehicles (2 lanes x 14 cars) and saw only 68% of the queue. They were
+  extended to 250 m, and coverage rose to 123% (above 100% for the same
+  halting-threshold reason as in v1). On the four-way, coverage was 93%.
+- **Modify:** bin edges 2, 4, 8, 13 (four-way) and 3, 11, 45, 59 (Lusaka), with lane
+  scales 14 and 34 and queue scales 33 and 137, all from the same percentile
+  rules as v1.
+
 ## 4. Model
 
 Three learners, all described in the README:
