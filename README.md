@@ -3,18 +3,23 @@
 Traffic signals that learn when to switch, trained and tested in the SUMO
 traffic simulator. This repo compares **tabular Q-learning**, a **Deep
 Q-Network (DQN)** and **multi-agent Q-learning** (independent vs coordinated
-intersections) against fixed-time, actuated and random control, on traffic
-the agents have never seen.
+intersections) against fixed-time, actuated, longest-queue-first and random
+control, on traffic the agents have never seen. Part 2 moves to realistic
+roads: a four-way junction with two-way traffic, and a real junction in
+Lusaka, Zambia, rebuilt from OpenStreetMap.
 
-| Scenario | Fixed-time wait | Best learner | Its wait | vs Fixed-time | vs Actuated |
+| Scenario | Fixed-time | Best learner | Learner | vs Fixed-time | vs Actuated |
 |---|---|---|---|---|---|
 | Single intersection, shifting demand | 12.1 s | DQN | **3.3 s** | **-73%** | **-21%** |
 | Corridor, 2 intersections, normal demand | 16.1 s | Independent Q-learning | **3.6 s** | **-78%** | +0.4% (tie) |
 | Corridor, 2 intersections, heavy demand | 19.1 s | Independent Q-learning | **4.0 s** | **-79%** | **-14%** |
+| Four-way junction, one lane each way (Part 2) | 56.3 s | DQN | **20.4 s** | **-64%** | **-7%** |
+| Lusaka, Great East Rd / Lufubu Rd, morning peak (Part 2) | 87.0 s | DQN | **23.9 s** | **-73%** | **-65%** |
 
-*Average waiting time per vehicle over 10 held-out traffic seeds. All differences
-marked in bold have a 95% bootstrap confidence interval that excludes zero.
-Full tables: [results/RESULTS.md](results/RESULTS.md).*
+*Over 10 held-out traffic seeds. v1 rows: average waiting time per vehicle.
+Part 2 rows: average delay per vehicle, which also counts time queued before
+entering the road (section 8). Differences in bold have a 95% bootstrap
+confidence interval that excludes zero. Full tables: [results/RESULTS.md](results/RESULTS.md).*
 
 ---
 
@@ -27,11 +32,12 @@ Full tables: [results/RESULTS.md](results/RESULTS.md).*
 5. [Data study (SEMMA)](#5-data-study-semma)
 6. [Methods](#6-methods)
 7. [Output and performance](#7-output-and-performance)
-8. [Rubric](#8-rubric)
-9. [What did not work, and what we learned](#9-what-did-not-work-and-what-we-learned)
-10. [Limitations and next steps](#10-limitations-and-next-steps)
-11. [Reproduce](#11-reproduce)
-12. [References](#12-references)
+8. [Part 2: a real junction, four arms and a Lusaka case study](#8-part-2-a-real-junction-four-arms-and-a-lusaka-case-study)
+9. [Rubric](#9-rubric)
+10. [What did not work, and what we learned](#10-what-did-not-work-and-what-we-learned)
+11. [Limitations and next steps](#11-limitations-and-next-steps)
+12. [Reproduce](#12-reproduce)
+13. [References](#13-references)
 
 ---
 
@@ -60,10 +66,11 @@ reacts to gaps between cars but follows hand-set rules. A learning controller
 optimizes the actual goal (short queues) from data, and adapts when demand
 patterns change, without an engineer re-tuning timings.
 
-**One-year vision.** Move from synthetic networks to a real district map from
-OpenStreetMap with measured traffic counts, add pedestrians, and run a
-shadow-mode pilot where the agent's decisions are logged next to the real
-controller's before it is ever given control.
+**One-year vision.** Part 2 already moves to a real Lusaka junction rebuilt
+from OpenStreetMap. Next: replace the estimated demand with measured turning
+counts, extend to a stretch of Great East Road with several signals, add
+pedestrians, and run a shadow-mode pilot where the agent's decisions are logged
+next to the real controller's before it is ever given control.
 
 ---
 
@@ -96,10 +103,10 @@ flowchart LR
 ```
 smart-traffic-light-rl/
 ├── traffic_rl/                 the library: one idea per file
-│   ├── scenarios.py            the 3 scenarios: files, agents, detectors
+│   ├── scenarios.py            the 5 scenarios: files, arms, detectors, action mode
 │   ├── env.py                  SUMO environment: min/max green, yellow, async decisions, metrics
 │   ├── runner.py               one episode loop shared by training and evaluation
-│   ├── baselines.py            fixed-time, actuated, random controllers + queue reward
+│   ├── baselines.py            fixed-time, actuated, random, longest queue first + queue reward
 │   ├── state.py                detector counts -> table state / DQN input (uses SEMMA config)
 │   ├── q_learning.py           tabular Q-learning (independent learners on the corridor)
 │   ├── dqn.py                  NumPy DQN: MLP + Adam, replay buffer, target net, Double DQN
@@ -111,8 +118,11 @@ smart-traffic-light-rl/
 │   ├── evaluate.py             held-out evaluation, probes, rubric -> results/RESULTS.md
 │   └── make_figures.py         every figure in this README
 ├── networks/
+│   ├── build_networks.py       builds four_way/ and lusaka/ (left-hand traffic, phases, detectors, demand)
 │   ├── single/                 1 signal, 3-lane EB and SB approaches, 6 detectors
-│   └── corridor/               2 signals 285 m apart, normal and heavy demand
+│   ├── corridor/               2 signals 285 m apart, normal and heavy demand
+│   ├── four_way/               4 two-way arms, one lane each way, split phasing
+│   └── lusaka/                 Great East Rd / Lufubu Rd from OpenStreetMap, 3 demand levels
 ├── results/
 │   ├── semma/                  sampled data, exploration figures, state_config.json
 │   ├── logs/                   training and validation curves (CSV)
@@ -123,7 +133,9 @@ smart-traffic-light-rl/
 ├── docs/
 │   ├── SEMMA.md                the data study write-up
 │   └── CONCEPTS.md             a short course on every concept used here
-└── tests/test_agents.py        unit tests (Q update, gradient check, replay, statistics)
+└── tests/
+    ├── test_agents.py          unit tests (Q update, gradient check, replay, LQF, statistics)
+    └── test_env.py             SUMO tests (min/max green, yellow, left-hand driving, reproducibility)
 ```
 
 ---
@@ -308,32 +320,175 @@ simply needed more data. Both improved, but the gap stayed. The likely reasons:
 
 This agrees with the literature: coordination pays off in dense grids and
 near saturation, and it needs function approximation (e.g. a DQN per agent)
-to cope with the larger state. That is the natural next step (section 10).
+to cope with the larger state. That is the natural next step (section 11).
 
 ![Training diagnostics](results/figures/training_diagnostics.png)
 
 ---
 
-## 8. Rubric
+## 8. Part 2: a real junction, four arms and a Lusaka case study
 
-Scored automatically by `experiments/evaluate.py`. **36 of 40 checks pass.**
+The v1 networks were simplified: one-way approaches and only two arms. Part 2
+asks the same questions on roads that look like real ones.
+
+### 8.1 Why Lusaka, and why this junction
+
+In April 2021 Lusaka City Council switched off the traffic lights at the
+junction of **Great East Road and Lufubu Road**, next to East Park Mall,
+because they were building up queues at peak hours (Lusaka Times, 2021). The
+Council also noted that new signals in the city were often poorly
+synchronised. The right turn into the mall was closed at the same time. So this is a real
+place where signal control failed, which makes a fair question: *could an
+adaptive signal have kept this junction working?*
+
+Zambia drives on the **left**, so every Part 2 network is built with
+`netconvert --lefthand`. Cars keep left, and the right turn is the movement
+that crosses oncoming traffic. A test checks every arm of both networks.
+
+### 8.2 The two new networks
+
+<table>
+<tr>
+<td><img src="results/figures/gui_four_way_t120s.png" alt="Four-way junction in sumo-gui"></td>
+<td><img src="results/figures/gui_lusaka_t300s.png" alt="Lusaka junction in sumo-gui"></td>
+</tr>
+<tr>
+<td align="center"><b>Four-way junction</b>: every road two-way with one lane each<br/>direction. The north arm queues under fixed-time control.</td>
+<td align="center"><b>Great East Rd / Lufubu Rd, Lusaka</b>: dual carriageway<br/>(2 lanes each way) with Lufubu Road (north) and the mall access (south).</td>
+</tr>
+</table>
+
+| | Four-way junction | Lusaka junction |
+|---|---|---|
+| Geometry | 4 arms of 200 m, one lane in and one lane out each | Rebuilt from an OpenStreetMap extract: arm bearings, lane counts and speed limits (60 to 80 km/h) from OSM tags; the two carriageways joined as the crossroads it was before 2021 |
+| Signal program | Split phasing: one arm green at a time (common in Zambia) | 3 greens: main road both ways (right turns give way), protected main-road right turns, side roads |
+| Agent's action | Which arm to serve next (4 actions) | Which of the 3 greens to show next |
+| Fixed-time plan | 30 s green + 3 s yellow per arm | 40 s / 10 s / 20 s + 3 s yellows |
+| Demand | 60% straight, 20% left, 20% right; N-S heavy, then balanced, then E-W heavy | Morning peak, see the assumptions below |
+| Built by | `networks/build_networks.py four_way` | `networks/build_networks.py lusaka` |
+
+**Demand assumptions for Lusaka.** No public turning counts exist for this junction, so the demand is estimated from published numbers and standard planning factors, and then tested at ±25%:
+
+| Quantity | Value | Source |
+|---|---|---|
+| Great East Road daily traffic (AADT) | about 31,000 veh/day | UNZA study of the Great East Road |
+| Peak-hour share K | 0.09 | Typical urban value (Highway Capacity Manual) |
+| Direction split D | 0.6 towards the city (westbound) | Typical morning-peak value (Highway Capacity Manual) |
+| Great East Road peak volumes | 1,674 veh/h westbound, 1,116 eastbound | AADT × K × D |
+| Lufubu Road and mall access | 300 and 200 veh/h | Assumption |
+| Turning shares | Main road 85% straight, 8% left, 7% right; side roads mostly turning | Assumption |
+| Sensitivity | every controller re-tested at ×0.75 and ×1.25 | Section 8.5 |
+
+### 8.3 Data study (SEMMA) on the new junctions
+
+The same SEMMA steps were applied to 21,600 new per-second samples (figures in `results/semma/`):
+
+- **The main-road detectors saturated.** With 105 m detectors, the Great East
+  Road counts hit their ceiling (28 = 2 lanes × 14 cars) and saw only 68% of
+  the queue, so the agent could not tell 28 queued cars from 60. The main road
+  was re-equipped with 250 m detectors, like the advance detectors used on
+  major roads. Coverage went from 68% to 123%.
+- **One arm dominates at Lusaka.** Under fixed-time and actuated control, the
+  westbound peak arm holds about 28 stopped cars on average, against 1 to 9 on
+  the others. The baselines leave 72 (actuated) to 104 (fixed-time) cars per
+  episode queued outside the modelled road.
+- **Per-scenario state design.** Count bins and input scales were derived from each junction's own data (`state_config.json`).
+
+### 8.4 A new metric: delay, not just wait
+
+At Lusaka the queue can grow past the 300 m of modelled road, and those cars
+never "enter". A controller that starves an arm could therefore *lower* the
+average wait, simply by keeping cars out. So the Part 2 junctions are judged on
+**average delay**: time stopped plus time queued before entering, for every
+car, including those still outside at the end. Checkpoint selection during
+training uses the same metric. The v1 results are unchanged: the regression
+check reproduces them exactly.
+
+### 8.5 Results
+
+![Head to head on the new junctions](results/figures/head_to_head_v11.png)
+
+| Controller | Four-way delay | Four-way worst delay | Lusaka delay | Lusaka worst delay | Lusaka cars through |
+|---|---|---|---|---|---|
+| Fixed-time | 56.3 s | 172 s | 87.0 s | 412 s | 877 |
+| Random | 83.9 s | 289 s | 196.3 s | 545 s | 649 |
+| Actuated | 21.9 s | **76 s** | 67.5 s | 397 s | 922 |
+| Longest queue first | 24.0 s | 159 s | 67.7 s | 811 s | 942 |
+| Q-learning | 65.0 s | 268 s | 58.9 s | 287 s | 918 |
+| **DQN** | **20.4 s** | 156 s | **23.9 s** | **149 s** | **1,000** |
+
+*Mean over 10 held-out seeds. "Cars through" = vehicles that completed their trip in 20 minutes.*
+
+**Before vs after training** (average delay, same seeds): Q-learning 311.5 → 65.0 s (four-way) and 95.7 → 58.9 s (Lusaka); DQN 348.3 → 20.4 s and 537.7 → 23.9 s. Every learner improved, with a 95% CI that excludes zero.
+
+**What the numbers say:**
+
+- **The DQN is the best controller on both junctions.** It beats actuated
+  control and longest-queue-first at both, with CIs that exclude zero. At
+  Lusaka it cuts average delay by 65% against actuated control
+  (-43.6 s, CI -53.5 to -33.8), gets 8% more cars through, and leaves the
+  fewest queued outside (21 vs 72). It also answers every hand-made logic probe
+  correctly on both junctions.
+- **Tabular Q-learning breaks down on four arms.** With a bin per arm, the
+  table has thousands of possible states, and 600 episodes cannot fill it. It
+  is statistically no better than fixed-time on the four-way. Three of its four
+  probe states were never visited, so it has no answer for them. This is the
+  "huge knowledge space" argument for deep Q-networks made concrete.
+- **Fairness is where the story gets interesting.** The average hides the
+  unlucky driver:
+
+![Fairness](results/figures/fairness_v11.png)
+
+  - **Longest-queue-first starves Lufubu Road.** It serves the busy main road
+    almost all the time. Lufubu Road cars are delayed 411 s on average, and the
+    worst single delay is 811 s, about 13.5 minutes. A policy that looks fine on the average
+    can be unacceptable to a whole neighbourhood.
+  - **At Lusaka, the DQN is also the fairest controller** (worst delay 149 s vs 397 s for actuated).
+  - **On the four-way, the DQN fails the fairness check.** Its per-arm averages
+    are balanced (17 to 26 s), but its worst single delay (156 s) is twice
+    actuated control's (76 s). Actuated control cycles regularly, which keeps
+    the tail short. We report this as a trade-off, not a win.
+
+**Demand sweep.** Because the Lusaka volumes are estimates, every controller was re-run at 75% and 125% of them:
+
+![Lusaka demand sweep](results/figures/lusaka_sweep.png)
+
+The DQN stays the best at every level: 7.5 s, 23.9 s and 86.8 s of average
+delay, against 15.2 s, 67.5 s and 148.8 s for actuated control. At 125% the
+junction is simply over capacity, and every controller leaves a large queue
+outside. So the ranking holds even though the exact volumes are uncertain.
+
+![Learning curves on the new junctions](results/figures/learning_curves_v11.png)
+
+The learning curves show one more lesson. The Lusaka DQN peaks around episode
+180 and then drifts. Keeping the best checkpoint on separate validation traffic
+is what protects the final model.
+
+---
+
+## 9. Rubric
+
+Scored automatically by `experiments/evaluate.py`. **63 of 76 checks pass.** v1
+scenarios are judged on average wait, Part 2 junctions on average delay.
 
 | Criterion | Measure | Threshold | Result |
 |---|---|---|---|
-| Every learner learned (6 checks) | avg wait, trained minus untrained, paired 95% CI | CI below 0 | **6 of 6 PASS** |
-| Every learner beats fixed-time (6) | avg wait, paired 95% CI | CI below 0 | **6 of 6 PASS** |
-| Every learner beats random switching (6) | avg wait, paired 95% CI | CI below 0 | **6 of 6 PASS** |
-| Competitive with actuated control (6) | avg wait vs actuated, paired 95% CI | within +10% | 5 of 6 (coordinated on the normal corridor: +37%) |
-| Learned traffic logic (2) | 4 hand-made probe states | 4 of 4 | DQN PASS, Q-learning FAIL (2 of 4) |
-| Stable learning (6) | TD loss, last 20 vs first 20 episodes | last at most 1.5 x first | **6 of 6 PASS** (all fell) |
+| Every learner learned (10 checks) | trained minus untrained, paired 95% CI | CI below 0 | **10 of 10 PASS** |
+| Beats fixed-time (10) | paired 95% CI | CI below 0 | 9 of 10 (Q-learning on the four-way: tie) |
+| Beats random switching (10) | paired 95% CI | CI below 0 | 9 of 10 (Q-learning on the four-way: tie) |
+| Competitive with actuated control (10) | vs actuated, paired 95% CI | within +10% | 8 of 10 (coordinated corridor +37%, Q-learning four-way +197%) |
+| Beats longest queue first (4, Part 2) | paired 95% CI | CI below 0 | 3 of 4 (Q-learning on the four-way) |
+| Starves no one (4, Part 2) | worst single delay vs actuated | at most 1.25 x | 2 of 4 (both learners on the four-way) |
+| Learned traffic logic (6) | hand-made probe states | all correct | **DQN 3 of 3**; Q-learning 0 of 3 (2 of 4, 0 of 4 and 2 of 3 probes, mostly never-visited states) |
+| Stable learning (10) | TD loss, last 20 vs first 20 episodes | last at most 1.5 x first | **10 of 10 PASS** (all fell) |
 | Coordination helps (2) | coordinated minus independent wait, 95% CI | CI below 0 | 0 of 2 (+1.3 s, +1.0 s) |
-| Serves all demand (6) | vehicles completed vs fixed-time | at least 98% | **6 of 6 PASS** |
+| Serves all demand (10) | vehicles completed vs fixed-time | at least 98% | 9 of 10 (Q-learning on the four-way: 94.8%) |
 
 Every row with the per-check numbers is in [results/RESULTS.md](results/RESULTS.md#rubric).
 
 ---
 
-## 9. What did not work, and what we learned
+## 10. What did not work, and what we learned
 
 These dead ends are part of the result:
 
@@ -355,25 +510,41 @@ These dead ends are part of the result:
    TraCI sockets occasionally picked the same port and crashed. Switching to
    `libsumo` (SUMO inside the Python process) removed the ports and made
    episodes 7.6x faster, with identical results.
+5. **A metric that could reward starvation.** Average wait only counts cars
+   that entered the modelled road. At Lusaka a controller could push its queue
+   outside and look better. Found while checking a result that seemed too good.
+   The fix was total delay, for evaluation and for checkpoint selection
+   (section 8.4). The good result survived the stricter metric.
+6. **Detectors too short for a dual carriageway.** 105 m was enough for the v1
+   junctions but saturated on Great East Road. Found by SEMMA (section 8.3).
+7. **Split phasing does not suit a busy dual carriageway.** Serving one arm at a
+   time would oversaturate Great East Road at about 1,700 veh/h. The Lusaka
+   junction uses the realistic main road / right turns / side roads program
+   instead.
 
 ---
 
-## 10. Limitations and next steps
+## 11. Limitations and next steps
 
-- Synthetic networks with two approaches and two phases. Next: a real
-  OpenStreetMap district with turning movements and 4 to 8 phases.
-- Simulated detectors. Real cameras add noise, occlusion and delay; the agent
-  should be trained with noisy counts before any field test.
-- No pedestrians (left out on purpose in the write-up, needed before deployment).
-- Coordination used tabular agents. Next: one DQN per intersection with the
-  neighbor features as extra inputs, and a grid of 4 or more junctions where
-  spillback between junctions is common.
-- Demand levels were chosen by hand. A sweep from light to saturated traffic
-  would show where each method starts to fail.
+- **Lusaka demand is estimated**, not counted: published daily volume, standard
+  peak factors and assumed side-road volumes and turning shares. The ×0.75 /
+  ×1.25 sweep shows the ranking holds, but real turning counts from the
+  Council or a video survey are the most valuable next step.
+- **Only the junction itself is modelled**: 300 m arms, with no neighbouring
+  junctions, minibus stops, informal parking or pedestrians. Each affects real
+  capacity on Great East Road.
+- **Simulated detectors.** Real cameras add noise, occlusion and delay; the
+  agent should be trained with noisy counts before any field test.
+- **The DQN's worst-case delay** on the four-way is twice actuated control's.
+  A fairness term in the reward (e.g. penalising the longest wait) is the
+  obvious next experiment.
+- **Coordination used tabular agents.** Next: one DQN per intersection with the
+  neighbor features as extra inputs, on a stretch of Great East Road with
+  several signals.
 
 ---
 
-## 11. Reproduce
+## 12. Reproduce
 
 Python 3.10 or newer. SUMO installs through pip; no separate install is needed.
 
@@ -392,8 +563,19 @@ python experiments/train.py --agent q_learning  --scenario corridor --episodes 6
 python experiments/train.py --agent coordinated --scenario corridor --episodes 600
 python experiments/train.py --agent q_learning  --scenario corridor_heavy --episodes 600
 python experiments/train.py --agent coordinated --scenario corridor_heavy --episodes 600
+python experiments/train.py --agent q_learning  --scenario four_way --episodes 600
+python experiments/train.py --agent dqn         --scenario four_way --episodes 300
+python experiments/train.py --agent q_learning  --scenario lusaka   --episodes 600
+python experiments/train.py --agent dqn         --scenario lusaka   --episodes 300
 python experiments/evaluate.py                                      # results/RESULTS.md
 python experiments/make_figures.py                                  # results/figures/
+```
+
+The Part 2 networks are already in `networks/`. To rebuild them from the
+node/edge definitions and the committed OpenStreetMap extract:
+
+```bash
+python networks/build_networks.py
 ```
 
 Each training run takes a few minutes with libsumo, and the runs can go in
@@ -402,7 +584,7 @@ with SUMO 1.27.1.
 
 ---
 
-## 12. References
+## 13. References
 
 - Watkins, C. and Dayan, P. (1992). Q-learning. *Machine Learning*, 8, 279-292.
 - Tan, M. (1993). Multi-agent reinforcement learning: independent vs. cooperative agents. *ICML*.
@@ -415,5 +597,10 @@ with SUMO 1.27.1.
 - Wei, H., Zheng, G., Gayah, V. and Li, Z. (2019). A survey on traffic signal control methods. arXiv:1904.08117.
 - Sutton, R. and Barto, A. (2018). *Reinforcement Learning: An Introduction*, 2nd ed. MIT Press.
 - SAS Institute. SEMMA data mining methodology.
+- Varaiya, P. (2013). Max pressure control of a network of signalized intersections. *Transportation Research Part C*, 36, 177-195.
+- Transportation Research Board (2022). *Highway Capacity Manual*, 7th ed. (peak-hour K and directional D factors).
+- Lusaka Times (23 April 2021). LCC "switches off" robots at Great East and Lufubu roads.
+- University of Zambia. Quality of public transport service in the city of Lusaka: a case study of the minibus service on the Great East Road (daily volume on Great East Road). UNZA repository.
+- OpenStreetMap contributors. Map data for the Lusaka junction, ODbL. https://www.openstreetmap.org/copyright
 
-Built on the RoadwayVR SUMO tutorial (MIT); see [NOTICE.md](NOTICE.md). Licensed under MIT.
+Built on the RoadwayVR SUMO tutorial (MIT); see [NOTICE.md](NOTICE.md). Map data © OpenStreetMap contributors (ODbL). Licensed under MIT.
