@@ -1,5 +1,16 @@
 # Changelog
 
+## 1.1.0 (2026-08-28)
+
+- Four-way junction: two-way roads with one lane each direction, left-hand traffic, split phasing
+- Lusaka case study: Great East Road / Lufubu Road rebuilt from OpenStreetMap as the signalized crossroads it was before 2021, with estimated morning-peak demand and a x0.75 / x1.25 sweep
+- The agent can choose which arm or phase to serve next, not only keep or switch
+- Longest-queue-first baseline, in the spirit of max-pressure control
+- Total delay metric that also counts cars queued outside the network; worst-case delay and per-arm delay for fairness
+- SEMMA extended to the new junctions; Great East Road detectors extended to 250 m after they saturated
+- Network builder that strips netconvert's build-time header, so network files only change when the network does
+- The v1 results are unchanged: a regression check reproduces them exactly
+
 ## 1.0.1 (2026-07-24)
 
 - Fix: validation seeds (now 700-702) no longer overlap the corridor training seeds (0-599); all agents retrained
