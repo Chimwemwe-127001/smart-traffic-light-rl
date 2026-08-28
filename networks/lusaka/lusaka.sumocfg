@@ -1,0 +1,11 @@
+<configuration>
+    <input>
+        <net-file value="lusaka.net.xml"/>
+        <route-files value="lusaka.rou.xml"/>
+        <additional-files value="det.add.xml"/>
+    </input>
+    <report>
+        <no-step-log value="true"/>
+        <duration-log.disable value="true"/>
+    </report>
+</configuration>

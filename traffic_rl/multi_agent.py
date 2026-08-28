@@ -24,13 +24,13 @@ NEIGHBOR_WEIGHT = 0.5
 
 class CoordinatedQLearning(QLearning):
     def __init__(self, scenario='corridor', neighbor_weight=NEIGHBOR_WEIGHT, **kwargs):
-        super().__init__(**kwargs)
+        super().__init__(scenario=scenario, **kwargs)
         self.neighbors = {tls: c['neighbor'] for tls, c in SCENARIOS[scenario]['intersections'].items()}
         self.neighbor_weight = neighbor_weight
 
     def state(self, tls, obs):
         n = obs[self.neighbors[tls]]
-        return super().state(tls, obs) + (n['green'], count_bin(n['EB'] + n['SB'], self.cfg['count_bin_edges']))
+        return super().state(tls, obs) + (n['green'], count_bin(sum(n['counts']), self.cfg['count_bin_edges']))
 
     def reward(self, tls, queues):
         return queue_reward(tls, queues, self.neighbors[tls], self.neighbor_weight)

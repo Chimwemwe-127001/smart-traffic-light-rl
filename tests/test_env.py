@@ -62,6 +62,67 @@ def test_fixed_time_runs_the_42_second_plan():
     assert {n for state, n in runs if state == -1} == {3}
 
 
+class AlwaysArm:
+    """Always asks for the same arm. Used to check that 'select' mode obeys the agent."""
+    program = 'agent'
+
+    def __init__(self, k):
+        self.k = k
+
+    def act(self, tls, obs, explore=False):
+        return self.k
+
+    def reward(self, tls, queues):
+        return -queues[tls]
+
+    def learn(self, *args):
+        return None
+
+
+def test_select_mode_serves_the_chosen_arm():
+    env = TrafficEnv('four_way', program='agent', episode_s=600, record=True)
+    ready, _ = env.reset(seed=4)
+    applied = []
+    while ready:
+        ready, _, _ = env.step({tls: 2 for tls in ready})     # always ask for arm S
+        applied += env.applied.values()
+    env.close()
+    greens = [r['green'] for r in env.records if r['green'] != -1]
+    assert greens.count(2) / len(greens) > 0.6               # S gets most of the green
+    # the only other choices are forced by the 60 s max green, and go to the next arm in cycle order (W)
+    assert set(applied) <= {2, 3}
+    runs = signal_runs(env.records, 'C')
+    assert all(MIN_GREEN_S <= n <= MAX_GREEN_S for s, n in runs if s != -1)
+    assert all(n == YELLOW_S for s, n in runs if s == -1)
+
+
+def test_four_way_fixed_plan_gives_each_arm_30_seconds_in_turn():
+    env = TrafficEnv('four_way', program='fixed', episode_s=400, record=True)
+    env.reset(seed=1)
+    env.run_to_end()
+    env.close()
+    runs = signal_runs(env.records, 'C')
+    greens = [s for s, n in runs if s != -1]
+    assert {n for s, n in runs if s != -1} == {30}
+    assert greens[:4] in ([0, 1, 2, 3], [1, 2, 3, 0], [2, 3, 0, 1], [3, 0, 1, 2])   # N, E, S, W order
+
+
+@pytest.mark.parametrize('name', ['four_way', 'lusaka'])
+def test_new_networks_drive_on_the_left(name):
+    """Zambia drives on the left: on every arm, the incoming lanes sit on the driver's left."""
+    import sumolib
+    net_file = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+                            'networks', name, f'{name}.net.xml')
+    net = sumolib.net.readNet(net_file)
+    for arm in 'NESW':
+        inc, out = net.getEdge(f'{arm}2C'), net.getEdge(f'C2{arm}')
+        (x1, y1), (x2, y2) = inc.getFromNode().getCoord(), inc.getToNode().getCoord()
+        lane_in, lane_out = inc.getLanes()[0].getShape(), out.getLanes()[0].getShape()
+        (xi, yi), (xo, yo) = lane_in[len(lane_in) // 2], lane_out[len(lane_out) // 2]
+        cross = (x2 - x1) * (yi - yo) - (y2 - y1) * (xi - xo)     # > 0: incoming lane is left of travel
+        assert cross > 0, f'{name} arm {arm} drives on the right'
+
+
 def test_same_seed_gives_identical_results():
     a = run_episode('single', RandomPolicy(seed=5), seed=11, episode_s=300)
     b = run_episode('single', RandomPolicy(seed=5), seed=11, episode_s=300)

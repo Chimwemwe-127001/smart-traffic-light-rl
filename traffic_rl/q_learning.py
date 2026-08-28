@@ -11,19 +11,21 @@ import json
 import numpy as np
 
 from traffic_rl.baselines import queue_reward
+from traffic_rl.scenarios import n_actions
 from traffic_rl.state import discrete_state, load_config
 
 
 class QLearning:
     program = 'agent'
 
-    def __init__(self, alpha=0.1, gamma=0.9, epsilon=1.0, seed=0):
+    def __init__(self, alpha=0.1, gamma=0.9, epsilon=1.0, seed=0, scenario='single'):
         self.alpha = alpha
         self.gamma = gamma
         self.epsilon = epsilon
-        self.cfg = load_config()
+        self.cfg = load_config(scenario)
+        self.n_actions = n_actions(scenario)
         self.rng = np.random.default_rng(seed)
-        self.tables = {}                     # tls -> {state tuple: np.array([Q(keep), Q(switch)])}
+        self.tables = {}                     # tls -> {state tuple: np.array of one Q-value per action}
 
     # -- what the agent sees and what it is rewarded for (overridden by the coordinated agent)
 
@@ -38,12 +40,12 @@ class QLearning:
     def q(self, tls, s):
         table = self.tables.setdefault(tls, {})
         if s not in table:
-            table[s] = np.zeros(2)
+            table[s] = np.zeros(self.n_actions)
         return table[s]
 
     def act(self, tls, obs, explore=False):
         if explore and self.rng.random() < self.epsilon:
-            return int(self.rng.integers(2))
+            return int(self.rng.integers(self.n_actions))
         return int(np.argmax(self.q(tls, self.state(tls, obs))))
 
     def learn(self, tls, obs, action, queues, next_obs):

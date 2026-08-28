@@ -48,5 +48,125 @@
       40
     ]
   },
-  "n_rows": 54000
+  "n_rows": 54000,
+  "four_way": {
+    "fixed_mean_queue_N": 8.2625,
+    "fixed_mean_queue_E": 4.566944444444444,
+    "fixed_mean_queue_S": 2.709722222222222,
+    "fixed_mean_queue_W": 2.731388888888889,
+    "actuated_mean_queue_N": 1.596111111111111,
+    "actuated_mean_queue_E": 1.478611111111111,
+    "actuated_mean_queue_S": 1.5402777777777779,
+    "actuated_mean_queue_W": 1.48,
+    "random_mean_queue_N": 8.596111111111112,
+    "random_mean_queue_E": 5.708055555555555,
+    "random_mean_queue_S": 6.338888888888889,
+    "random_mean_queue_W": 3.1955555555555555,
+    "arm_count_N": {
+      "mean": 6.504444444444444,
+      "p90": 14.0,
+      "max": 14.0,
+      "share_zero": 0.0999074074074074
+    },
+    "arm_count_E": {
+      "mean": 4.536481481481482,
+      "p90": 12.0,
+      "max": 14.0,
+      "share_zero": 0.15731481481481482
+    },
+    "arm_count_S": {
+      "mean": 4.601666666666667,
+      "p90": 12.0,
+      "max": 14.0,
+      "share_zero": 0.13268518518518518
+    },
+    "arm_count_W": {
+      "mean": 3.507222222222222,
+      "p90": 8.0,
+      "max": 14.0,
+      "share_zero": 0.1412962962962963
+    },
+    "approach_count": {
+      "mean": 4.7874537037037035,
+      "median": 3.0,
+      "p90": 12.0,
+      "max": 14.0
+    },
+    "detector_coverage": 0.9337251851211571,
+    "modify": {
+      "count_bin_edges": [
+        2,
+        4,
+        8,
+        13
+      ],
+      "lane_scale": 14.0,
+      "queue_scale": 33.0,
+      "green_time_edges": [
+        20,
+        40
+      ]
+    },
+    "n_rows": 10800
+  },
+  "lusaka": {
+    "fixed_mean_queue_W": 9.15,
+    "fixed_mean_queue_E": 28.16,
+    "fixed_mean_queue_N": 4.063611111111111,
+    "fixed_mean_queue_S": 1.3563888888888889,
+    "actuated_mean_queue_W": 6.073333333333333,
+    "actuated_mean_queue_E": 27.62,
+    "actuated_mean_queue_N": 2.951111111111111,
+    "actuated_mean_queue_S": 1.7327777777777778,
+    "random_mean_queue_W": 30.941111111111113,
+    "random_mean_queue_E": 34.28527777777778,
+    "random_mean_queue_N": 3.062222222222222,
+    "random_mean_queue_S": 1.0808333333333333,
+    "arm_count_W": {
+      "mean": 27.363055555555555,
+      "p90": 60.0,
+      "max": 68.0,
+      "share_zero": 0.002777777777777778
+    },
+    "arm_count_E": {
+      "mean": 48.6487962962963,
+      "p90": 63.0,
+      "max": 68.0,
+      "share_zero": 0.004166666666666667
+    },
+    "arm_count_N": {
+      "mean": 5.0841666666666665,
+      "p90": 10.0,
+      "max": 14.0,
+      "share_zero": 0.06712962962962964
+    },
+    "arm_count_S": {
+      "mean": 2.0970370370370373,
+      "p90": 5.0,
+      "max": 8.0,
+      "share_zero": 0.20629629629629628
+    },
+    "approach_count": {
+      "mean": 20.79826388888889,
+      "median": 9.0,
+      "p90": 59.0,
+      "max": 68.0
+    },
+    "detector_coverage": 1.2332144518530004,
+    "modify": {
+      "count_bin_edges": [
+        3,
+        11,
+        45,
+        59
+      ],
+      "lane_scale": 34.0,
+      "queue_scale": 137.0,
+      "green_time_edges": [
+        20,
+        40
+      ]
+    },
+    "n_rows": 10800
+  }
 }

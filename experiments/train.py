@@ -33,6 +33,7 @@ from traffic_rl.dqn import DQN
 from traffic_rl.multi_agent import CoordinatedQLearning
 from traffic_rl.q_learning import QLearning
 from traffic_rl.runner import run_episode
+from traffic_rl.scenarios import SCENARIOS
 
 REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 LOGS = os.path.join(REPO, 'results', 'logs')
@@ -44,9 +45,9 @@ EPS_END = 0.05
 
 def make_agent(name, scenario, seed=0):
     if name == 'q_learning':
-        return QLearning(seed=seed)
+        return QLearning(seed=seed, scenario=scenario)
     if name == 'dqn':
-        return DQN(seed=seed)
+        return DQN(seed=seed, scenario=scenario)
     if name == 'coordinated':
         return CoordinatedQLearning(scenario=scenario, seed=seed)
     raise ValueError(name)
@@ -61,20 +62,22 @@ def validate(scenario, agent):
     Q-table, and validation must not change the agent being trained."""
     probe = copy.deepcopy(agent)
     runs = [run_episode(scenario, probe, seed=s) for s in VAL_SEEDS]
-    return {k: float(np.mean([r[k] for r in runs])) for k in ('avg_queue', 'avg_wait_s', 'avg_travel_s')}
+    return {k: float(np.mean([r[k] for r in runs])) for k in ('avg_queue', 'avg_wait_s', 'avg_travel_s', 'avg_delay_s')}
 
 
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('--agent', choices=['q_learning', 'dqn', 'coordinated'], required=True)
-    ap.add_argument('--scenario', choices=['single', 'corridor', 'corridor_heavy'], required=True)
+    ap.add_argument('--scenario', choices=list(SCENARIOS), required=True)
     ap.add_argument('--episodes', type=int, default=200)
     ap.add_argument('--seed', type=int, default=0)
     args = ap.parse_args()
     if args.episodes > min(VAL_SEEDS):
         sys.exit(f'Training seeds 0-{args.episodes - 1} would overlap the validation seeds {VAL_SEEDS}.')
-    if args.agent == 'dqn' and args.scenario != 'single':
-        sys.exit('The DQN input layer is sized for the single intersection.')
+    if args.agent == 'dqn' and len(SCENARIOS[args.scenario]['intersections']) != 1:
+        sys.exit('The DQN controls one intersection; use a single-junction scenario.')
+    if args.agent == 'coordinated' and len(SCENARIOS[args.scenario]['intersections']) < 2:
+        sys.exit('Coordination needs a scenario with neighboring intersections.')
 
     os.makedirs(LOGS, exist_ok=True)
     os.makedirs(MODELS, exist_ok=True)
@@ -82,6 +85,9 @@ def main():
     agent = make_agent(args.agent, args.scenario, args.seed)
     decay = EPS_END ** (1 / (0.6 * args.episodes))
 
+    # Checkpoint selection: the new junctions can back up past the network edge, where the
+    # in-network queue would not see it, so they select on total delay instead.
+    select_by = SCENARIOS[args.scenario].get('select_by', 'avg_queue')
     train_rows, val_rows = [], []
     best, best_agent = float('inf'), None
     start = time.time()
@@ -89,12 +95,12 @@ def main():
         if ep % VAL_EVERY == 0 or ep == args.episodes:
             v = validate(args.scenario, agent)
             size = agent.n_states() if hasattr(agent, 'n_states') else ''
-            val_rows.append([ep, v['avg_queue'], v['avg_wait_s'], v['avg_travel_s'], size])
+            val_rows.append([ep, v['avg_queue'], v['avg_wait_s'], v['avg_travel_s'], size, v['avg_delay_s']])
             flag = ''
-            if ep > 0 and v['avg_queue'] < best:
-                best, best_agent, flag = v['avg_queue'], copy.deepcopy(agent), '  <- best'
+            if ep > 0 and v[select_by] < best:
+                best, best_agent, flag = v[select_by], copy.deepcopy(agent), '  <- best'
             print(f'[val] ep {ep:4d}  queue {v["avg_queue"]:6.2f}  wait {v["avg_wait_s"]:6.1f}s  '
-                  f'travel {v["avg_travel_s"]:6.1f}s{flag}', flush=True)
+                  f'delay {v["avg_delay_s"]:6.1f}s  travel {v["avg_travel_s"]:6.1f}s{flag}', flush=True)
         if ep == args.episodes:
             break
 
@@ -103,7 +109,7 @@ def main():
         size = agent.n_states() if hasattr(agent, 'n_states') else ''
         train_rows.append([ep, round(agent.epsilon, 4), m['total_reward'], m['avg_queue'],
                            m['avg_wait_s'], m['avg_travel_s'], m['throughput'], m['switches'],
-                           m['td_loss'], size])
+                           m['td_loss'], size, m['avg_delay_s']])
         print(f'ep {ep:4d}  eps {agent.epsilon:.2f}  reward {m["total_reward"]:9.1f}  '
               f'queue {m["avg_queue"]:6.2f}  wait {m["avg_wait_s"]:6.1f}s  td {m["td_loss"]:.4f}  '
               f'states {size}  [{time.time() - start:.0f}s]', flush=True)
@@ -111,14 +117,14 @@ def main():
     with open(os.path.join(LOGS, f'train_{tag}.csv'), 'w', newline='') as f:
         w = csv.writer(f)
         w.writerow(['episode', 'epsilon', 'total_reward', 'avg_queue', 'avg_wait_s', 'avg_travel_s',
-                    'throughput', 'switches', 'td_loss', 'q_table_states'])
+                    'throughput', 'switches', 'td_loss', 'q_table_states', 'avg_delay_s'])
         w.writerows(train_rows)
     with open(os.path.join(LOGS, f'val_{tag}.csv'), 'w', newline='') as f:
         w = csv.writer(f)
-        w.writerow(['episode', 'avg_queue', 'avg_wait_s', 'avg_travel_s', 'q_table_states'])
+        w.writerow(['episode', 'avg_queue', 'avg_wait_s', 'avg_travel_s', 'q_table_states', 'avg_delay_s'])
         w.writerows(val_rows)
     best_agent.save(model_path(args.agent, args.scenario))
-    print(f'saved {model_path(args.agent, args.scenario)} (best validation queue {best:.2f})')
+    print(f'saved {model_path(args.agent, args.scenario)} (best validation {select_by} {best:.2f})')
 
 
 if __name__ == '__main__':

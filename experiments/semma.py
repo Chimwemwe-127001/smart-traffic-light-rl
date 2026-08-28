@@ -31,10 +31,12 @@ import matplotlib.pyplot as plt
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from traffic_rl.env import TrafficEnv
+from traffic_rl.scenarios import SCENARIOS as ALL_SCENARIOS, arms, n_actions
 
 REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 OUT = os.path.join(REPO, 'results', 'semma')
-SCENARIOS = ['single', 'corridor', 'corridor_heavy']
+SCENARIOS = ['single', 'corridor', 'corridor_heavy']           # v1 study, one shared config ("default")
+NEW_SCENARIOS = ['four_way', 'lusaka']                           # v1.1, one config each
 PROGRAMS = ['fixed', 'actuated', 'random']
 SAMPLE_SEEDS = [900, 901, 902]          # not used for training or evaluation
 
@@ -44,10 +46,11 @@ SAMPLE_SEEDS = [900, 901, 902]          # not used for training or evaluation
 def sample_episode(scenario, program, seed):
     env = TrafficEnv(scenario, program='agent' if program == 'random' else program, record=True)
     rng = np.random.default_rng(seed)
+    n = n_actions(scenario)
     ready, _ = env.reset(seed)
     if program == 'random':
         while ready:
-            ready, _, _ = env.step({tls: int(rng.integers(2)) for tls in ready})
+            ready, _, _ = env.step({tls: int(rng.integers(n)) for tls in ready})
     else:
         env.run_to_end()
     env.close()
@@ -56,9 +59,9 @@ def sample_episode(scenario, program, seed):
     return env.records
 
 
-def sample():
+def sample(scenarios=SCENARIOS):
     rows = []
-    for sc in SCENARIOS:
+    for sc in scenarios:
         for prog in PROGRAMS:
             for seed in SAMPLE_SEEDS:
                 rows += sample_episode(sc, prog, seed)
@@ -197,18 +200,113 @@ def modify(rows, summary):
     return config
 
 
+# ------------------------------------------------- v1.1: four-way and Lusaka
+
+def explore_arms(rows, sc):
+    """Per-arm exploration for one of the new junctions."""
+    names = arms(sc, 'C')
+    colors = ['#2a78d6', '#eb6834', '#1baf7a', '#eda100']
+    summary = {}
+
+    # 1. Demand seen by each arm over time (fixed-time, mean over seeds, 60 s smoothing)
+    fig, ax = plt.subplots(figsize=(10, 4))
+    for name, c in zip(names, colors):
+        series = np.array([[r[name] for r in rows if r['scenario'] == sc and r['program'] == 'fixed'
+                            and r['seed'] == s] for s in SAMPLE_SEEDS])
+        smooth = np.convolve(series.mean(0), np.ones(60) / 60, mode='same')
+        ax.plot(np.arange(1, len(smooth) + 1), smooth, color=c, lw=2, label=name)
+    ax.set_xlabel('time (s)'); ax.set_ylabel('vehicles seen (60 s mean)')
+    ax.set_title(f'{sc}: vehicles seen per arm under fixed-time control')
+    ax.legend(ncol=len(names)); ax.grid(True, alpha=0.3)
+    fig.tight_layout()
+    fig.savefig(os.path.join(OUT, f'{sc}_explore_arm_demand.png'), dpi=120)
+    plt.close(fig)
+
+    # 2. Real queue per arm under each baseline controller
+    fig, ax = plt.subplots(figsize=(8, 4))
+    width = 0.25
+    for k, prog in enumerate(PROGRAMS):
+        means = [column(rows, f'queue_{n}', scenario=sc, program=prog).mean() for n in names]
+        ax.bar(np.arange(len(names)) + (k - 1) * width, means, width, label=prog,
+               color=['#8a8983', '#52514e', '#c3c2b7'][k], edgecolor='white')
+        summary.update({f'{prog}_mean_queue_{n}': float(m) for n, m in zip(names, means)})
+    ax.set_xticks(range(len(names)), names)
+    ax.set_ylabel('stopped vehicles on the arm (mean)')
+    ax.set_title(f'{sc}: which arm queues, by baseline controller')
+    ax.legend(); ax.grid(True, axis='y', alpha=0.3)
+    fig.tight_layout()
+    fig.savefig(os.path.join(OUT, f'{sc}_explore_arm_queue.png'), dpi=120)
+    plt.close(fig)
+
+    counts = np.concatenate([column(rows, n, scenario=sc) for n in names])
+    for n in names:
+        c = column(rows, n, scenario=sc)
+        summary[f'arm_count_{n}'] = {'mean': float(c.mean()), 'p90': float(np.percentile(c, 90)),
+                                     'max': float(c.max()), 'share_zero': float(np.mean(c == 0))}
+    summary['approach_count'] = {'mean': float(counts.mean()), 'median': float(np.median(counts)),
+                                 'p90': float(np.percentile(counts, 90)), 'max': float(counts.max())}
+    det, edge = column(rows, 'queue', scenario=sc), column(rows, 'edge_queue', scenario=sc)
+    summary['detector_coverage'] = float(det.sum() / max(1.0, edge.sum()))
+    return summary
+
+
+def modify_for(rows, sc, summary):
+    """Same rules as the v1 Modify step, applied to one junction's own data."""
+    names = arms(sc, 'C')
+    counts = np.concatenate([column(rows, n, scenario=sc) for n in names])
+    nonzero = counts[counts > 0]
+    edges = sorted({int(np.ceil(np.percentile(nonzero, p))) for p in (25, 50, 75, 90)})
+    n_lanes = sum(len(a['detectors']) for a in ALL_SCENARIOS[sc]['intersections']['C']['approaches'].values())
+    lanes = np.concatenate([column(rows, f'lane_{k}', scenario=sc) for k in range(n_lanes)])
+    config = {'count_bin_edges': edges,
+              'lane_scale': float(np.percentile(lanes, 99)),
+              'queue_scale': float(np.percentile(column(rows, 'queue', scenario=sc), 99)),
+              'green_time_edges': [20, 40]}
+    summary['modify'] = config
+    return config
+
+
+def load_json(name, default):
+    path = os.path.join(OUT, name)
+    if os.path.exists(path):
+        with open(path) as f:
+            return json.load(f)
+    return default
+
+
 def main():
+    import argparse
+    ap = argparse.ArgumentParser()
+    ap.add_argument('--groups', nargs='+', choices=['v1', 'v1.1'], default=['v1', 'v1.1'])
+    args = ap.parse_args()
     os.makedirs(OUT, exist_ok=True)
-    rows = sample()
-    save_csv(rows, os.path.join(OUT, 'detector_samples.csv.gz'))
-    summary = explore(rows)
-    config = modify(rows, summary)
-    summary['n_rows'] = len(rows)
+
+    config = load_json('state_config.json', {})
+    if 'count_bin_edges' in config:                 # older single-config file
+        config = {'default': config}
+    summary = load_json('summary.json', {})
+
+    if 'v1' in args.groups:
+        rows = sample()
+        save_csv(rows, os.path.join(OUT, 'detector_samples.csv.gz'))
+        v1 = explore(rows)
+        config['default'] = modify(rows, v1)
+        v1['n_rows'] = len(rows)
+        summary.update(v1)
+    if 'v1.1' in args.groups:
+        rows = sample(NEW_SCENARIOS)
+        save_csv(rows, os.path.join(OUT, 'detector_samples_v1_1.csv.gz'))
+        for sc in NEW_SCENARIOS:
+            s = explore_arms(rows, sc)
+            config[sc] = modify_for(rows, sc, s)
+            s['n_rows'] = sum(1 for r in rows if r['scenario'] == sc)
+            summary[sc] = s
+
     with open(os.path.join(OUT, 'state_config.json'), 'w') as f:
         json.dump(config, f, indent=2)
     with open(os.path.join(OUT, 'summary.json'), 'w') as f:
         json.dump(summary, f, indent=2)
-    print(json.dumps(summary, indent=2))
+    print(json.dumps({k: summary[k] for k in NEW_SCENARIOS if k in summary}, indent=2))
 
 
 if __name__ == '__main__':

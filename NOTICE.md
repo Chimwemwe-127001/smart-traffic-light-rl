@@ -12,6 +12,14 @@ agent with a queue-based reward, the lane-area detector naming
 Keras DQN scripts (`traci6.QL.py`, `traci7.DQL.py`), which this code no longer
 contains but was first adapted from.
 
+## Map data
+
+`networks/lusaka/east_park.osm.xml` and the Lusaka network built from it use map
+data © OpenStreetMap contributors, available under the Open Database License
+(ODbL): https://www.openstreetmap.org/copyright
+
+## This project
+
 Everything else was built for this project: the networks and demand files, the
 shared environment with asynchronous decisions and minimum green, the NumPy DQN
 with replay, target network and Double DQN target, the coordinated multi-agent

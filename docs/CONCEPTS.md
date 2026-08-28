@@ -30,15 +30,26 @@ seeds" would not mean anything.
 ## 2. Traffic signals
 
 A signal runs a **program**: a list of **phases**, each with a duration and a
-state string such as `GGGGrrrr` (one letter per movement: `G` green, `y`
-yellow, `r` red). Our junctions have four phases: EB green, EB yellow, SB
-green, SB yellow.
+state string such as `GGGGrrrr` (one letter per movement: `G` green with
+priority, `g` green but give way, `y` yellow, `r` red). The v1 junctions have
+four phases: EB green, EB yellow, SB green, SB yellow.
 
-Three kinds of control appear in this repo:
+Four kinds of control appear in this repo:
 
-- **Fixed-time**: the cycle runs on a timer (42 s green, 3 s yellow), whatever the traffic.
+- **Fixed-time**: the cycle runs on a timer, whatever the traffic.
 - **Actuated**: a green is extended while cars keep arriving and ends when the gap between cars gets too long. This is what many real cities use. See `networks/*/actuated.add.xml`.
-- **RL agents**: learn when to switch from what the detectors see.
+- **Longest queue first**: always serve the phase with the most cars waiting. A simple adaptive rule in the spirit of max-pressure control (Varaiya, 2013). It is strong on average but can starve a quiet road.
+- **RL agents**: learn when to switch, or which phase to serve, from what the detectors see.
+
+**Left-hand traffic.** Zambia drives on the left. The networks for v1.1 are built
+with `netconvert --lefthand`, so cars keep left and the *right* turn is the one
+that crosses oncoming traffic. A test checks that every arm drives on the left.
+
+**Split phasing and phase selection.** At the four-way junction one arm gets
+green at a time (split phasing), and the agent chooses which arm to serve next
+(4 actions) instead of just keep or switch. At the Lusaka junction the program
+has three greens: the main road both ways (right turns give way), protected
+right turns, then the side roads; the agent chooses among those.
 
 Every controller must respect **minimum green** (10 s here, drivers need time
 to react) and **yellow clearance** (never jump from green straight to the
@@ -180,6 +191,13 @@ needs junctions that cooperate.
 - **Metrics the agent did not optimize**: it is trained on queue length, but we
   also report waiting time and travel time. If those improve too, the reward is
   a good proxy.
+- **Wait vs delay**: "wait" counts time stopped for cars that entered the
+  simulated roads. If a controller starves an arm, its queue can grow past the
+  edge of the model, and those cars never enter, so wait would *improve*.
+  "Delay" also counts the time cars spend queued before entering, including
+  cars still outside at the end. The new junctions are judged on delay.
+- **Fairness**: the average hides the unlucky driver. The worst single delay
+  shows whether a controller starves a quiet road to keep the main road moving.
 - **Q-value probes**: hand-made states with an obvious right answer (busy road
   on red, empty road on green: switch). They check the agent learned traffic
   logic and not just numbers.

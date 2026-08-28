@@ -8,6 +8,7 @@ import sys
 import numpy as np
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from traffic_rl.baselines import LongestQueueFirst
 from traffic_rl.dqn import MLP, ReplayBuffer, DQN
 from traffic_rl.metrics import bootstrap_ci, paired_difference
 from traffic_rl.multi_agent import CoordinatedQLearning
@@ -17,7 +18,7 @@ from traffic_rl.state import count_bin, discrete_state, feature_vector, DEFAULT_
 
 def obs(eb=0, sb=0, green=0, green_time=15, tls='Node2'):
     lanes = np.array([eb / 3] * 3 + [sb / 3] * 3)
-    return {tls: {'lanes': lanes, 'EB': eb, 'SB': sb, 'green': green,
+    return {tls: {'lanes': lanes, 'counts': [eb, sb], 'EB': eb, 'SB': sb, 'green': green,
                   'green_time': green_time, 'queue': eb + sb}}
 
 
@@ -115,6 +116,40 @@ def test_dqn_learns_after_warmup():
     o, o2 = obs(eb=4), obs(eb=2)
     losses = [agent.learn('Node2', o, 0, {'Node2': 3.0}, o2) for _ in range(20)]
     assert losses[0] is None and losses[-1] is not None
+
+
+def four_way_obs(counts=(0, 0, 0, 0), green=0, green_time=15):
+    return {'C': {'lanes': np.array(counts, dtype=float), 'counts': list(counts), 'green': green,
+                  'green_time': green_time, 'queue': sum(counts)}}
+
+
+def test_agents_get_one_action_per_arm_on_the_four_way():
+    ql, dqn = QLearning(scenario='four_way'), DQN(scenario='four_way')
+    assert ql.n_actions == dqn.n_actions == 4
+    o = four_way_obs((6, 0, 1, 0), green=1)
+    assert ql.state('C', o) == (2, 0, 0, 0, 1, 0)             # 4 arm bins, green arm, green age bin
+    assert dqn.features('C', o).shape == (9,)                 # 4 lanes + 4 one-hot + age
+    assert dqn.net.predict(dqn.features('C', o)).shape == (1, 4)
+    ql.q('C', ql.state('C', o))[:] = [-3.0, -9.0, -1.0, -5.0]
+    assert ql.act('C', o) == 2
+    assert {ql.act('C', o, explore=True) for _ in range(200)} == {0, 1, 2, 3}   # epsilon = 1 explores all arms
+
+
+def test_v1_state_is_unchanged_by_the_arm_generalization():
+    o = obs(eb=6, sb=0, green=1, green_time=45)['Node2']
+    assert discrete_state(o, DEFAULT_CONFIG) == (2, 0, 1, 2)
+    assert QLearning().n_actions == DQN().n_actions == 2
+    assert DQN().net.params[0].shape == (9, 32)
+
+
+def test_longest_queue_first_serves_the_busiest_green():
+    lqf = LongestQueueFirst('four_way')
+    assert lqf.act('C', four_way_obs((1, 7, 3, 0), green=0)) == 1
+    lusaka = LongestQueueFirst('lusaka')              # arms W, E, N, S; greens: main, main rights, side
+    o = {'C': {'counts': [10, 12, 4, 1]}}
+    assert lusaka.act('C', o) == 0                    # main road busiest; tie with the rights phase goes to main
+    o = {'C': {'counts': [2, 1, 9, 3]}}
+    assert lusaka.act('C', o) == 2                    # side roads busiest
 
 
 def test_bootstrap_and_paired_difference():

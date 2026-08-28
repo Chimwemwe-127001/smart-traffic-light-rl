@@ -24,13 +24,17 @@ FIG = os.path.join(RESULTS, 'figures')
 
 INK, MUTED, GRID = '#0b0b0b', '#52514e', '#e4e3df'
 COLORS = {'Fixed-time': '#8a8983', 'Actuated': '#52514e', 'Random': '#c3c2b7',
+          'Longest queue first': '#7d93ad',
           'Q-learning': '#2a78d6', 'Independent QL': '#2a78d6',
           'DQN': '#eb6834', 'Coordinated QL': '#1baf7a'}
 TITLES = {'single': 'Single intersection', 'corridor': 'Corridor, normal demand',
-          'corridor_heavy': 'Corridor, heavy demand'}
+          'corridor_heavy': 'Corridor, heavy demand', 'four_way': 'Four-way, one lane each way',
+          'lusaka': 'Lusaka, Great East Rd / Lufubu Rd'}
 LEARNERS = {'single': [('q_learning', 'Q-learning'), ('dqn', 'DQN')],
             'corridor': [('q_learning', 'Independent QL'), ('coordinated', 'Coordinated QL')],
             'corridor_heavy': [('q_learning', 'Independent QL'), ('coordinated', 'Coordinated QL')]}
+LEARNERS_V11 = {'four_way': [('q_learning', 'Q-learning'), ('dqn', 'DQN')],
+                'lusaka': [('q_learning', 'Q-learning'), ('dqn', 'DQN')]}
 
 plt.rcParams.update({'font.size': 10, 'axes.edgecolor': MUTED, 'axes.labelcolor': INK,
                      'xtick.color': MUTED, 'ytick.color': MUTED, 'axes.spines.top': False,
@@ -38,7 +42,7 @@ plt.rcParams.update({'font.size': 10, 'axes.edgecolor': MUTED, 'axes.labelcolor'
                      'grid.linewidth': 0.8, 'axes.axisbelow': True, 'legend.frameon': False})
 
 
-def plain_log_axis(ax, ticks=(2, 3, 4, 6, 10, 15, 20, 30)):
+def plain_log_axis(ax, ticks=(2, 3, 4, 6, 10, 15, 20, 30, 50, 100, 200, 400, 800)):
     ax.set_yscale('log')
     ax.yaxis.set_major_locator(FixedLocator(ticks))
     ax.yaxis.set_major_formatter(ScalarFormatter())
@@ -87,12 +91,15 @@ def validation_curves(summary):
 
 def before_after(summary):
     rows = summary['before_after']
-    fig, ax = plt.subplots(figsize=(13, 5))
+    fig, ax = plt.subplots(figsize=(2.2 * len(rows), 5))
     x = np.arange(len(rows))
     w = 0.38
+    short = {'single': 'Single\nintersection', 'corridor': 'Corridor\nnormal', 'corridor_heavy': 'Corridor\nheavy',
+             'four_way': 'Four-way\n(delay)', 'lusaka': 'Lusaka\n(delay)'}
     for i, r in enumerate(rows):
         c = COLORS[r['learner']]
-        b, a = r['avg_wait_s']['before'], r['avg_wait_s']['after']
+        metric = 'avg_delay_s' if r['scenario'] in LEARNERS_V11 else 'avg_wait_s'
+        b, a = r[metric]['before'], r[metric]['after']
         ax.bar(i - w / 2 - 0.01, b, w, color=lighten(c), edgecolor='white', linewidth=2)
         ax.bar(i + w / 2 + 0.01, a, w, color=c, edgecolor='white', linewidth=2)
         ax.annotate(f'{b:.1f}s', (i - w / 2, b), xytext=(0, 3), textcoords='offset points',
@@ -100,8 +107,8 @@ def before_after(summary):
         ax.annotate(f'{a:.1f}s', (i + w / 2, a), xytext=(0, 3), textcoords='offset points',
                     ha='center', fontsize=8, color=INK)
     plain_log_axis(ax)
-    ax.set_xticks(x, [f'{r["learner"]}\n{TITLES[r["scenario"]].replace(", ", chr(10))}' for r in rows], fontsize=8.5)
-    ax.set_ylabel('avg waiting time per vehicle (s, log scale)')
+    ax.set_xticks(x, [f'{r["learner"]}\n{short[r["scenario"]]}' for r in rows], fontsize=8.5)
+    ax.set_ylabel('avg wait, or avg delay on the new junctions (s, log scale)')
     ax.legend(handles=[Patch(color='#c3c2b7', label='before training (lighter shade, initial parameters)'),
                        Patch(color=MUTED, label='after training (full color)')],
               loc='lower center', bbox_to_anchor=(0.5, 1.02), ncol=2)
@@ -160,6 +167,83 @@ def training_diagnostics():
     save(fig, 'training_diagnostics.png')
 
 
+# ------------------------------------------------------ v1.1: four-way and Lusaka
+
+def validation_curves_v11(summary):
+    fig, axes = plt.subplots(1, 2, figsize=(13, 4.2))
+    for ax, (sc, learners) in zip(axes, LEARNERS_V11.items()):
+        for tag, label in learners:
+            rows = read_csv(os.path.join(LOGS, f'val_{tag}_{sc}.csv'))
+            ax.plot([int(r['episode']) for r in rows], [float(r['avg_wait_s']) for r in rows],
+                    '-o', ms=3, lw=2, color=COLORS[label], label=label)
+        for base in ('Fixed-time', 'Actuated', 'Longest queue first'):     # in the legend: the lines sit close
+            y = summary['summary'][sc][base]['avg_wait_s'][0]
+            ax.axhline(y, color=COLORS[base], lw=1.5, ls='--', label=f'{base} (test)')
+        plain_log_axis(ax, ticks=(5, 10, 20, 40, 80, 150, 300, 600))
+        ax.set_title(TITLES[sc], color=INK)
+        ax.set_xlabel('training episode')
+        ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.18), ncol=3, fontsize=9)
+    axes[0].set_ylabel('avg waiting time per vehicle (s, log scale)')
+    fig.suptitle('Learning curves on the new junctions: greedy policy on validation traffic', color=INK)
+    fig.tight_layout()
+    save(fig, 'learning_curves_v11.png')
+
+
+def bars_with_ci(ax, table, names, metric):
+    means = [table[n][metric][0] for n in names]
+    err = [[table[n][metric][0] - table[n][metric][1] for n in names],
+           [table[n][metric][2] - table[n][metric][0] for n in names]]
+    colors = [COLORS[n.replace(' (trained)', '')] for n in names]
+    ax.bar(range(len(names)), means, 0.7, color=colors, edgecolor='white', linewidth=2,
+           yerr=err, capsize=3, error_kw={'ecolor': INK, 'elinewidth': 1})
+    for i, m in enumerate(means):
+        ax.annotate(f'{m:.0f}' if m >= 100 else f'{m:.1f}', (i, m + err[1][i]), xytext=(0, 3),
+                    textcoords='offset points', ha='center', fontsize=8.5, color=INK)
+    short = {'Longest queue first': 'Longest\nqueue first'}
+    ax.set_xticks(range(len(names)), [short.get(n, n.replace(' (trained)', '')) for n in names], fontsize=8.5)
+
+
+V11_ORDER = ['Fixed-time', 'Random', 'Actuated', 'Longest queue first', 'Q-learning (trained)', 'DQN (trained)']
+
+
+def head_to_head_v11(summary):
+    fig, axes = plt.subplots(1, 2, figsize=(13, 4.6))
+    for ax, sc in zip(axes, LEARNERS_V11):
+        bars_with_ci(ax, summary['summary'][sc], V11_ORDER, 'avg_delay_s')
+        ax.set_title(TITLES[sc], color=INK)
+    axes[0].set_ylabel('avg delay per vehicle (s)')
+    fig.suptitle('Head to head on the new junctions (mean and 95% CI over 10 held-out seeds)', color=INK)
+    fig.tight_layout()
+    save(fig, 'head_to_head_v11.png')
+
+
+def fairness(summary):
+    fig, axes = plt.subplots(1, 2, figsize=(13, 4.6))
+    for ax, sc in zip(axes, LEARNERS_V11):
+        bars_with_ci(ax, summary['summary'][sc], V11_ORDER, 'max_delay_s')
+        ax.set_title(TITLES[sc], color=INK)
+    axes[0].set_ylabel('worst single-vehicle delay (s)')
+    fig.suptitle('Fairness: the longest delay any one driver had (mean and 95% CI over 10 seeds)', color=INK)
+    fig.tight_layout()
+    save(fig, 'fairness_v11.png')
+
+
+def lusaka_sweep(summary):
+    sweep = summary['sweep']
+    scales = sorted(sweep, key=float)
+    fig, ax = plt.subplots(figsize=(8, 4.6))
+    for name in sweep[scales[0]]:
+        label = name.replace(' (trained)', '')
+        ys = [sweep[s][name]['avg_delay_s'] for s in scales]
+        ax.plot([float(s) for s in scales], ys, '-o', lw=2, ms=6, color=COLORS[label], label=label)
+    ax.set_xticks([float(s) for s in scales], [f'x{float(s):.2f}' for s in scales])
+    ax.set_xlabel('demand, relative to the estimated morning peak')
+    ax.set_ylabel('avg delay per vehicle (s)')
+    ax.set_title('Lusaka: how each controller copes as demand grows', color=INK)
+    ax.legend(loc='upper left', fontsize=9)
+    save(fig, 'lusaka_sweep.png')
+
+
 def main():
     os.makedirs(FIG, exist_ok=True)
     with open(os.path.join(RESULTS, 'summary.json')) as f:
@@ -168,6 +252,10 @@ def main():
     before_after(summary)
     head_to_head(summary)
     training_diagnostics()
+    validation_curves_v11(summary)
+    head_to_head_v11(summary)
+    fairness(summary)
+    lusaka_sweep(summary)
 
 
 if __name__ == '__main__':
