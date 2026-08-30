@@ -193,7 +193,7 @@ LUSAKA_ARMS = {
 MAIN_ARMS, SIDE_ARMS = ('W', 'E'), ('N', 'S')
 SIDE_ROAD_SPEED_KMH = 40            # assumption: no maxspeed tag on the side roads
 # Set by the SEMMA study: with 105 m detectors the Great East Road counts saturated
-# (28 = 2 lanes x 14 cars) and saw only 68% of the queue, so the main road is covered
+# (28 = 2 lanes x 14 cars) and saw only 75% of the queue, so the main road is covered
 # 250 m back, like the advance detectors used on major roads.
 MAIN_ROAD_DETECTOR_M = 250
 # Fixed-time plan: main road 40 s, protected right turns 10 s, side roads 20 s (3 s yellow after each).

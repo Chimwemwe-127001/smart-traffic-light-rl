@@ -70,19 +70,42 @@ The same steps were repeated for the two new junctions
 and the `four_way_*` and `lusaka_*` figures). Each junction gets its own config,
 so the v1 bins above are unchanged.
 
-- **Sample:** 21,600 rows: fixed-time, actuated and random control, seeds 900-902, 1,200 s each.
-- **Explore:** at Lusaka the westbound Great East Road arm (towards the city
-  in the morning) holds about 28 stopped cars under both fixed-time and
-  actuated control, against 1 to 9 on the other arms (`lusaka_explore_arm_queue.png`).
-  On the four-way, fixed-time leaves the busy north arm with 8.3 stopped cars
-  against 1.5 under actuated control.
-- **Data quality, again:** the 105 m detectors on Great East Road saturated at
-  28 vehicles (2 lanes x 14 cars) and saw only 68% of the queue. They were
-  extended to 250 m, and coverage rose to 123% (above 100% for the same
-  halting-threshold reason as in v1). On the four-way, coverage was 93%.
-- **Modify:** bin edges 2, 4, 8, 13 (four-way) and 3, 11, 45, 59 (Lusaka), with lane
-  scales 14 and 34 and queue scales 33 and 137, all from the same percentile
-  rules as v1.
+### Sample
+
+21,600 rows: fixed-time, actuated and random control, seeds 900-902, 1,200 s each, 10,800 per junction.
+
+### Explore
+
+**Which arm queues.** At Lusaka the westbound Great East Road arm (towards the city in the morning) holds about 28 stopped cars under both fixed-time and actuated control, against 1 to 9 on the other arms. On the four-way, fixed-time leaves the busy north arm with 8.3 stopped cars, against 1.5 under actuated control.
+
+![Lusaka: stopped cars per arm](../results/semma/lusaka_explore_arm_queue.png)
+
+**Demand over time.** On the four-way the north-south peak, the balanced middle and the east-west peak are all visible in what the detectors see (`four_way_explore_arm_demand.png`). At Lusaka the westbound arm stays high for the whole peak hour (`lusaka_explore_arm_demand.png`).
+
+**How many vehicles an arm sees.** The westbound Lusaka arm is bimodal: either draining (under 10 cars) or backed up far down the road (45 to 68 cars). The bin edges fall between these regimes. The side roads rarely see more than 10.
+
+![Lusaka: vehicles seen per arm](../results/semma/lusaka_explore_arm_counts.png)
+
+On the four-way, the spike at 14 vehicles is a full 105 m single-lane detector (about 7.5 m per car). The north arm hits it often, so on this junction too the cameras sometimes see only part of the queue. Overall coverage is still 93%, so we kept the detectors, and we note it as a limitation.
+
+![Four-way: vehicles seen per arm](../results/semma/four_way_explore_arm_counts.png)
+
+**Lanes of one arm move together.** At Lusaka the two lanes of each Great East Road arm are strongly correlated (0.96 westbound, 0.73 eastbound; mean 0.85), and correlation across arms is low (mean 0.12). So the Q-learning state uses one count per arm, as in v1. The DQN still gets every lane.
+
+![Lusaka: lane correlation](../results/semma/lusaka_explore_lane_correlation.png)
+
+**Data quality, again.** `experiments/semma.py` re-runs fixed-time control with two detector lengths (a temporary detector file, the committed network is not touched):
+
+| Great East Road detectors | Coverage (detector queue / real queue) |
+|---|---|
+| 105 m, as on the v1 junctions | **75%** |
+| 250 m, as used now | 123% |
+
+With 105 m the counts saturated at 28 (2 lanes x 14 cars) and a quarter of the queue was invisible. With 250 m the detectors see the whole queue. The value sits above 100% for the same halting-threshold reason as in v1.
+
+### Modify
+
+Bin edges 2, 4, 8, 13 (four-way) and 3, 11, 45, 59 (Lusaka), lane scales 14 and 34, queue scales 33 and 137, all from the same percentile rules as v1, written per junction to `state_config.json`.
 
 ## 4. Model
 

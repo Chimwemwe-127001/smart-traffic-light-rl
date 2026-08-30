@@ -73,7 +73,9 @@ def save_csv(rows, path):
     import csv
     import gzip
     keys = sorted({k for r in rows for k in r})
-    with gzip.open(path, 'wt', newline='') as f:
+    import io
+    # mtime=0: the file only changes when the data does
+    with io.TextIOWrapper(gzip.GzipFile(path, 'wb', mtime=0), newline='') as f:
         w = csv.DictWriter(f, fieldnames=keys)
         w.writeheader()
         w.writerows(rows)
@@ -266,6 +268,85 @@ def modify_for(rows, sc, summary):
     return config
 
 
+def explore_counts_and_lanes(rows, sc, summary, config):
+    """Two views that back the Modify decisions: count distributions against the
+    chosen bin edges, and lane correlation (are lanes of one arm redundant?)."""
+    names = arms(sc, 'C')
+    colors = ['#2a78d6', '#eb6834', '#1baf7a', '#eda100']
+
+    # 1. How many vehicles each arm's detectors see, with the Q-learning bin edges
+    fig, ax = plt.subplots(figsize=(9, 4))
+    top = max(column(rows, n, scenario=sc).max() for n in names)
+    bins = np.arange(0, top + 2) - 0.5
+    for name, c in zip(names, colors):
+        ax.hist(column(rows, name, scenario=sc), bins=bins, histtype='step', lw=2, color=c, label=name)
+    for e in config['count_bin_edges']:
+        ax.axvline(e - 0.5, color='#52514e', ls='--', lw=1)
+    ax.set_yscale('log')
+    ax.set_xlabel('vehicles seen on one arm (dashed lines: Q-learning bin edges)')
+    ax.set_ylabel('seconds (log scale)')
+    ax.set_title(f'{sc}: vehicles seen per arm, all baseline controllers')
+    ax.legend(ncol=len(names), loc='upper center', bbox_to_anchor=(0.5, -0.2)); ax.grid(True, alpha=0.3)
+    fig.tight_layout()
+    fig.savefig(os.path.join(OUT, f'{sc}_explore_arm_counts.png'), dpi=120)
+    plt.close(fig)
+
+    # 2. Lane correlation, labelled by arm
+    approaches = ALL_SCENARIOS[sc]['intersections']['C']['approaches']
+    lane_arm = [n for n, a in approaches.items() for _ in a['detectors']]
+    lanes = np.array([[float(r[f'lane_{k}']) for k in range(len(lane_arm))] for r in rows if r['scenario'] == sc])
+    corr = np.corrcoef(lanes.T)
+    labels = [f'{a}{i}' for a, i in zip(lane_arm, [lane_arm[:k + 1].count(a) - 1 for k, a in enumerate(lane_arm)])]
+    fig, ax = plt.subplots(figsize=(5.5, 4.5))
+    im = ax.imshow(corr, cmap='RdBu_r', vmin=-1, vmax=1)
+    ax.set_xticks(range(len(labels)), labels); ax.set_yticks(range(len(labels)), labels)
+    for i in range(len(labels)):
+        for j in range(len(labels)):
+            ax.text(j, i, f'{corr[i, j]:.2f}', ha='center', va='center', fontsize=8)
+    fig.colorbar(im)
+    ax.set_title(f'{sc}: lane count correlation')
+    fig.tight_layout()
+    fig.savefig(os.path.join(OUT, f'{sc}_explore_lane_correlation.png'), dpi=120)
+    plt.close(fig)
+    pairs = [(i, j) for i in range(len(lane_arm)) for j in range(i + 1, len(lane_arm))]
+    within = [corr[i, j] for i, j in pairs if lane_arm[i] == lane_arm[j]]
+    across = [corr[i, j] for i, j in pairs if lane_arm[i] != lane_arm[j]]
+    if within:
+        summary['lane_corr_within_arm'] = float(np.mean(within))
+    summary['lane_corr_across_arms'] = float(np.mean(across))
+
+
+def coverage_check(sc, reach_m):
+    """Detector coverage (detector queue / real queue on the arms) with the main-road
+    detectors reaching reach_m metres back. Uses a temporary detector file outside the
+    repo, so the committed network is not touched. Fixed-time control, sample seeds."""
+    import tempfile
+    sys.path.insert(0, os.path.join(REPO, 'networks'))
+    import build_networks as bn
+    from traffic_rl.env import traci
+    import sumolib
+
+    cfg = ALL_SCENARIOS[sc]
+    names = arms(sc, 'C')
+    net_file = cfg['cfg'].replace('.sumocfg', '.net.xml')
+    tmp = tempfile.mkdtemp(prefix='coverage_')
+    reach = {f'{a}2C': reach_m for a in bn.MAIN_ARMS} if sc == 'lusaka' else {f'{a}2C': reach_m for a in names}
+    bn.write_detectors(sumolib.net.readNet(net_file), tmp, [[f'{a}2C'] for a in names], reach=reach)
+    det_file = os.path.join(tmp, 'det.add.xml')
+    edges = [e for a in cfg['intersections']['C']['approaches'].values() for e in a['edges']]
+    det_q = edge_q = 0.0
+    for seed in SAMPLE_SEEDS:
+        traci.start([sumolib.checkBinary('sumo'), '-c', cfg['cfg'], '-a', det_file, '--seed', str(seed),
+                     '--step-length', '1', '--time-to-teleport', '-1', '--no-warnings', '--no-step-log'])
+        dets = traci.lanearea.getIDList()
+        for _ in range(1200):
+            traci.simulationStep()
+            det_q += sum(traci.lanearea.getLastStepHaltingNumber(d) for d in dets)
+            edge_q += sum(traci.edge.getLastStepHaltingNumber(e) for e in edges)
+        traci.close()
+    return float(det_q / max(1.0, edge_q))
+
+
 def load_json(name, default):
     path = os.path.join(OUT, name)
     if os.path.exists(path):
@@ -299,8 +380,12 @@ def main():
         for sc in NEW_SCENARIOS:
             s = explore_arms(rows, sc)
             config[sc] = modify_for(rows, sc, s)
+            explore_counts_and_lanes(rows, sc, s, config[sc])
             s['n_rows'] = sum(1 for r in rows if r['scenario'] == sc)
             summary[sc] = s
+        # The Lusaka detector decision, reproduced: coverage with the original 105 m
+        # detectors vs the 250 m detectors now used on Great East Road
+        summary['lusaka']['coverage_check'] = {f'{m}m': coverage_check('lusaka', m) for m in (105, 250)}
 
     with open(os.path.join(OUT, 'state_config.json'), 'w') as f:
         json.dump(config, f, indent=2)
