@@ -11,8 +11,9 @@ Exploration epsilon decays from 1.0 to 0.05 over the first 60% of episodes.
 Every VAL_EVERY episodes the greedy policy is scored on 3 validation seeds;
 the checkpoint with the lowest validation queue is kept as the final model.
 
-Seed ranges never overlap: training 0-599, validation 700-702,
-SEMMA sample 900-902, final evaluation 1000-1009.
+Every agent trains for the same 900 episodes. Seed ranges never overlap:
+training 0-899, SEMMA sample 900-902, final evaluation 1000-1009,
+validation 2000-2002.
 
 Outputs:
     results/logs/train_<agent>_<scenario>.csv   one row per training episode
@@ -38,7 +39,8 @@ from traffic_rl.scenarios import SCENARIOS
 REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 LOGS = os.path.join(REPO, 'results', 'logs')
 MODELS = os.path.join(REPO, 'results', 'models')
-VAL_SEEDS = [700, 701, 702]         # outside the training range (at most 600 episodes)
+VAL_SEEDS = [2000, 2001, 2002]      # outside training, SEMMA and evaluation seeds
+FIRST_RESERVED_SEED = 900           # SEMMA uses 900-902 and evaluation 1000-1009, so training stops at 899
 VAL_EVERY = 10
 EPS_END = 0.05
 
@@ -69,11 +71,12 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('--agent', choices=['q_learning', 'dqn', 'coordinated'], required=True)
     ap.add_argument('--scenario', choices=list(SCENARIOS), required=True)
-    ap.add_argument('--episodes', type=int, default=200)
+    ap.add_argument('--episodes', type=int, default=900)
     ap.add_argument('--seed', type=int, default=0)
     args = ap.parse_args()
-    if args.episodes > min(VAL_SEEDS):
-        sys.exit(f'Training seeds 0-{args.episodes - 1} would overlap the validation seeds {VAL_SEEDS}.')
+    if args.episodes > FIRST_RESERVED_SEED:
+        sys.exit(f'Training seeds 0-{args.episodes - 1} would reach seeds reserved for SEMMA, '
+                 f'evaluation or validation (from {FIRST_RESERVED_SEED}).')
     if args.agent == 'dqn' and len(SCENARIOS[args.scenario]['intersections']) != 1:
         sys.exit('The DQN controls one intersection; use a single-junction scenario.')
     if args.agent == 'coordinated' and len(SCENARIOS[args.scenario]['intersections']) < 2:
