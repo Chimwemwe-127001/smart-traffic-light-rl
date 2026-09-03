@@ -12,9 +12,9 @@ Held-out evaluation on 10 traffic seeds (1000-1009), never seen in training. Val
 | Actuated | 2.38 ± 0.12 | 4.16 ± 0.18 | 39.65 ± 0.19 | 657 ± 15 | n/a |
 | Random | 4.36 ± 0.53 | 7.67 ± 0.96 | 44.80 ± 1.39 | 653 ± 13 | 67 ± 2 |
 | Q-learning (untrained) | 9.80 ± 0.38 | 17.24 ± 0.46 | 54.13 ± 0.59 | 654 ± 14 | 19 ± 0 |
-| Q-learning (trained) | 2.03 ± 0.09 | 3.54 ± 0.11 | 39.05 ± 0.22 | 657 ± 14 | 74 ± 2 |
+| Q-learning (trained) | 1.94 ± 0.07 | 3.38 ± 0.11 | 38.90 ± 0.17 | 656 ± 14 | 78 ± 2 |
 | DQN (untrained) | 2.10 ± 0.09 | 3.68 ± 0.12 | 39.88 ± 0.27 | 657 ± 14 | 92 ± 0 |
-| DQN (trained) | 1.88 ± 0.08 | 3.28 ± 0.11 | 38.71 ± 0.23 | 656 ± 14 | 75 ± 2 |
+| DQN (trained) | 1.86 ± 0.08 | 3.24 ± 0.09 | 38.73 ± 0.19 | 657 ± 14 | 79 ± 1 |
 
 ## Corridor, 2 intersections, normal demand
 
@@ -24,9 +24,9 @@ Held-out evaluation on 10 traffic seeds (1000-1009), never seen in training. Val
 | Actuated | 1.70 ± 0.12 | 3.55 ± 0.20 | 67.28 ± 0.97 | 538 ± 12 | n/a |
 | Random | 3.85 ± 0.19 | 8.07 ± 0.35 | 73.28 ± 0.78 | 533 ± 12 | 134 ± 2 |
 | Independent QL (untrained) | 9.77 ± 0.28 | 20.56 ± 0.58 | 84.09 ± 1.32 | 532 ± 13 | 38 ± 0 |
-| Independent QL (trained) | 1.71 ± 0.07 | 3.57 ± 0.12 | 67.08 ± 0.88 | 538 ± 12 | 152 ± 3 |
+| Independent QL (trained) | 1.66 ± 0.06 | 3.46 ± 0.10 | 66.91 ± 0.92 | 537 ± 12 | 154 ± 2 |
 | Coordinated QL (untrained) | 9.77 ± 0.28 | 20.56 ± 0.58 | 84.09 ± 1.32 | 532 ± 13 | 38 ± 0 |
-| Coordinated QL (trained) | 2.33 ± 0.22 | 4.86 ± 0.42 | 68.64 ± 0.89 | 537 ± 13 | 132 ± 4 |
+| Coordinated QL (trained) | 2.05 ± 0.09 | 4.28 ± 0.17 | 68.14 ± 0.77 | 538 ± 12 | 138 ± 4 |
 
 ## Corridor, 2 intersections, heavy demand
 
@@ -36,9 +36,9 @@ Held-out evaluation on 10 traffic seeds (1000-1009), never seen in training. Val
 | Actuated | 3.30 ± 0.20 | 4.69 ± 0.26 | 71.03 ± 0.58 | 787 ± 9 | n/a |
 | Random | 7.12 ± 0.49 | 10.17 ± 0.69 | 78.75 ± 1.38 | 780 ± 11 | 134 ± 2 |
 | Independent QL (untrained) | 15.79 ± 0.37 | 22.61 ± 0.50 | 88.91 ± 0.95 | 779 ± 9 | 38 ± 0 |
-| Independent QL (trained) | 2.83 ± 0.14 | 4.03 ± 0.19 | 70.39 ± 0.50 | 789 ± 9 | 144 ± 3 |
+| Independent QL (trained) | 2.71 ± 0.09 | 3.86 ± 0.11 | 69.95 ± 0.55 | 787 ± 8 | 160 ± 2 |
 | Coordinated QL (untrained) | 15.79 ± 0.37 | 22.61 ± 0.50 | 88.91 ± 0.95 | 779 ± 9 | 38 ± 0 |
-| Coordinated QL (trained) | 3.50 ± 0.27 | 4.98 ± 0.36 | 71.49 ± 0.49 | 788 ± 8 | 139 ± 4 |
+| Coordinated QL (trained) | 3.32 ± 0.21 | 4.73 ± 0.28 | 71.24 ± 0.60 | 786 ± 8 | 146 ± 3 |
 
 ## Four-way junction, one lane each way, split phasing
 
@@ -49,9 +49,9 @@ Held-out evaluation on 10 traffic seeds (1000-1009), never seen in training. Val
 | Random | 83.89 ± 10.78 | 289 ± 28 | 79.30 ± 8.48 | 24.02 ± 2.65 | 317 ± 9 | 6 ± 5 | 81 ± 1 |
 | Longest queue first | 24.00 ± 4.47 | 159 ± 24 | 23.78 ± 4.45 | 7.43 ± 1.56 | 350 ± 5 | 0 ± 0 | 87 ± 1 |
 | Q-learning (untrained) | 311.50 ± 9.93 | 1175 ± 4 | 257.01 ± 5.86 | 48.79 ± 0.78 | 152 ± 5 | 141 ± 6 | 30 ± 0 |
-| Q-learning (trained) | 64.97 ± 12.44 | 268 ± 67 | 62.16 ± 9.71 | 18.52 ± 2.37 | 318 ± 16 | 9 ± 9 | 72 ± 2 |
+| Q-learning (trained) | 62.48 ± 6.24 | 301 ± 72 | 61.05 ± 5.96 | 18.55 ± 1.94 | 319 ± 10 | 6 ± 4 | 72 ± 3 |
 | DQN (untrained) | 348.32 ± 9.54 | 1173 ± 5 | 291.05 ± 6.60 | 55.93 ± 1.08 | 154 ± 4 | 138 ± 6 | 31 ± 0 |
-| DQN (trained) | 20.41 ± 1.56 | 156 ± 27 | 20.20 ± 1.55 | 6.27 ± 0.58 | 353 ± 7 | 0 ± 0 | 76 ± 1 |
+| DQN (trained) | 19.62 ± 2.00 | 137 ± 19 | 19.40 ± 1.98 | 6.03 ± 0.71 | 353 ± 8 | 0 ± 0 | 72 ± 1 |
 
 ## Lusaka: Great East Road / Lufubu Road, estimated morning peak
 
@@ -62,9 +62,9 @@ Held-out evaluation on 10 traffic seeds (1000-1009), never seen in training. Val
 | Random | 196.26 ± 13.30 | 545 ± 29 | 100.36 ± 5.98 | 66.57 ± 2.48 | 649 ± 21 | 302 ± 25 | 77 ± 1 |
 | Longest queue first | 67.68 ± 7.94 | 811 ± 71 | 42.16 ± 2.36 | 35.41 ± 1.90 | 942 ± 10 | 70 ± 11 | 37 ± 2 |
 | Q-learning (untrained) | 95.66 ± 6.81 | 1177 ± 5 | 49.36 ± 1.50 | 39.53 ± 1.02 | 898 ± 15 | 122 ± 8 | 30 ± 0 |
-| Q-learning (trained) | 58.85 ± 7.70 | 287 ± 29 | 38.95 ± 4.21 | 32.88 ± 3.57 | 918 ± 18 | 69 ± 9 | 52 ± 2 |
+| Q-learning (trained) | 45.59 ± 6.76 | 292 ± 27 | 31.30 ± 1.73 | 26.94 ± 1.51 | 946 ± 10 | 44 ± 13 | 53 ± 1 |
 | DQN (untrained) | 537.72 ± 5.06 | 1178 ± 1 | 628.79 ± 4.99 | 159.71 ± 1.60 | 107 ± 3 | 798 ± 12 | 31 ± 0 |
-| DQN (trained) | 23.92 ± 5.34 | 149 ± 20 | 17.20 ± 0.91 | 14.99 ± 0.79 | 1000 ± 27 | 21 ± 16 | 62 ± 2 |
+| DQN (trained) | 32.31 ± 5.65 | 176 ± 30 | 19.19 ± 1.35 | 16.58 ± 1.19 | 978 ± 30 | 32 ± 20 | 63 ± 4 |
 
 ## Before vs after training
 
@@ -72,16 +72,16 @@ v1 scenarios use average wait; the new junctions use average delay.
 
 | Scenario | Learner | Wait or delay before (s) | After (s) | Change | Queue before | Queue after | Change |
 |---|---|---|---|---|---|---|---|
-| single | Q-learning | 17.2 | 3.5 | -79% | 9.80 | 2.03 | -79% |
-| single | DQN | 3.7 | 3.3 | -11% | 2.10 | 1.88 | -11% |
-| corridor | Independent QL | 20.6 | 3.6 | -83% | 9.77 | 1.71 | -83% |
-| corridor | Coordinated QL | 20.6 | 4.9 | -76% | 9.77 | 2.33 | -76% |
-| corridor_heavy | Independent QL | 22.6 | 4.0 | -82% | 15.79 | 2.83 | -82% |
-| corridor_heavy | Coordinated QL | 22.6 | 5.0 | -78% | 15.79 | 3.50 | -78% |
-| four_way | Q-learning | 311.5 | 65.0 | -79% | 48.79 | 18.52 | -62% |
-| four_way | DQN | 348.3 | 20.4 | -94% | 55.93 | 6.27 | -89% |
-| lusaka | Q-learning | 95.7 | 58.9 | -38% | 39.53 | 32.88 | -17% |
-| lusaka | DQN | 537.7 | 23.9 | -96% | 159.71 | 14.99 | -91% |
+| single | Q-learning | 17.2 | 3.4 | -80% | 9.80 | 1.94 | -80% |
+| single | DQN | 3.7 | 3.2 | -12% | 2.10 | 1.86 | -12% |
+| corridor | Independent QL | 20.6 | 3.5 | -83% | 9.77 | 1.66 | -83% |
+| corridor | Coordinated QL | 20.6 | 4.3 | -79% | 9.77 | 2.05 | -79% |
+| corridor_heavy | Independent QL | 22.6 | 3.9 | -83% | 15.79 | 2.71 | -83% |
+| corridor_heavy | Coordinated QL | 22.6 | 4.7 | -79% | 15.79 | 3.32 | -79% |
+| four_way | Q-learning | 311.5 | 62.5 | -80% | 48.79 | 18.55 | -62% |
+| four_way | DQN | 348.3 | 19.6 | -94% | 55.93 | 6.03 | -89% |
+| lusaka | Q-learning | 95.7 | 45.6 | -52% | 39.53 | 26.94 | -32% |
+| lusaka | DQN | 537.7 | 32.3 | -94% | 159.71 | 16.58 | -90% |
 
 ## Trained learners vs Actuated control
 
@@ -89,16 +89,16 @@ Paired difference per seed (learner minus Actuated), mean and 95% bootstrap CI. 
 
 | Scenario | Learner | Wait (s) | Delay (s) | Worst delay (s) | Travel time (s) | Queue (veh) |
 |---|---|---|---|---|---|---|
-| single | Q-learning | -0.62 [-0.81, -0.45] better | -0.63 [-0.82, -0.46] better | -5.30 [-14.60, +4.60] tie | -0.60 [-0.75, -0.46] better | -0.35 [-0.46, -0.25] better |
-| single | DQN | -0.89 [-1.02, -0.75] better | -0.88 [-1.02, -0.75] better | -14.70 [-20.30, -9.30] better | -0.94 [-1.08, -0.81] better | -0.50 [-0.58, -0.42] better |
-| corridor | Independent QL | +0.02 [-0.23, +0.24] tie | +0.01 [-0.24, +0.24] tie | +11.70 [+6.00, +17.90] worse | -0.20 [-0.70, +0.23] tie | +0.00 [-0.12, +0.11] tie |
-| corridor | Coordinated QL | +1.30 [+0.91, +1.78] worse | +1.31 [+0.91, +1.79] worse | +27.30 [+21.30, +33.00] worse | +1.37 [+0.83, +2.05] worse | +0.62 [+0.43, +0.85] worse |
-| corridor_heavy | Independent QL | -0.66 [-1.06, -0.26] better | -0.66 [-1.06, -0.25] better | +1.00 [-7.50, +9.30] tie | -0.64 [-1.13, -0.10] better | -0.46 [-0.74, -0.18] better |
-| corridor_heavy | Coordinated QL | +0.29 [-0.05, +0.66] tie | +0.30 [-0.04, +0.67] tie | +8.40 [+2.20, +15.40] worse | +0.46 [-0.07, +1.00] tie | +0.21 [-0.04, +0.46] tie |
-| four_way | Q-learning | +40.50 [+32.17, +51.67] worse | +43.09 [+32.45, +57.37] worse | +192.00 [+136.20, +265.70] worse | +45.92 [+36.74, +58.52] worse | +11.81 [+9.80, +14.55] worse |
-| four_way | DQN | -1.46 [-2.67, -0.07] better | -1.47 [-2.67, -0.07] better | +80.90 [+55.20, +110.50] worse | -1.20 [-2.65, +0.42] tie | -0.44 [-0.81, -0.01] better |
-| lusaka | Q-learning | -4.78 [-9.13, -0.19] better | -8.63 [-18.54, +1.03] tie | -109.80 [-155.00, -66.50] better | +5.55 [+0.56, +10.64] worse | -3.87 [-7.31, -0.22] better |
-| lusaka | DQN | -26.52 [-29.58, -23.06] better | -43.56 [-53.49, -33.77] better | -247.60 [-309.40, -185.70] better | -21.52 [-27.98, -14.54] better | -21.76 [-23.99, -19.07] better |
+| single | Q-learning | -0.78 [-0.97, -0.58] better | -0.77 [-0.97, -0.58] better | -5.40 [-15.50, +5.20] tie | -0.75 [-0.95, -0.54] better | -0.44 [-0.55, -0.33] better |
+| single | DQN | -0.92 [-1.12, -0.72] better | -0.93 [-1.13, -0.73] better | -12.30 [-17.80, -6.00] better | -0.92 [-1.16, -0.68] better | -0.52 [-0.63, -0.41] better |
+| corridor | Independent QL | -0.09 [-0.35, +0.12] tie | -0.09 [-0.35, +0.12] tie | +5.90 [+2.60, +9.10] worse | -0.36 [-0.84, +0.10] tie | -0.05 [-0.17, +0.06] tie |
+| corridor | Coordinated QL | +0.73 [+0.43, +0.94] worse | +0.72 [+0.43, +0.94] worse | +28.40 [+21.30, +34.50] worse | +0.87 [+0.44, +1.23] worse | +0.34 [+0.21, +0.44] worse |
+| corridor_heavy | Independent QL | -0.83 [-1.13, -0.52] better | -0.82 [-1.12, -0.51] better | -8.50 [-15.20, -3.50] better | -1.08 [-1.62, -0.50] better | -0.58 [-0.79, -0.36] better |
+| corridor_heavy | Coordinated QL | +0.04 [-0.27, +0.36] tie | +0.04 [-0.27, +0.37] tie | +7.00 [-0.50, +14.60] tie | +0.21 [-0.27, +0.71] tie | +0.03 [-0.19, +0.25] tie |
+| four_way | Q-learning | +39.38 [+34.19, +45.19] worse | +40.60 [+35.24, +46.72] worse | +225.40 [+162.30, +299.40] worse | +46.26 [+40.72, +52.73] worse | +11.84 [+10.29, +13.72] worse |
+| four_way | DQN | -2.26 [-3.59, -0.66] better | -2.26 [-3.59, -0.65] better | +61.50 [+43.00, +82.10] worse | -2.43 [-3.94, -0.49] better | -0.68 [-1.10, -0.17] better |
+| lusaka | Q-learning | -12.42 [-15.29, -9.49] better | -21.89 [-26.31, -16.95] better | -104.50 [-152.00, -62.40] better | -5.79 [-9.37, -2.10] better | -9.81 [-11.97, -7.53] better |
+| lusaka | DQN | -24.53 [-27.72, -21.35] better | -35.17 [-42.57, -27.18] better | -220.50 [-294.30, -147.40] better | -15.16 [-20.18, -10.13] better | -20.17 [-22.59, -17.63] better |
 
 ## Trained learners vs longest queue first
 
@@ -106,10 +106,10 @@ Paired difference per seed (learner minus longest queue first), mean and 95% boo
 
 | Scenario | Learner | Wait (s) | Delay (s) | Worst delay (s) | Travel time (s) | Queue (veh) |
 |---|---|---|---|---|---|---|
-| four_way | Q-learning | +38.39 [+28.34, +50.82] worse | +40.97 [+28.91, +56.37] worse | +108.20 [+58.00, +180.20] worse | +42.17 [+30.65, +56.52] worse | +11.09 [+8.59, +14.19] worse |
-| four_way | DQN | -3.58 [-7.87, -0.32] better | -3.59 [-7.89, -0.33] better | -2.90 [-29.40, +22.90] tie | -4.96 [-10.42, -0.85] better | -1.15 [-2.56, -0.10] better |
-| lusaka | Q-learning | -3.21 [-7.80, +1.58] tie | -8.83 [-15.71, -2.66] better | -524.20 [-590.60, -464.70] better | +17.12 [+12.86, +21.36] worse | -2.53 [-6.11, +1.33] tie |
-| lusaka | DQN | -24.95 [-27.20, -23.05] better | -43.76 [-54.08, -34.16] better | -662.00 [-749.10, -582.00] better | -9.96 [-15.70, -4.21] better | -20.42 [-22.04, -19.02] better |
+| four_way | Q-learning | +37.27 [+33.12, +41.50] worse | +38.48 [+34.29, +42.96] worse | +141.60 [+75.00, +213.80] worse | +42.51 [+38.50, +46.72] worse | +11.12 [+9.98, +12.23] worse |
+| four_way | DQN | -4.38 [-7.86, -1.67] better | -4.38 [-7.88, -1.68] better | -22.30 [-45.90, -1.10] better | -6.18 [-10.68, -2.74] better | -1.39 [-2.55, -0.50] better |
+| lusaka | Q-learning | -10.85 [-12.70, -9.14] better | -22.09 [-27.75, -16.76] better | -518.90 [-604.80, -445.10] better | +5.78 [+3.81, +7.67] worse | -8.47 [-9.72, -7.29] better |
+| lusaka | DQN | -22.96 [-25.31, -20.83] better | -35.37 [-44.79, -27.25] better | -634.90 [-719.20, -551.40] better | -3.60 [-8.25, +1.03] tie | -18.84 [-20.65, -17.08] better |
 
 ## Fairness on the new junctions
 
@@ -124,9 +124,9 @@ Worst single-vehicle delay (mean ± CI half-width over seeds) and average delay 
 | Random | 289 ± 28 | 133.8 | 65.4 | 69.4 | 62.9 |
 | Longest queue first | 159 ± 24 | 19.7 | 21.4 | 29.4 | 27.1 |
 | Q-learning (untrained) | 1175 ± 4 | 1.3 | 116.0 | 681.9 | 523.0 |
-| Q-learning (trained) | 268 ± 67 | 46.6 | 62.8 | 42.3 | 103.5 |
+| Q-learning (trained) | 301 ± 72 | 37.5 | 59.4 | 89.6 | 67.2 |
 | DQN (untrained) | 1173 ± 5 | 293.6 | 453.8 | 681.9 | 1.4 |
-| DQN (trained) | 156 ± 27 | 19.2 | 25.7 | 19.7 | 16.9 |
+| DQN (trained) | 137 ± 19 | 15.8 | 18.7 | 22.5 | 22.2 |
 
 ### Lusaka: Great East Road / Lufubu Road, estimated morning peak
 
@@ -137,9 +137,9 @@ Worst single-vehicle delay (mean ± CI half-width over seeds) and average delay 
 | Random | 545 ± 29 | 140.9 | 283.6 | 34.3 | 22.7 |
 | Longest queue first | 811 ± 71 | 5.1 | 10.8 | 410.9 | 384.4 |
 | Q-learning (untrained) | 1177 ± 5 | 4.3 | 6.2 | 585.7 | 626.8 |
-| Q-learning (trained) | 287 ± 29 | 15.7 | 81.5 | 95.5 | 57.3 |
+| Q-learning (trained) | 292 ± 27 | 10.3 | 64.7 | 85.4 | 30.1 |
 | DQN (untrained) | 1178 ± 1 | 597.6 | 600.5 | 219.5 | 138.4 |
-| DQN (trained) | 149 ± 20 | 8.8 | 30.8 | 42.0 | 22.9 |
+| DQN (trained) | 176 ± 30 | 10.9 | 46.3 | 40.6 | 21.6 |
 
 ## Lusaka demand sweep
 
@@ -150,125 +150,125 @@ The peak volumes are estimates, so every controller is also tested at 75% and 12
 | x0.75 | Fixed-time | 26.1 | 164 | 25.8 | 766 | 0 |
 | x0.75 | Actuated | 15.2 | 97 | 15.1 | 792 | 0 |
 | x0.75 | Longest queue first | 14.4 | 200 | 14.2 | 794 | 0 |
-| x0.75 | Q-learning (trained) | 26.9 | 242 | 25.3 | 771 | 2 |
-| x0.75 | DQN (trained) | 7.5 | 91 | 7.4 | 799 | 0 |
+| x0.75 | Q-learning (trained) | 15.8 | 220 | 15.2 | 785 | 2 |
+| x0.75 | DQN (trained) | 8.6 | 116 | 8.5 | 795 | 0 |
 | x1.00 | Fixed-time | 87.0 | 412 | 51.3 | 877 | 104 |
 | x1.00 | Actuated | 67.5 | 397 | 43.7 | 922 | 72 |
 | x1.00 | Longest queue first | 67.7 | 811 | 42.2 | 942 | 70 |
-| x1.00 | Q-learning (trained) | 58.9 | 287 | 38.9 | 918 | 69 |
-| x1.00 | DQN (trained) | 23.9 | 149 | 17.2 | 1000 | 21 |
+| x1.00 | Q-learning (trained) | 45.6 | 292 | 31.3 | 946 | 44 |
+| x1.00 | DQN (trained) | 32.3 | 176 | 19.2 | 978 | 32 |
 | x1.25 | Fixed-time | 148.0 | 531 | 70.0 | 938 | 261 |
 | x1.25 | Actuated | 148.8 | 613 | 70.8 | 947 | 277 |
 | x1.25 | Longest queue first | 126.2 | 1164 | 58.5 | 1013 | 231 |
-| x1.25 | Q-learning (trained) | 141.5 | 496 | 61.8 | 919 | 292 |
-| x1.25 | DQN (trained) | 86.8 | 391 | 32.3 | 1026 | 189 |
+| x1.25 | Q-learning (trained) | 115.1 | 442 | 50.4 | 979 | 234 |
+| x1.25 | DQN (trained) | 84.6 | 336 | 25.7 | 1036 | 197 |
 
 ## Q-value probes
 
 | Agent | Probe | Right answer | Agent chose | Q-values | Correct |
 |---|---|---|---|---|---|
-| Q-learning (single) | SB busy, EB empty, EB has green | switch | switch | -15.62, -15.19 | yes |
-| Q-learning (single) | EB busy, SB empty, SB has green | switch | switch | -15.19, -14.49 | yes |
+| Q-learning (single) | SB busy, EB empty, EB has green | switch | switch | -29.00, -21.57 | yes |
+| Q-learning (single) | EB busy, SB empty, SB has green | switch | switch | -26.71, -21.40 | yes |
 | Q-learning (single) | EB busy, SB empty, EB has green | keep | keep | 0.00, 0.00 | no (state never visited) |
 | Q-learning (single) | SB busy, EB empty, SB has green | keep | keep | 0.00, 0.00 | no (state never visited) |
-| DQN (single) | SB busy, EB empty, EB has green | switch | switch | -1.96, -1.34 | yes |
-| DQN (single) | EB busy, SB empty, SB has green | switch | switch | -1.97, -1.29 | yes |
-| DQN (single) | EB busy, SB empty, EB has green | keep | keep | -1.00, -1.71 | yes |
-| DQN (single) | SB busy, EB empty, SB has green | keep | keep | -0.91, -1.74 | yes |
-| Q-learning (four_way) | N busy, others empty, E has green | serve N | serve E | -0.98, 0.00, 0.00, 0.00 | no |
+| DQN (single) | SB busy, EB empty, EB has green | switch | switch | -1.99, -1.33 | yes |
+| DQN (single) | EB busy, SB empty, SB has green | switch | switch | -2.00, -1.29 | yes |
+| DQN (single) | EB busy, SB empty, EB has green | keep | keep | -1.04, -1.68 | yes |
+| DQN (single) | SB busy, EB empty, SB has green | keep | keep | -0.91, -1.55 | yes |
+| Q-learning (four_way) | N busy, others empty, E has green | serve N | serve N | 0.00, 0.00, 0.00, 0.00 | no (state never visited) |
 | Q-learning (four_way) | W busy, others empty, N has green | serve W | serve N | 0.00, 0.00, 0.00, 0.00 | no (state never visited) |
 | Q-learning (four_way) | E busy, others empty, E has green | serve E | serve N | 0.00, 0.00, 0.00, 0.00 | no (state never visited) |
 | Q-learning (four_way) | S busy, W light, S has green | serve S | serve N | 0.00, 0.00, 0.00, 0.00 | no (state never visited) |
-| DQN (four_way) | N busy, others empty, E has green | serve N | serve N | -1.95, -2.26, -2.47, -2.31 | yes |
-| DQN (four_way) | W busy, others empty, N has green | serve W | serve W | -2.43, -2.54, -2.62, -2.08 | yes |
-| DQN (four_way) | E busy, others empty, E has green | serve E | serve E | -2.22, -1.52, -2.35, -2.20 | yes |
-| DQN (four_way) | S busy, W light, S has green | serve S | serve S | -2.45, -2.68, -2.06, -2.55 | yes |
-| Q-learning (lusaka) | Main road busy, side roads empty, side roads have green | main road | side roads | -172.40, -174.06, -168.22 | no |
-| Q-learning (lusaka) | Side roads busy, main road light, main road has green | side roads | side roads | -3.05, -18.84, 0.00 | yes |
-| Q-learning (lusaka) | Main road busy, side roads empty, main road has green | main road | main road | -115.05, -117.50, -131.01 | yes |
-| DQN (lusaka) | Main road busy, side roads empty, side roads have green | main road | main road | -2.78, -3.20, -3.05 | yes |
-| DQN (lusaka) | Side roads busy, main road light, main road has green | side roads | side roads | -1.13, -1.27, -1.06 | yes |
-| DQN (lusaka) | Main road busy, side roads empty, main road has green | main road | main road | -2.40, -2.83, -2.87 | yes |
+| DQN (four_way) | N busy, others empty, E has green | serve N | serve N | -1.82, -2.96, -2.61, -2.65 | yes |
+| DQN (four_way) | W busy, others empty, N has green | serve W | serve W | -2.12, -2.39, -2.59, -1.92 | yes |
+| DQN (four_way) | E busy, others empty, E has green | serve E | serve E | -2.30, -1.65, -2.50, -2.44 | yes |
+| DQN (four_way) | S busy, W light, S has green | serve S | serve S | -2.64, -2.73, -1.85, -3.10 | yes |
+| Q-learning (lusaka) | Main road busy, side roads empty, side roads have green | main road | main road | -222.41, -243.47, -240.48 | yes |
+| Q-learning (lusaka) | Side roads busy, main road light, main road has green | side roads | main road | -3.53, -4.39, -6.51 | no |
+| Q-learning (lusaka) | Main road busy, side roads empty, main road has green | main road | main road | -144.52, -213.60, -226.31 | yes |
+| DQN (lusaka) | Main road busy, side roads empty, side roads have green | main road | main road | -2.88, -3.18, -3.09 | yes |
+| DQN (lusaka) | Side roads busy, main road light, main road has green | side roads | main road | -1.06, -1.25, -1.08 | no |
+| DQN (lusaka) | Main road busy, side roads empty, main road has green | main road | main road | -2.58, -2.86, -2.99 | yes |
 
 ## Rubric
 
 | Criterion | Measure | Threshold | Result | Pass |
 |---|---|---|---|---|
-| Q-learning learned (single) | avg wait, trained minus untrained, 95% CI | CI below 0 | -13.7 s [-14.2, -13.3] | PASS |
+| Q-learning learned (single) | avg wait, trained minus untrained, 95% CI | CI below 0 | -13.9 s [-14.4, -13.4] | PASS |
 | DQN learned (single) | avg wait, trained minus untrained, 95% CI | CI below 0 | -0.4 s [-0.5, -0.3] | PASS |
-| Independent QL learned (corridor) | avg wait, trained minus untrained, 95% CI | CI below 0 | -17.0 s [-17.6, -16.3] | PASS |
-| Coordinated QL learned (corridor) | avg wait, trained minus untrained, 95% CI | CI below 0 | -15.7 s [-16.5, -14.8] | PASS |
-| Independent QL learned (corridor_heavy) | avg wait, trained minus untrained, 95% CI | CI below 0 | -18.6 s [-19.0, -18.1] | PASS |
-| Coordinated QL learned (corridor_heavy) | avg wait, trained minus untrained, 95% CI | CI below 0 | -17.6 s [-18.2, -16.9] | PASS |
-| Q-learning learned (four_way) | avg delay, trained minus untrained, 95% CI | CI below 0 | -246.5 s [-261.5, -228.7] | PASS |
-| DQN learned (four_way) | avg delay, trained minus untrained, 95% CI | CI below 0 | -327.9 s [-336.7, -317.7] | PASS |
-| Q-learning learned (lusaka) | avg delay, trained minus untrained, 95% CI | CI below 0 | -36.8 s [-45.4, -28.1] | PASS |
-| DQN learned (lusaka) | avg delay, trained minus untrained, 95% CI | CI below 0 | -513.8 s [-519.9, -508.3] | PASS |
-| Q-learning beats Fixed-time (single) | avg wait, trained minus Fixed-time, 95% CI | CI below 0 | -8.5 s [-8.8, -8.3] | PASS |
-| Q-learning beats Random (single) | avg wait, trained minus Random, 95% CI | CI below 0 | -4.1 s [-5.2, -3.2] | PASS |
+| Independent QL learned (corridor) | avg wait, trained minus untrained, 95% CI | CI below 0 | -17.1 s [-17.7, -16.5] | PASS |
+| Coordinated QL learned (corridor) | avg wait, trained minus untrained, 95% CI | CI below 0 | -16.3 s [-16.9, -15.6] | PASS |
+| Independent QL learned (corridor_heavy) | avg wait, trained minus untrained, 95% CI | CI below 0 | -18.7 s [-19.2, -18.2] | PASS |
+| Coordinated QL learned (corridor_heavy) | avg wait, trained minus untrained, 95% CI | CI below 0 | -17.9 s [-18.5, -17.2] | PASS |
+| Q-learning learned (four_way) | avg delay, trained minus untrained, 95% CI | CI below 0 | -249.0 s [-260.1, -238.8] | PASS |
+| DQN learned (four_way) | avg delay, trained minus untrained, 95% CI | CI below 0 | -328.7 s [-337.6, -318.5] | PASS |
+| Q-learning learned (lusaka) | avg delay, trained minus untrained, 95% CI | CI below 0 | -50.1 s [-58.1, -43.5] | PASS |
+| DQN learned (lusaka) | avg delay, trained minus untrained, 95% CI | CI below 0 | -505.4 s [-510.8, -499.9] | PASS |
+| Q-learning beats Fixed-time (single) | avg wait, trained minus Fixed-time, 95% CI | CI below 0 | -8.7 s [-8.9, -8.5] | PASS |
+| Q-learning beats Random (single) | avg wait, trained minus Random, 95% CI | CI below 0 | -4.3 s [-5.3, -3.4] | PASS |
 | DQN beats Fixed-time (single) | avg wait, trained minus Fixed-time, 95% CI | CI below 0 | -8.8 s [-9.0, -8.6] | PASS |
-| DQN beats Random (single) | avg wait, trained minus Random, 95% CI | CI below 0 | -4.4 s [-5.5, -3.5] | PASS |
-| Independent QL beats Fixed-time (corridor) | avg wait, trained minus Fixed-time, 95% CI | CI below 0 | -12.5 s [-12.9, -12.2] | PASS |
-| Independent QL beats Random (corridor) | avg wait, trained minus Random, 95% CI | CI below 0 | -4.5 s [-4.9, -4.1] | PASS |
-| Coordinated QL beats Fixed-time (corridor) | avg wait, trained minus Fixed-time, 95% CI | CI below 0 | -11.2 s [-11.8, -10.7] | PASS |
-| Coordinated QL beats Random (corridor) | avg wait, trained minus Random, 95% CI | CI below 0 | -3.2 s [-3.7, -2.7] | PASS |
-| Independent QL beats Fixed-time (corridor_heavy) | avg wait, trained minus Fixed-time, 95% CI | CI below 0 | -15.0 s [-15.5, -14.5] | PASS |
-| Independent QL beats Random (corridor_heavy) | avg wait, trained minus Random, 95% CI | CI below 0 | -6.1 s [-6.8, -5.5] | PASS |
-| Coordinated QL beats Fixed-time (corridor_heavy) | avg wait, trained minus Fixed-time, 95% CI | CI below 0 | -14.1 s [-14.7, -13.4] | PASS |
-| Coordinated QL beats Random (corridor_heavy) | avg wait, trained minus Random, 95% CI | CI below 0 | -5.2 s [-5.8, -4.5] | PASS |
-| Q-learning beats Fixed-time (four_way) | avg delay, trained minus Fixed-time, 95% CI | CI below 0 | +8.7 s [-2.9, +23.6] | FAIL |
-| Q-learning beats Random (four_way) | avg delay, trained minus Random, 95% CI | CI below 0 | -18.9 s [-37.1, +1.6] | FAIL |
-| DQN beats Fixed-time (four_way) | avg delay, trained minus Fixed-time, 95% CI | CI below 0 | -35.9 s [-39.4, -32.6] | PASS |
-| DQN beats Random (four_way) | avg delay, trained minus Random, 95% CI | CI below 0 | -63.5 s [-74.0, -53.2] | PASS |
-| Q-learning beats Fixed-time (lusaka) | avg delay, trained minus Fixed-time, 95% CI | CI below 0 | -28.2 s [-38.1, -18.9] | PASS |
-| Q-learning beats Random (lusaka) | avg delay, trained minus Random, 95% CI | CI below 0 | -137.4 s [-152.9, -121.6] | PASS |
-| DQN beats Fixed-time (lusaka) | avg delay, trained minus Fixed-time, 95% CI | CI below 0 | -63.1 s [-72.9, -53.5] | PASS |
-| DQN beats Random (lusaka) | avg delay, trained minus Random, 95% CI | CI below 0 | -172.3 s [-183.0, -161.6] | PASS |
-| Q-learning competitive with Actuated (single) | avg wait vs Actuated, paired 95% CI | within +10% | -14.9% (-0.62 s [-0.81, -0.45]) | PASS |
-| DQN competitive with Actuated (single) | avg wait vs Actuated, paired 95% CI | within +10% | -21.3% (-0.89 s [-1.02, -0.75]) | PASS |
-| Independent QL competitive with Actuated (corridor) | avg wait vs Actuated, paired 95% CI | within +10% | +0.4% (+0.02 s [-0.23, +0.24]) | PASS |
-| Coordinated QL competitive with Actuated (corridor) | avg wait vs Actuated, paired 95% CI | within +10% | +36.7% (+1.30 s [+0.91, +1.78]) | FAIL |
-| Independent QL competitive with Actuated (corridor_heavy) | avg wait vs Actuated, paired 95% CI | within +10% | -14.1% (-0.66 s [-1.06, -0.26]) | PASS |
-| Coordinated QL competitive with Actuated (corridor_heavy) | avg wait vs Actuated, paired 95% CI | within +10% | +6.2% (+0.29 s [-0.05, +0.66]) | PASS |
-| Q-learning competitive with Actuated (four_way) | avg delay vs Actuated, paired 95% CI | within +10% | +196.9% (+43.09 s [+32.45, +57.37]) | FAIL |
-| DQN competitive with Actuated (four_way) | avg delay vs Actuated, paired 95% CI | within +10% | -6.7% (-1.47 s [-2.67, -0.07]) | PASS |
-| Q-learning competitive with Actuated (lusaka) | avg delay vs Actuated, paired 95% CI | within +10% | -12.8% (-8.63 s [-18.54, +1.03]) | PASS |
-| DQN competitive with Actuated (lusaka) | avg delay vs Actuated, paired 95% CI | within +10% | -64.5% (-43.56 s [-53.49, -33.77]) | PASS |
-| Q-learning beats longest queue first (four_way) | avg delay, trained minus LQF, 95% CI | CI below 0 | +41.0 s [+28.9, +56.4] | FAIL |
-| Q-learning starves no one (four_way) | worst single-vehicle delay vs Actuated | at most 1.25 x Actuated | 268 s vs 76 s | FAIL |
-| DQN beats longest queue first (four_way) | avg delay, trained minus LQF, 95% CI | CI below 0 | -3.6 s [-7.9, -0.3] | PASS |
-| DQN starves no one (four_way) | worst single-vehicle delay vs Actuated | at most 1.25 x Actuated | 156 s vs 76 s | FAIL |
-| Q-learning beats longest queue first (lusaka) | avg delay, trained minus LQF, 95% CI | CI below 0 | -8.8 s [-15.7, -2.7] | PASS |
-| Q-learning starves no one (lusaka) | worst single-vehicle delay vs Actuated | at most 1.25 x Actuated | 287 s vs 397 s | PASS |
-| DQN beats longest queue first (lusaka) | avg delay, trained minus LQF, 95% CI | CI below 0 | -43.8 s [-54.1, -34.2] | PASS |
-| DQN starves no one (lusaka) | worst single-vehicle delay vs Actuated | at most 1.25 x Actuated | 149 s vs 397 s | PASS |
+| DQN beats Random (single) | avg wait, trained minus Random, 95% CI | CI below 0 | -4.4 s [-5.5, -3.6] | PASS |
+| Independent QL beats Fixed-time (corridor) | avg wait, trained minus Fixed-time, 95% CI | CI below 0 | -12.6 s [-13.0, -12.3] | PASS |
+| Independent QL beats Random (corridor) | avg wait, trained minus Random, 95% CI | CI below 0 | -4.6 s [-5.0, -4.3] | PASS |
+| Coordinated QL beats Fixed-time (corridor) | avg wait, trained minus Fixed-time, 95% CI | CI below 0 | -11.8 s [-12.3, -11.4] | PASS |
+| Coordinated QL beats Random (corridor) | avg wait, trained minus Random, 95% CI | CI below 0 | -3.8 s [-4.2, -3.5] | PASS |
+| Independent QL beats Fixed-time (corridor_heavy) | avg wait, trained minus Fixed-time, 95% CI | CI below 0 | -15.2 s [-15.7, -14.7] | PASS |
+| Independent QL beats Random (corridor_heavy) | avg wait, trained minus Random, 95% CI | CI below 0 | -6.3 s [-7.0, -5.7] | PASS |
+| Coordinated QL beats Fixed-time (corridor_heavy) | avg wait, trained minus Fixed-time, 95% CI | CI below 0 | -14.3 s [-14.8, -13.7] | PASS |
+| Coordinated QL beats Random (corridor_heavy) | avg wait, trained minus Random, 95% CI | CI below 0 | -5.4 s [-6.1, -4.7] | PASS |
+| Q-learning beats Fixed-time (four_way) | avg delay, trained minus Fixed-time, 95% CI | CI below 0 | +6.2 s [-0.8, +12.8] | FAIL |
+| Q-learning beats Random (four_way) | avg delay, trained minus Random, 95% CI | CI below 0 | -21.4 s [-33.5, -10.5] | PASS |
+| DQN beats Fixed-time (four_way) | avg delay, trained minus Fixed-time, 95% CI | CI below 0 | -36.7 s [-40.1, -33.3] | PASS |
+| DQN beats Random (four_way) | avg delay, trained minus Random, 95% CI | CI below 0 | -64.3 s [-75.1, -53.8] | PASS |
+| Q-learning beats Fixed-time (lusaka) | avg delay, trained minus Fixed-time, 95% CI | CI below 0 | -41.4 s [-47.2, -36.7] | PASS |
+| Q-learning beats Random (lusaka) | avg delay, trained minus Random, 95% CI | CI below 0 | -150.7 s [-163.1, -137.1] | PASS |
+| DQN beats Fixed-time (lusaka) | avg delay, trained minus Fixed-time, 95% CI | CI below 0 | -54.7 s [-63.5, -46.4] | PASS |
+| DQN beats Random (lusaka) | avg delay, trained minus Random, 95% CI | CI below 0 | -163.9 s [-174.8, -152.6] | PASS |
+| Q-learning competitive with Actuated (single) | avg wait vs Actuated, paired 95% CI | within +10% | -18.7% (-0.78 s [-0.97, -0.58]) | PASS |
+| DQN competitive with Actuated (single) | avg wait vs Actuated, paired 95% CI | within +10% | -22.2% (-0.92 s [-1.12, -0.72]) | PASS |
+| Independent QL competitive with Actuated (corridor) | avg wait vs Actuated, paired 95% CI | within +10% | -2.7% (-0.09 s [-0.35, +0.12]) | PASS |
+| Coordinated QL competitive with Actuated (corridor) | avg wait vs Actuated, paired 95% CI | within +10% | +20.4% (+0.73 s [+0.43, +0.94]) | FAIL |
+| Independent QL competitive with Actuated (corridor_heavy) | avg wait vs Actuated, paired 95% CI | within +10% | -17.7% (-0.83 s [-1.13, -0.52]) | PASS |
+| Coordinated QL competitive with Actuated (corridor_heavy) | avg wait vs Actuated, paired 95% CI | within +10% | +0.8% (+0.04 s [-0.27, +0.36]) | PASS |
+| Q-learning competitive with Actuated (four_way) | avg delay vs Actuated, paired 95% CI | within +10% | +185.5% (+40.60 s [+35.24, +46.72]) | FAIL |
+| DQN competitive with Actuated (four_way) | avg delay vs Actuated, paired 95% CI | within +10% | -10.3% (-2.26 s [-3.59, -0.65]) | PASS |
+| Q-learning competitive with Actuated (lusaka) | avg delay vs Actuated, paired 95% CI | within +10% | -32.4% (-21.89 s [-26.31, -16.95]) | PASS |
+| DQN competitive with Actuated (lusaka) | avg delay vs Actuated, paired 95% CI | within +10% | -52.1% (-35.17 s [-42.57, -27.18]) | PASS |
+| Q-learning beats longest queue first (four_way) | avg delay, trained minus LQF, 95% CI | CI below 0 | +38.5 s [+34.3, +43.0] | FAIL |
+| Q-learning starves no one (four_way) | worst single-vehicle delay vs Actuated | at most 1.25 x Actuated | 301 s vs 76 s | FAIL |
+| DQN beats longest queue first (four_way) | avg delay, trained minus LQF, 95% CI | CI below 0 | -4.4 s [-7.9, -1.7] | PASS |
+| DQN starves no one (four_way) | worst single-vehicle delay vs Actuated | at most 1.25 x Actuated | 137 s vs 76 s | FAIL |
+| Q-learning beats longest queue first (lusaka) | avg delay, trained minus LQF, 95% CI | CI below 0 | -22.1 s [-27.7, -16.8] | PASS |
+| Q-learning starves no one (lusaka) | worst single-vehicle delay vs Actuated | at most 1.25 x Actuated | 292 s vs 397 s | PASS |
+| DQN beats longest queue first (lusaka) | avg delay, trained minus LQF, 95% CI | CI below 0 | -35.4 s [-44.8, -27.2] | PASS |
+| DQN starves no one (lusaka) | worst single-vehicle delay vs Actuated | at most 1.25 x Actuated | 176 s vs 397 s | PASS |
 | Q-learning (single) learned traffic logic | hand-made probe states answered correctly | 4 of 4 | 2 of 4 | FAIL |
 | DQN (single) learned traffic logic | hand-made probe states answered correctly | 4 of 4 | 4 of 4 | PASS |
 | Q-learning (four_way) learned traffic logic | hand-made probe states answered correctly | 4 of 4 | 0 of 4 | FAIL |
 | DQN (four_way) learned traffic logic | hand-made probe states answered correctly | 4 of 4 | 4 of 4 | PASS |
 | Q-learning (lusaka) learned traffic logic | hand-made probe states answered correctly | 3 of 3 | 2 of 3 | FAIL |
-| DQN (lusaka) learned traffic logic | hand-made probe states answered correctly | 3 of 3 | 3 of 3 | PASS |
-| Stable learning (q_learning_single) | TD loss, last 20 vs first 20 episodes | last <= 1.5 x first | 15.9515 -> 6.5494 | PASS |
-| Stable learning (dqn_single) | TD loss, last 20 vs first 20 episodes | last <= 1.5 x first | 0.0105 -> 0.0028 | PASS |
-| Stable learning (q_learning_corridor) | TD loss, last 20 vs first 20 episodes | last <= 1.5 x first | 6.9869 -> 1.5696 | PASS |
-| Stable learning (coordinated_corridor) | TD loss, last 20 vs first 20 episodes | last <= 1.5 x first | 17.0528 -> 9.7061 | PASS |
-| Stable learning (q_learning_corridor_heavy) | TD loss, last 20 vs first 20 episodes | last <= 1.5 x first | 19.8541 -> 3.2506 | PASS |
-| Stable learning (coordinated_corridor_heavy) | TD loss, last 20 vs first 20 episodes | last <= 1.5 x first | 55.5973 -> 27.2427 | PASS |
-| Stable learning (q_learning_four_way) | TD loss, last 20 vs first 20 episodes | last <= 1.5 x first | 498.6345 -> 303.0955 | PASS |
-| Stable learning (dqn_four_way) | TD loss, last 20 vs first 20 episodes | last <= 1.5 x first | 0.0302 -> 0.0234 | PASS |
-| Stable learning (q_learning_lusaka) | TD loss, last 20 vs first 20 episodes | last <= 1.5 x first | 7140.0877 -> 4002.1459 | PASS |
-| Stable learning (dqn_lusaka) | TD loss, last 20 vs first 20 episodes | last <= 1.5 x first | 0.0299 -> 0.0097 | PASS |
-| Coordination helps (corridor) | avg wait, coordinated minus independent, 95% CI | CI below 0 | +1.3 s [+0.9, +1.8] | FAIL |
-| Coordination helps (corridor_heavy) | avg wait, coordinated minus independent, 95% CI | CI below 0 | +1.0 s [+0.5, +1.4] | FAIL |
-| Q-learning serves all demand (single) | vehicles completed vs Fixed-time | at least 98% | 101.1% | PASS |
-| DQN serves all demand (single) | vehicles completed vs Fixed-time | at least 98% | 100.9% | PASS |
-| Independent QL serves all demand (corridor) | vehicles completed vs Fixed-time | at least 98% | 99.9% | PASS |
-| Coordinated QL serves all demand (corridor) | vehicles completed vs Fixed-time | at least 98% | 99.8% | PASS |
-| Independent QL serves all demand (corridor_heavy) | vehicles completed vs Fixed-time | at least 98% | 100.4% | PASS |
-| Coordinated QL serves all demand (corridor_heavy) | vehicles completed vs Fixed-time | at least 98% | 100.3% | PASS |
-| Q-learning serves all demand (four_way) | vehicles completed vs Fixed-time | at least 98% | 94.8% | FAIL |
+| DQN (lusaka) learned traffic logic | hand-made probe states answered correctly | 3 of 3 | 2 of 3 | FAIL |
+| Stable learning (q_learning_single) | TD loss, last 20 vs first 20 episodes | last <= 1.5 x first | 19.5377 -> 2.4301 | PASS |
+| Stable learning (dqn_single) | TD loss, last 20 vs first 20 episodes | last <= 1.5 x first | 0.0106 -> 0.0028 | PASS |
+| Stable learning (q_learning_corridor) | TD loss, last 20 vs first 20 episodes | last <= 1.5 x first | 7.9321 -> 1.2570 | PASS |
+| Stable learning (coordinated_corridor) | TD loss, last 20 vs first 20 episodes | last <= 1.5 x first | 18.7082 -> 7.6474 | PASS |
+| Stable learning (q_learning_corridor_heavy) | TD loss, last 20 vs first 20 episodes | last <= 1.5 x first | 24.0155 -> 3.0520 | PASS |
+| Stable learning (coordinated_corridor_heavy) | TD loss, last 20 vs first 20 episodes | last <= 1.5 x first | 62.9029 -> 23.0235 | PASS |
+| Stable learning (q_learning_four_way) | TD loss, last 20 vs first 20 episodes | last <= 1.5 x first | 501.2539 -> 315.8509 | PASS |
+| Stable learning (dqn_four_way) | TD loss, last 20 vs first 20 episodes | last <= 1.5 x first | 0.0303 -> 0.0186 | PASS |
+| Stable learning (q_learning_lusaka) | TD loss, last 20 vs first 20 episodes | last <= 1.5 x first | 7096.4709 -> 4013.1291 | PASS |
+| Stable learning (dqn_lusaka) | TD loss, last 20 vs first 20 episodes | last <= 1.5 x first | 0.0256 -> 0.0059 | PASS |
+| Coordination helps (corridor) | avg wait, coordinated minus independent, 95% CI | CI below 0 | +0.8 s [+0.7, +1.0] | FAIL |
+| Coordination helps (corridor_heavy) | avg wait, coordinated minus independent, 95% CI | CI below 0 | +0.9 s [+0.6, +1.1] | FAIL |
+| Q-learning serves all demand (single) | vehicles completed vs Fixed-time | at least 98% | 100.9% | PASS |
+| DQN serves all demand (single) | vehicles completed vs Fixed-time | at least 98% | 101.1% | PASS |
+| Independent QL serves all demand (corridor) | vehicles completed vs Fixed-time | at least 98% | 99.8% | PASS |
+| Coordinated QL serves all demand (corridor) | vehicles completed vs Fixed-time | at least 98% | 99.9% | PASS |
+| Independent QL serves all demand (corridor_heavy) | vehicles completed vs Fixed-time | at least 98% | 100.1% | PASS |
+| Coordinated QL serves all demand (corridor_heavy) | vehicles completed vs Fixed-time | at least 98% | 100.0% | PASS |
+| Q-learning serves all demand (four_way) | vehicles completed vs Fixed-time | at least 98% | 95.3% | FAIL |
 | DQN serves all demand (four_way) | vehicles completed vs Fixed-time | at least 98% | 105.4% | PASS |
-| Q-learning serves all demand (lusaka) | vehicles completed vs Fixed-time | at least 98% | 104.7% | PASS |
-| DQN serves all demand (lusaka) | vehicles completed vs Fixed-time | at least 98% | 114.0% | PASS |
+| Q-learning serves all demand (lusaka) | vehicles completed vs Fixed-time | at least 98% | 107.8% | PASS |
+| DQN serves all demand (lusaka) | vehicles completed vs Fixed-time | at least 98% | 111.5% | PASS |
 
 **63 of 76 rubric checks pass.**
