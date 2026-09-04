@@ -177,9 +177,9 @@ needs junctions that cooperate.
 
 ## 9. Evaluation
 
-- **Held-out seeds**: training uses seeds 0-199 (single) or 0-599 (corridor),
-  validation 700-702, the SEMMA sample 900-902 and the final evaluation
-  1000-1009. The ranges never overlap. A result on traffic the agent trained
+- **Held-out seeds**: training uses seeds 0-899 (900 episodes for every
+  agent), the SEMMA sample 900-902, the final evaluation 1000-1009 and
+  validation 2000-2002. The ranges never overlap. A result on traffic the agent trained
   on proves nothing.
 - **Paired comparison**: every controller sees the same 10 seeds, so the
   difference per seed removes most traffic-to-traffic noise.
