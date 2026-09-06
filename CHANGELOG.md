@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.2.0 (2026-09-06)
+
+- Every agent on every scenario now trains for the same 900 episodes (before: 200, 300 or 600), so all curves and comparisons are like for like
+- Validation seeds moved to 2000-2002 to keep training (0-899), SEMMA (900-902), test (1000-1009) and validation disjoint; train.py refuses budgets above 900
+- All 10 agents retrained, all tables and figures regenerated; 63 of 76 rubric checks pass
+- More training helped almost everywhere (e.g. Lusaka Q-learning 58.9 to 45.6 s, coordination gap under 1 s), but the Lusaka DQN got worse on test traffic (23.9 to 32.3 s) while better on validation: reported, with more validation seeds as the next step
+
 ## 1.1.1 (2026-08-30)
 
 - SEMMA for the new junctions: count distributions against the bin edges, and lane correlation
