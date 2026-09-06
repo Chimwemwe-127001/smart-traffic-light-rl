@@ -10,13 +10,13 @@ Lusaka, Zambia, rebuilt from OpenStreetMap.
 
 | Scenario | Fixed-time | Best learner | Learner | vs Fixed-time | vs Actuated |
 |---|---|---|---|---|---|
-| Single intersection, shifting demand | 12.1 s | DQN | **3.3 s** | **-73%** | **-21%** |
-| Corridor, 2 intersections, normal demand | 16.1 s | Independent Q-learning | **3.6 s** | **-78%** | +0.4% (tie) |
-| Corridor, 2 intersections, heavy demand | 19.1 s | Independent Q-learning | **4.0 s** | **-79%** | **-14%** |
-| Four-way junction, one lane each way (Part 2) | 56.3 s | DQN | **20.4 s** | **-64%** | **-7%** |
-| Lusaka, Great East Rd / Lufubu Rd, morning peak (Part 2) | 87.0 s | DQN | **23.9 s** | **-73%** | **-65%** |
+| Single intersection, shifting demand | 12.1 s | DQN | **3.2 s** | **-73%** | **-22%** |
+| Corridor, 2 intersections, normal demand | 16.1 s | Independent Q-learning | **3.5 s** | **-78%** | -3% (tie) |
+| Corridor, 2 intersections, heavy demand | 19.1 s | Independent Q-learning | **3.9 s** | **-80%** | **-18%** |
+| Four-way junction, one lane each way (Part 2) | 56.3 s | DQN | **19.6 s** | **-65%** | **-10%** |
+| Lusaka, Great East Rd / Lufubu Rd, morning peak (Part 2) | 87.0 s | DQN | **32.3 s** | **-63%** | **-52%** |
 
-*Over 10 held-out traffic seeds. v1 rows: average waiting time per vehicle.
+*Every agent trained for the same 900 episodes; results over 10 held-out traffic seeds. v1 rows: average waiting time per vehicle.
 Part 2 rows: average delay per vehicle, which also counts time queued before
 entering the road (section 8). Differences in bold have a 95% bootstrap
 confidence interval that excludes zero. Full tables: [results/RESULTS.md](results/RESULTS.md).*
@@ -79,8 +79,8 @@ next to the real controller's before it is ever given control.
 ```mermaid
 flowchart LR
     A[Build networks<br/>and demand] --> B[SEMMA data study<br/>Sample, Explore, Modify]
-    B -->|bins and scales| C[Train agents<br/>seeds 0 to 599]
-    C -->|best checkpoint on<br/>validation seeds 700 to 702| D[Evaluate on held-out<br/>seeds 1000 to 1009]
+    B -->|bins and scales| C[Train agents<br/>900 episodes, seeds 0 to 899]
+    C -->|best checkpoint on<br/>validation seeds 2000 to 2002| D[Evaluate on held-out<br/>seeds 1000 to 1009]
     D --> E[Before vs after,<br/>head to head, probes]
     E --> F[Rubric<br/>pass or fail]
     B -.->|found detector bug| A
@@ -160,9 +160,9 @@ smart-traffic-light-rl/
 | `corridor_heavy` | same | EB 1400, SB 550 at each junction (veh/h) | 1200 s |
 
 Arrivals are random (a probability of a new car every second), so each seed
-is different traffic. The seed ranges never overlap: 0 to 199 (single) or
-0 to 599 (corridor) for training, 700 to 702 for validation, 900 to 902 for
-the SEMMA sample and 1000 to 1009 for the final test.
+is different traffic. The seed ranges never overlap: 0 to 899 for training,
+900 to 902 for the SEMMA sample, 1000 to 1009 for the final test and
+2000 to 2002 for validation.
 
 **The decision problem (a Markov Decision Process):**
 
@@ -220,9 +220,10 @@ finite differences.
   the cooperative reward shaping used in networked traffic control (Chu et
   al., 2019).
 
-**Training.** 200 episodes (single) or 600 episodes (corridor) of 20 simulated
-minutes each. Epsilon-greedy exploration decays from 1.0 to 0.05 over the first
-60% of episodes. Every 10 episodes the greedy policy is scored on 3 validation
+**Training.** Every agent, on every scenario, gets the same budget: 900
+episodes of 20 simulated minutes each, so all learning curves and comparisons
+are like for like. Epsilon-greedy exploration decays from 1.0 to 0.05 over the
+first 60% of episodes (540). Every 10 episodes the greedy policy is scored on 3 validation
 seeds, and the best checkpoint is kept.
 
 **Evaluation protocol.** Every controller runs on the same 10 held-out seeds.
@@ -243,28 +244,29 @@ travel time, which they never optimized directly.
 
 | Scenario | Learner | Wait before | Wait after | Change |
 |---|---|---|---|---|
-| Single | Q-learning | 17.2 s | 3.5 s | **-79%** |
-| Single | DQN | 3.7 s | 3.3 s | **-11%** |
-| Corridor | Independent QL | 20.6 s | 3.6 s | **-83%** |
-| Corridor | Coordinated QL | 20.6 s | 4.9 s | **-76%** |
-| Corridor heavy | Independent QL | 22.6 s | 4.0 s | **-82%** |
-| Corridor heavy | Coordinated QL | 22.6 s | 5.0 s | **-78%** |
+| Single | Q-learning | 17.2 s | 3.4 s | **-80%** |
+| Single | DQN | 3.7 s | 3.2 s | **-12%** |
+| Corridor | Independent QL | 20.6 s | 3.5 s | **-83%** |
+| Corridor | Coordinated QL | 20.6 s | 4.3 s | **-79%** |
+| Corridor heavy | Independent QL | 22.6 s | 3.9 s | **-83%** |
+| Corridor heavy | Coordinated QL | 22.6 s | 4.7 s | **-79%** |
 
 An untrained Q-table has all values at zero, so it always keeps the green
 until the 60 s maximum forces a switch. That is a slow fixed cycle, worse than
 the 42 s fixed-time plan. The untrained DQN starts from random weights, which
 happen to switch often, and that is already a decent policy at this demand.
-So its gain from training is smaller (-11%) but still significant (95% CI of
+So its gain from training is smaller (-12%) but still significant (95% CI of
 the paired difference: -0.5 to -0.3 s).
 
 ### Learning curves
 
 ![Learning curves](results/figures/learning_curves.png)
 
-Greedy policy on the validation seeds during training. All learners beat
-fixed-time within 10 episodes. The DQN is the smoothest learner: the network
-generalizes, so one bad episode does not flip whole regions of the policy the
-way it can in a table.
+Greedy policy on the validation seeds during training, all on the same
+0 to 900 episode axis. All learners beat fixed-time within 10 episodes. The DQN
+is the smoothest learner: the network generalizes, so one bad episode does not
+flip whole regions of the policy the way it can in a table. Coordinated agents
+keep closing the gap on independent ones until the end, but do not catch up.
 
 ### Head to head (held-out traffic)
 
@@ -275,19 +277,19 @@ way it can in a table.
 | Fixed-time | 12.1 s | 16.1 s | 19.1 s |
 | Random switching | 7.7 s | 8.1 s | 10.2 s |
 | Actuated (SUMO) | 4.2 s | 3.6 s | 4.7 s |
-| Q-learning / Independent QL | 3.5 s | 3.6 s | **4.0 s** |
-| DQN | **3.3 s** | | |
-| Coordinated QL | | 4.9 s | 5.0 s |
+| Q-learning / Independent QL | 3.4 s | **3.5 s** | **3.9 s** |
+| DQN | **3.2 s** | | |
+| Coordinated QL | | 4.3 s | 4.7 s |
 
 *Average waiting time per vehicle. Travel time and queue length give the same
-ranking, except that independent QL and actuated control are tied on every
-metric on the normal corridor. Paired confidence intervals for each learner
-against actuated control are in the
+ranking, except that independent QL and actuated control are tied on the
+normal corridor (-0.09 s, CI -0.35 to +0.12). Paired confidence intervals for
+each learner against actuated control are in the
 [vs Actuated table](results/RESULTS.md#trained-learners-vs-actuated-control).
 Every learner serves the full demand (99.8% to 101.1% of fixed-time throughput).*
 
 **DQN vs Q-learning.** On the single intersection the DQN is slightly better
-(3.3 vs 3.5 s) and much more robust. The Q-value probes below show why: the DQN
+(3.2 vs 3.4 s) and much more robust. The Q-value probes below show why: the DQN
 answers 4 of 4 hand-made traffic situations correctly. The Q-table gets the two
 "switch" cases right, but it never visited the two "keep" states during
 training and has no answer for them, because a table cannot generalize to
@@ -303,14 +305,14 @@ RL made concrete.
 
 **Independent vs coordinated.** This is the research question from the
 write-up, and the honest answer here is **no, coordination did not help**.
-Coordinated agents were 1.3 s (normal) and 1.0 s (heavy) slower than
+Coordinated agents were 0.8 s (normal) and 0.9 s (heavy) slower than
 independent ones (95% CI excludes zero). Under heavy demand they did at least
-match actuated control (+0.3 s, CI -0.05 to +0.66, a tie). We trained all four
-corridor agents for 600 episodes instead of 200 to test whether coordination
-simply needed more data. Both improved, but the gap stayed. The likely reasons:
+match actuated control (+0.04 s, CI -0.27 to +0.36, a tie). More training
+narrows the gap: in earlier runs with 200 and then 600 episodes it was
+1.0 to 1.7 s, and at 900 it is under 1 s. But it has not closed. The likely reasons:
 
 - *State explosion.* The neighbor information multiplies the table size by
-  about 10 (about 2,200 to 2,400 states vs 200 to 230, see the growth curve
+  about 10 (about 2,300 to 2,500 states vs 200 to 230, see the growth curve
   below). Each state is visited far less often, so its value estimate stays noisier.
 - *The neighbor signal is weak here.* The two signals are 285 m apart and
   platoons disperse on the way, so the neighbor's current phase says little
@@ -415,8 +417,8 @@ never "enter". A controller that starves an arm could therefore *lower* the
 average wait, simply by keeping cars out. So the Part 2 junctions are judged on
 **average delay**: time stopped plus time queued before entering, for every
 car, including those still outside at the end. Checkpoint selection during
-training uses the same metric. The v1 results are unchanged: the regression
-check reproduces them exactly.
+training uses the same metric. Adding it did not change any v1 result: a
+regression check reproduced them exactly before any agent was retrained.
 
 ### 8.5 Results
 
@@ -428,26 +430,36 @@ check reproduces them exactly.
 | Random | 83.9 s | 289 s | 196.3 s | 545 s | 649 |
 | Actuated | 21.9 s | **76 s** | 67.5 s | 397 s | 922 |
 | Longest queue first | 24.0 s | 159 s | 67.7 s | 811 s | 942 |
-| Q-learning | 65.0 s | 268 s | 58.9 s | 287 s | 918 |
-| **DQN** | **20.4 s** | 156 s | **23.9 s** | **149 s** | **1,000** |
+| Q-learning | 62.5 s | 301 s | 45.6 s | 292 s | 946 |
+| **DQN** | **19.6 s** | 137 s | **32.3 s** | **176 s** | **978** |
 
 *Mean over 10 held-out seeds. "Cars through" = vehicles that completed their trip in 20 minutes.*
 
-**Before vs after training** (average delay, same seeds): Q-learning 311.5 → 65.0 s (four-way) and 95.7 → 58.9 s (Lusaka); DQN 348.3 → 20.4 s and 537.7 → 23.9 s. Every learner improved, with a 95% CI that excludes zero.
+**Before vs after training** (average delay, same seeds): Q-learning 311.5 → 62.5 s (four-way) and 95.7 → 45.6 s (Lusaka); DQN 348.3 → 19.6 s and 537.7 → 32.3 s. Every learner improved, with a 95% CI that excludes zero.
 
 **What the numbers say:**
 
 - **The DQN is the best controller on both junctions.** It beats actuated
   control and longest-queue-first at both, with CIs that exclude zero. At
-  Lusaka it cuts average delay by 65% against actuated control
-  (-43.6 s, CI -53.5 to -33.8), gets 8% more cars through, and leaves the
-  fewest queued outside (21 vs 72). It also answers every hand-made logic probe
-  correctly on both junctions.
+  Lusaka it cuts average delay by 52% against actuated control
+  (-35.2 s, CI -42.6 to -27.2), gets 6% more cars through, and leaves the
+  fewest queued outside (32 vs 72).
+- **But the Lusaka DQN did not get better with more training.** With the
+  earlier 300-episode budget it reached 23.9 s on the same test seeds; with 900
+  it reaches 32.3 s. Its selected checkpoint scored 17.9 s on the 3 validation
+  seeds, so the gap to the 10 test seeds grew. More episodes means more
+  checkpoints to choose from, and a higher chance of picking one that suits the
+  validation traffic by luck. It also now answers 2 of 3 logic probes: when the
+  side roads are busy and the main road has green, it keeps the main road. The
+  fix is more validation seeds (5 to 10 instead of 3), a documented next step.
 - **Tabular Q-learning breaks down on four arms.** With a bin per arm, the
-  table has thousands of possible states, and 600 episodes cannot fill it. It
-  is statistically no better than fixed-time on the four-way. Three of its four
-  probe states were never visited, so it has no answer for them. This is the
-  "huge knowledge space" argument for deep Q-networks made concrete.
+  table grew to 3,263 states, and even 900 episodes cannot fill it. It is
+  statistically no better than fixed-time on the four-way (62.5 s vs 56.3 s,
+  CI of the difference -0.8 to +12.8 s). Three of its four probe states were
+  never visited, so it has no answer for them. This is the "huge knowledge
+  space" argument for deep Q-networks made concrete. At Lusaka, where the
+  state is smaller in practice, the extra training helped it a lot
+  (58.9 → 45.6 s).
 - **Fairness is where the story gets interesting.** The average hides the
   unlucky driver:
 
@@ -457,9 +469,9 @@ check reproduces them exactly.
     almost all the time. Lufubu Road cars are delayed 411 s on average, and the
     worst single delay is 811 s, about 13.5 minutes. A policy that looks fine on the average
     can be unacceptable to a whole neighbourhood.
-  - **At Lusaka, the DQN is also the fairest controller** (worst delay 149 s vs 397 s for actuated).
+  - **At Lusaka, the DQN is also the fairest controller** (worst delay 176 s vs 397 s for actuated).
   - **On the four-way, the DQN fails the fairness check.** Its per-arm averages
-    are balanced (17 to 26 s), but its worst single delay (156 s) is twice
+    are balanced (16 to 23 s), but its worst single delay (137 s) is 1.8 times
     actuated control's (76 s). Actuated control cycles regularly, which keeps
     the tail short. We report this as a trade-off, not a win.
 
@@ -467,16 +479,19 @@ check reproduces them exactly.
 
 ![Lusaka demand sweep](results/figures/lusaka_sweep.png)
 
-The DQN stays the best at every level: 7.5 s, 23.9 s and 86.8 s of average
+The DQN stays the best at every level: 8.6 s, 32.3 s and 84.6 s of average
 delay, against 15.2 s, 67.5 s and 148.8 s for actuated control. At 125% the
 junction is simply over capacity, and every controller leaves a large queue
 outside. So the ranking holds even though the exact volumes are uncertain.
 
 ![Learning curves on the new junctions](results/figures/learning_curves_v11.png)
 
-The learning curves show one more lesson. The Lusaka DQN peaks around episode
-180 and then drifts. Keeping the best checkpoint on separate validation traffic
-is what protects the final model.
+The learning curves show the same lesson from the other side. The Lusaka DQN
+is at its best between about episode 40 and 400, then drifts upward as
+training continues. Keeping the best checkpoint on separate validation traffic
+protects the final model from that drift, but only as well as the validation
+traffic represents the test traffic. The four-way DQN, by contrast, stays
+stable from about episode 300 to 900.
 
 ---
 
@@ -489,14 +504,14 @@ scenarios are judged on average wait, Part 2 junctions on average delay.
 |---|---|---|---|
 | Every learner learned (10 checks) | trained minus untrained, paired 95% CI | CI below 0 | **10 of 10 PASS** |
 | Beats fixed-time (10) | paired 95% CI | CI below 0 | 9 of 10 (Q-learning on the four-way: tie) |
-| Beats random switching (10) | paired 95% CI | CI below 0 | 9 of 10 (Q-learning on the four-way: tie) |
-| Competitive with actuated control (10) | vs actuated, paired 95% CI | within +10% | 8 of 10 (coordinated corridor +37%, Q-learning four-way +197%) |
+| Beats random switching (10) | paired 95% CI | CI below 0 | **10 of 10 PASS** |
+| Competitive with actuated control (10) | vs actuated, paired 95% CI | within +10% | 8 of 10 (coordinated corridor +20%, Q-learning four-way +186%) |
 | Beats longest queue first (4, Part 2) | paired 95% CI | CI below 0 | 3 of 4 (Q-learning on the four-way) |
 | Starves no one (4, Part 2) | worst single delay vs actuated | at most 1.25 x | 2 of 4 (both learners on the four-way) |
-| Learned traffic logic (6) | hand-made probe states | all correct | **DQN 3 of 3**; Q-learning 0 of 3 (2 of 4, 0 of 4 and 2 of 3 probes, mostly never-visited states) |
+| Learned traffic logic (6) | hand-made probe states | all correct | DQN 2 of 3 (Lusaka: 2 of 3 probes); Q-learning 0 of 3 (2 of 4, 0 of 4 and 2 of 3 probes, mostly never-visited states) |
 | Stable learning (10) | TD loss, last 20 vs first 20 episodes | last at most 1.5 x first | **10 of 10 PASS** (all fell) |
-| Coordination helps (2) | coordinated minus independent wait, 95% CI | CI below 0 | 0 of 2 (+1.3 s, +1.0 s) |
-| Serves all demand (10) | vehicles completed vs fixed-time | at least 98% | 9 of 10 (Q-learning on the four-way: 94.8%) |
+| Coordination helps (2) | coordinated minus independent wait, 95% CI | CI below 0 | 0 of 2 (+0.8 s, +0.9 s) |
+| Serves all demand (10) | vehicles completed vs fixed-time | at least 98% | 9 of 10 (Q-learning on the four-way: 95.3%) |
 
 Every row with the per-check numbers is in [results/RESULTS.md](results/RESULTS.md#rubric).
 
@@ -552,9 +567,13 @@ These dead ends are part of the result:
   the queue. Coverage is still 93%, but longer detectors may help there too.
 - **Simulated detectors.** Real cameras add noise, occlusion and delay; the
   agent should be trained with noisy counts before any field test.
-- **The DQN's worst-case delay** on the four-way is twice actuated control's.
-  A fairness term in the reward (e.g. penalising the longest wait) is the
-  obvious next experiment.
+- **The DQN's worst-case delay** on the four-way is 1.8 times actuated
+  control's. A fairness term in the reward (e.g. penalising the longest wait)
+  is the obvious next experiment.
+- **Only 3 validation seeds.** Checkpoint selection on 3 seeds picked a Lusaka
+  DQN that scored 17.9 s on validation but 32.3 s on the test seeds. Selecting
+  on 5 to 10 validation seeds, or averaging the last few checkpoints, should
+  close that gap.
 - **Coordination used tabular agents.** Next: one DQN per intersection with the
   neighbor features as extra inputs, on a stretch of Great East Road with
   several signals.
@@ -574,16 +593,16 @@ pip install -r requirements.txt
 ```bash
 python -m pytest tests                                              # unit tests, no SUMO needed
 python experiments/semma.py                                         # data study (about 2 min)
-python experiments/train.py --agent q_learning  --scenario single   --episodes 200
-python experiments/train.py --agent dqn         --scenario single   --episodes 200
-python experiments/train.py --agent q_learning  --scenario corridor --episodes 600
-python experiments/train.py --agent coordinated --scenario corridor --episodes 600
-python experiments/train.py --agent q_learning  --scenario corridor_heavy --episodes 600
-python experiments/train.py --agent coordinated --scenario corridor_heavy --episodes 600
-python experiments/train.py --agent q_learning  --scenario four_way --episodes 600
-python experiments/train.py --agent dqn         --scenario four_way --episodes 300
-python experiments/train.py --agent q_learning  --scenario lusaka   --episodes 600
-python experiments/train.py --agent dqn         --scenario lusaka   --episodes 300
+python experiments/train.py --agent q_learning  --scenario single           # 900 episodes by default
+python experiments/train.py --agent dqn         --scenario single
+python experiments/train.py --agent q_learning  --scenario corridor
+python experiments/train.py --agent coordinated --scenario corridor
+python experiments/train.py --agent q_learning  --scenario corridor_heavy
+python experiments/train.py --agent coordinated --scenario corridor_heavy
+python experiments/train.py --agent q_learning  --scenario four_way
+python experiments/train.py --agent dqn         --scenario four_way
+python experiments/train.py --agent q_learning  --scenario lusaka
+python experiments/train.py --agent dqn         --scenario lusaka
 python experiments/evaluate.py                                      # results/RESULTS.md
 python experiments/make_figures.py                                  # results/figures/
 ```
