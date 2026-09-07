@@ -65,28 +65,37 @@ def save(fig, name):
     print('saved', name)
 
 
-def validation_curves(summary):
-    """Greedy validation wait time over training, with the baselines as reference lines."""
-    fig, axes = plt.subplots(1, 3, figsize=(15, 4.2))
-    for ax, (sc, learners) in zip(axes, LEARNERS.items()):
-        for tag, label in learners:
-            rows = read_csv(os.path.join(LOGS, f'val_{tag}_{sc}.csv'))
-            ax.plot([int(r['episode']) for r in rows], [float(r['avg_wait_s']) for r in rows],
-                    '-o', ms=4, lw=2, color=COLORS[label], label=label)
-        for base in ('Fixed-time', 'Actuated'):
-            y = summary['summary'][sc][base]['avg_wait_s'][0]
-            ax.axhline(y, color=COLORS[base], lw=1.5, ls='--')
-            ax.annotate(base, (1.0, y), xycoords=('axes fraction', 'data'), xytext=(4, 0),
-                        textcoords='offset points', va='center', fontsize=9, color=MUTED)
-        plain_log_axis(ax)
-        ax.set_title(TITLES[sc], color=INK)
-        ax.set_xlabel('training episode')
-    axes[0].set_ylabel('avg waiting time per vehicle (s, log scale)')
-    for ax in axes:
-        ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.18), ncol=2)
-    fig.suptitle('Learning curves: greedy policy on validation traffic (episode 0 = untrained)', color=INK)
+def learning_curve(summary, sc, learners, baselines, metric):
+    """One scenario per figure: the greedy policy on validation traffic every 10
+    episodes, with the baselines' held-out test score as dashed reference lines."""
+    label = {'avg_wait_s': 'avg waiting time per vehicle', 'avg_delay_s': 'avg delay per vehicle'}[metric]
+    fig, ax = plt.subplots(figsize=(10, 4.8))
+    ys = []
+    for tag, name in learners:
+        rows = read_csv(os.path.join(LOGS, f'val_{tag}_{sc}.csv'))
+        y = [float(r[metric]) for r in rows]
+        ys += y
+        ax.plot([int(r['episode']) for r in rows], y, '-o', ms=3.5, lw=2, color=COLORS[name], label=name)
+    for base in baselines:            # in the legend, not on the lines: some sit close together
+        y = summary['summary'][sc][base][metric][0]
+        ys.append(y)
+        ax.axhline(y, color=COLORS[base], lw=1.5, ls='--', label=f'{base} (test)')
+    candidates = (2, 3, 4, 5, 6, 8, 10, 15, 20, 30, 40, 60, 80, 150, 300, 600)
+    plain_log_axis(ax, ticks=[t for t in candidates if min(ys) * 0.8 <= t <= max(ys) * 1.2])
+    ax.set_xlim(-15, 915)
+    ax.set_xlabel('training episode (episode 0 = before training)')
+    ax.set_ylabel(f'{label} (s, log scale)')
+    ax.set_title(f'Learning curve: {TITLES[sc]}', color=INK)
+    ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.16), ncol=len(learners) + len(baselines), fontsize=9)
     fig.tight_layout()
-    save(fig, 'learning_curves.png')
+    save(fig, f'learning_curve_{sc}.png')
+
+
+def learning_curves(summary):
+    for sc, learners in LEARNERS.items():
+        learning_curve(summary, sc, learners, ('Fixed-time', 'Actuated'), 'avg_wait_s')
+    for sc, learners in LEARNERS_V11.items():
+        learning_curve(summary, sc, learners, ('Fixed-time', 'Actuated', 'Longest queue first'), 'avg_delay_s')
 
 
 def before_after(summary):
@@ -169,26 +178,6 @@ def training_diagnostics():
 
 # ------------------------------------------------------ v1.1: four-way and Lusaka
 
-def validation_curves_v11(summary):
-    fig, axes = plt.subplots(1, 2, figsize=(13, 4.2))
-    for ax, (sc, learners) in zip(axes, LEARNERS_V11.items()):
-        for tag, label in learners:
-            rows = read_csv(os.path.join(LOGS, f'val_{tag}_{sc}.csv'))
-            ax.plot([int(r['episode']) for r in rows], [float(r['avg_wait_s']) for r in rows],
-                    '-o', ms=3, lw=2, color=COLORS[label], label=label)
-        for base in ('Fixed-time', 'Actuated', 'Longest queue first'):     # in the legend: the lines sit close
-            y = summary['summary'][sc][base]['avg_wait_s'][0]
-            ax.axhline(y, color=COLORS[base], lw=1.5, ls='--', label=f'{base} (test)')
-        plain_log_axis(ax, ticks=(5, 10, 20, 40, 80, 150, 300, 600))
-        ax.set_title(TITLES[sc], color=INK)
-        ax.set_xlabel('training episode')
-        ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.18), ncol=3, fontsize=9)
-    axes[0].set_ylabel('avg waiting time per vehicle (s, log scale)')
-    fig.suptitle('Learning curves on the new junctions: greedy policy on validation traffic', color=INK)
-    fig.tight_layout()
-    save(fig, 'learning_curves_v11.png')
-
-
 def bars_with_ci(ax, table, names, metric):
     means = [table[n][metric][0] for n in names]
     err = [[table[n][metric][0] - table[n][metric][1] for n in names],
@@ -248,11 +237,10 @@ def main():
     os.makedirs(FIG, exist_ok=True)
     with open(os.path.join(RESULTS, 'summary.json')) as f:
         summary = json.load(f)
-    validation_curves(summary)
+    learning_curves(summary)
     before_after(summary)
     head_to_head(summary)
     training_diagnostics()
-    validation_curves_v11(summary)
     head_to_head_v11(summary)
     fairness(summary)
     lusaka_sweep(summary)
