@@ -260,13 +260,24 @@ the paired difference: -0.5 to -0.3 s).
 
 ### Learning curves
 
-![Learning curves](results/figures/learning_curves.png)
+Each curve is the greedy policy scored on the validation seeds every 10
+episodes, all on the same 0 to 900 episode axis. The dashed lines are the
+baselines' scores on the held-out test seeds.
 
-Greedy policy on the validation seeds during training, all on the same
-0 to 900 episode axis. All learners beat fixed-time within 10 episodes. The DQN
-is the smoothest learner: the network generalizes, so one bad episode does not
-flip whole regions of the policy the way it can in a table. Coordinated agents
-keep closing the gap on independent ones until the end, but do not catch up.
+![Learning curve, single intersection](results/figures/learning_curve_single.png)
+
+On the single intersection both learners beat fixed-time within 10 episodes and
+actuated control soon after. The DQN is the smoother learner: the network
+generalizes, so one bad episode does not flip whole regions of the policy the
+way it can in a table.
+
+![Learning curve, corridor normal demand](results/figures/learning_curve_corridor.png)
+
+![Learning curve, corridor heavy demand](results/figures/learning_curve_corridor_heavy.png)
+
+On both corridors the independent learners settle around actuated control
+within about 300 episodes. The coordinated learners stay above them the whole
+way; they keep closing the gap until episode 900, but do not catch up.
 
 ### Head to head (held-out traffic)
 
@@ -484,14 +495,23 @@ delay, against 15.2 s, 67.5 s and 148.8 s for actuated control. At 125% the
 junction is simply over capacity, and every controller leaves a large queue
 outside. So the ranking holds even though the exact volumes are uncertain.
 
-![Learning curves on the new junctions](results/figures/learning_curves_v11.png)
+**Learning curves on the new junctions** (average delay on the validation seeds):
 
-The learning curves show the same lesson from the other side. The Lusaka DQN
-is at its best between about episode 40 and 400, then drifts upward as
-training continues. Keeping the best checkpoint on separate validation traffic
-protects the final model from that drift, but only as well as the validation
-traffic represents the test traffic. The four-way DQN, by contrast, stays
-stable from about episode 300 to 900.
+![Learning curve, four-way junction](results/figures/learning_curve_four_way.png)
+
+On the four-way the DQN drops below actuated control within about 50
+episodes and keeps creeping down to episode 900 (about 20 s to 16 s). Tabular
+Q-learning improves quickly at first, then hovers around fixed-time for the
+rest of training: its table is too big to fill.
+
+![Learning curve, Lusaka junction](results/figures/learning_curve_lusaka.png)
+
+At Lusaka the DQN is at its best around episodes 350 to 410 (about 17 to
+20 s), then drifts upward as training continues. Keeping the best checkpoint
+on separate validation traffic protects the final model from that drift, but
+only as well as 3 validation seeds represent the test traffic. Tabular
+Q-learning is noisy throughout. (The actuated and longest-queue-first lines
+overlap: 67.5 s and 67.7 s.)
 
 ---
 
