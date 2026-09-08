@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.2.1 (2026-09-08)
+
+- Learning curves split into one full-width figure per scenario (five figures instead of two crowded strips)
+- The four-way and Lusaka curves now plot average delay, the metric those junctions are judged and checkpointed on
+- README descriptions of the curves corrected against the clearer figures
+
 ## 1.2.0 (2026-09-06)
 
 - Every agent on every scenario now trains for the same 900 episodes (before: 200, 300 or 600), so all curves and comparisons are like for like
