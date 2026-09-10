@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.2.2 (2026-09-10)
+
+- Lusaka demand sources corrected: the 31,000 veh/day figure is from 2009 (quoted by Choongo 2020) and is daily traffic, not AADT; the peak factors K and D are marked as assumed, not taken from the Highway Capacity Manual
+- Every Lusaka input is now labelled measured, reported, derived or assumed, and the estimate is compared with a 2022 count (Ng'andu 2024)
+- `requirements.txt` pins SUMO 1.27.1 and the numpy and matplotlib versions the results were produced with
+- The v1 network files lose their netconvert build header, like the Part 2 networks (no result changes: the v1 evaluation reproduces exactly)
+- Setup notes: the tested Python version, and which tests need SUMO
+
 ## 1.2.1 (2026-09-08)
 
 - Learning curves split into one full-width figure per scenario (five figures instead of two crowded strips)
