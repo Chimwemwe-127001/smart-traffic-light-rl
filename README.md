@@ -377,20 +377,24 @@ that crosses oncoming traffic. A test checks every arm of both networks.
 | Signal program | Split phasing: one arm green at a time (common in Zambia) | 3 greens: main road both ways (right turns give way), protected main-road right turns, side roads |
 | Agent's action | Which arm to serve next (4 actions) | Which of the 3 greens to show next |
 | Fixed-time plan | 30 s green + 3 s yellow per arm | 40 s / 10 s / 20 s + 3 s yellows |
-| Demand | 60% straight, 20% left, 20% right; N-S heavy, then balanced, then E-W heavy | Morning peak, see the assumptions below |
+| Demand | 60% straight, 20% left, 20% right; N-S heavy, then balanced, then E-W heavy | Morning peak, see the sources below |
 | Built by | `networks/build_networks.py four_way` | `networks/build_networks.py lusaka` |
 
-**Demand assumptions for Lusaka.** No public turning counts exist for this junction, so the demand is estimated from published numbers and standard planning factors, and then tested at ±25%:
+**Where the Lusaka demand comes from.** No public turning counts exist for this junction. The demand is built from one old published daily volume and assumed planning factors, and then tested at ±25%. Each row says whether it is measured, reported or assumed:
 
-| Quantity | Value | Source |
-|---|---|---|
-| Great East Road daily traffic (AADT) | about 31,000 veh/day | UNZA study of the Great East Road |
-| Peak-hour share K | 0.09 | Typical urban value (Highway Capacity Manual) |
-| Direction split D | 0.6 towards the city (westbound) | Typical morning-peak value (Highway Capacity Manual) |
-| Great East Road peak volumes | 1,674 veh/h westbound, 1,116 eastbound | AADT × K × D |
-| Lufubu Road and mall access | 300 and 200 veh/h | Assumption |
-| Turning shares | Main road 85% straight, 8% left, 7% right; side roads mostly turning | Assumption |
-| Sensitivity | every controller re-tested at ×0.75 and ×1.25 | Section 8.5 |
+| Quantity | Value | Status | Source |
+|---|---|---|---|
+| Geometry, lanes, speed limits | as mapped | Measured | OpenStreetMap extract, committed in `networks/lusaka/` |
+| Great East Road daily traffic | about 31,000 veh/day, **in 2009** | Reported | Choongo (2020), UNZA; counting place and method not stated |
+| Peak-hour share K | 0.09 | Assumed | A common planning value, not measured in Lusaka |
+| Direction split D | 0.6 towards the city (westbound) | Assumed | The value is assumed; the direction follows the westbound morning peak quoted by Ng'andu (2024) |
+| Great East Road peak volumes | 1,674 veh/h westbound, 1,116 eastbound | Derived | 31,000 × K × D |
+| Lufubu Road and mall access | 300 and 200 veh/h | Assumed | No source |
+| Turning shares | Main road 85% straight, 8% left, 7% right; side roads mostly turning | Assumed | No source |
+| Fixed-time plan before 2021 | 40 s / 10 s / 20 s | Assumed | No source |
+| Sensitivity | every controller re-tested at ×0.75 and ×1.25 | | Section 8.5 |
+
+**A check against a recent count.** Ng'andu (2024) counted 1,545 veh/h on Great East Road from video on a weekday between 07:00 and 08:00 in 2022, near Bwinjimfumu bus stop, not at this junction. The study does not say whether the count covers one direction or both. If it is one direction, our westbound 1,674 veh/h is 8% higher. If it is both, our two-way 2,790 veh/h is 80% higher, and even the ×0.75 sweep (2,093 veh/h) stays above it. The same study quotes Lusaka City Council peak periods of 07:30 to 08:30 westbound and 15:30 to 18:30 eastbound. The Lusaka results therefore compare controllers on the real geometry under a plausible but possibly high peak. They are not predictions of real delays at this junction.
 
 ### 8.3 Data study (SEMMA) on the new junctions
 
@@ -575,10 +579,11 @@ These dead ends are part of the result:
 
 ## 11. Limitations and next steps
 
-- **Lusaka demand is estimated**, not counted: published daily volume, standard
-  peak factors and assumed side-road volumes and turning shares. The ×0.75 /
-  ×1.25 sweep shows the ranking holds, but real turning counts from the
-  Council or a video survey are the most valuable next step.
+- **Lusaka demand is estimated**, not counted: a daily volume from 2009,
+  assumed peak factors, and assumed side-road volumes and turning shares. It
+  may be high compared with a 2022 count (section 8.2). The ×0.75 / ×1.25
+  sweep shows the ranking holds, but real turning counts from the Council or a
+  video survey are the most valuable next step.
 - **Only the junction itself is modelled**: 300 m arms, with no neighbouring
   junctions, minibus stops, informal parking or pedestrians. Each affects real
   capacity on Great East Road.
@@ -602,7 +607,9 @@ These dead ends are part of the result:
 
 ## 12. Reproduce
 
-Python 3.10 or newer. SUMO installs through pip; no separate install is needed.
+Tested with Python 3.14.7 on Windows 11. SUMO installs through pip; no separate
+install is needed, and `requirements.txt` pins the versions the results were
+produced with.
 
 ```bash
 python -m venv .venv
@@ -611,7 +618,7 @@ pip install -r requirements.txt
 ```
 
 ```bash
-python -m pytest tests                                              # unit tests, no SUMO needed
+python -m pytest tests                                              # 22 tests; the SUMO ones skip if SUMO is missing
 python experiments/semma.py                                         # data study (about 2 min)
 python experiments/train.py --agent q_learning  --scenario single           # 900 episodes by default
 python experiments/train.py --agent dqn         --scenario single
@@ -654,9 +661,9 @@ with SUMO 1.27.1.
 - Sutton, R. and Barto, A. (2018). *Reinforcement Learning: An Introduction*, 2nd ed. MIT Press.
 - SAS Institute. SEMMA data mining methodology.
 - Varaiya, P. (2013). Max pressure control of a network of signalized intersections. *Transportation Research Part C*, 36, 177-195.
-- Transportation Research Board (2022). *Highway Capacity Manual*, 7th ed. (peak-hour K and directional D factors).
 - Lusaka Times (23 April 2021). LCC "switches off" robots at Great East and Lufubu roads.
-- University of Zambia. Quality of public transport service in the city of Lusaka: a case study of the minibus service on the Great East Road (daily volume on Great East Road). UNZA repository.
+- Choongo, B. (2020). *Quality of public transport service in the city of Lusaka: a case study of the minibus service on the Great East Road*. University of Zambia (quotes 31,000 veh/day on Great East Road in 2009).
+- Ng'andu, L. (2024). *An assessment of the Lusaka Decongestion Project (LDP): a case study of Great East Road*. MSc dissertation, University of Zambia (2022 video count and LCC peak periods).
 - OpenStreetMap contributors. Map data for the Lusaka junction, ODbL. https://www.openstreetmap.org/copyright
 
 Built on the RoadwayVR SUMO tutorial (MIT); see [NOTICE.md](NOTICE.md). Map data © OpenStreetMap contributors (ODbL). Licensed under MIT.
