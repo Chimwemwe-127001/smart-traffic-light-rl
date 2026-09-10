@@ -199,12 +199,15 @@ MAIN_ROAD_DETECTOR_M = 250
 # Fixed-time plan: main road 40 s, protected right turns 10 s, side roads 20 s (3 s yellow after each).
 LUSAKA_FIXED_GREENS = [40, 10, 20]
 
-# Morning peak hour. Great East Road carries about 31,000 veh/day (UNZA study).
-# Peak hour = K x AADT with K = 0.09, split D = 0.6 towards the city (westbound),
-# standard planning factors (Highway Capacity Manual). Side-road volumes and all
-# turning shares are assumptions, listed in the README.
-AADT, K_FACTOR, D_FACTOR = 31_000, 0.09, 0.6
-LUSAKA_ARRIVALS = {'E': AADT * K_FACTOR * D_FACTOR, 'W': AADT * K_FACTOR * (1 - D_FACTOR), 'N': 300, 'S': 200}
+# Morning peak hour. Great East Road carried about 31,000 veh/day in 2009, as quoted
+# by Choongo (2020, UNZA); the counting place and method are not stated. Peak hour =
+# K x daily volume, split D towards the city (westbound). K = 0.09 and D = 0.6 are
+# assumed planning values, not measured in Lusaka. Side-road volumes and all turning
+# shares are also assumptions. The README lists every source and compares the
+# result with a 2022 count.
+DAILY_VEH, K_FACTOR, D_FACTOR = 31_000, 0.09, 0.6
+LUSAKA_ARRIVALS = {'E': DAILY_VEH * K_FACTOR * D_FACTOR, 'W': DAILY_VEH * K_FACTOR * (1 - D_FACTOR),
+                   'N': 300, 'S': 200}
 LUSAKA_TURNS = {       # share of each arm's traffic by movement (left-hand traffic)
     'W': {'straight': 0.85, 'left': 0.08, 'right': 0.07},
     'E': {'straight': 0.85, 'left': 0.08, 'right': 0.07},
