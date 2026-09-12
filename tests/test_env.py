@@ -14,7 +14,7 @@ import pytest
 pytest.importorskip('sumo')
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from traffic_rl.baselines import FixedTime, RandomPolicy
-from traffic_rl.env import MAX_GREEN_S, MIN_GREEN_S, YELLOW_S, TrafficEnv
+from traffic_rl.env import MAX_GREEN_S, MIN_GREEN_S, YELLOW_S, TrafficEnv, check_yellow_follows
 from traffic_rl.runner import run_episode
 
 
@@ -134,3 +134,12 @@ def test_different_seeds_give_different_traffic():
     a = run_episode('single', FixedTime(), seed=1, episode_s=300)
     b = run_episode('single', FixedTime(), seed=2, episode_s=300)
     assert a['throughput'] != b['throughput'] or a['avg_wait_s'] != b['avg_wait_s']
+
+
+def test_every_green_must_be_followed_by_its_yellow():
+    check_yellow_follows(['GGrr', 'yyrr', 'rrGg', 'rryy'])             # a valid program passes
+    for bad in (['GGrr', 'rrGG', 'yyrr', 'rryy'],                       # green followed by a green
+                ['GGrr', 'yrrr', 'rrGG', 'rryy'],                       # yellow misses a green link
+                ['rryy', 'GGrr', 'yyrr', 'rrGG']):                      # the last phase is a green
+        with pytest.raises(ValueError):
+            check_yellow_follows(bad)
