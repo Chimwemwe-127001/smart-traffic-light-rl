@@ -69,6 +69,18 @@ DECISION_S = 5
 KEEP, SWITCH = 0, 1
 
 
+def check_yellow_follows(states):
+    """A change jumps from a green to the next phase in the program and expects its
+    yellow there (see _change). Check that every green is followed by a phase that
+    shows yellow on all its green links and green nowhere."""
+    for i, s in enumerate(states):
+        if 'y' in s or 'G' not in s:
+            continue
+        nxt = states[i + 1] if i + 1 < len(states) else ''
+        if not nxt or 'G' in nxt or 'g' in nxt or any(ch in 'Gg' and n != 'y' for ch, n in zip(s, nxt)):
+            raise ValueError(f'phase {i} ({s}) must be followed by its yellow, found {nxt}')
+
+
 class TrafficEnv:
     def __init__(self, scenario, program='agent', episode_s=1200, gui=False, record=False, routes=None):
         self.name = scenario
@@ -142,6 +154,7 @@ class TrafficEnv:
         programs where one phase serves several arms (e.g. both directions of a
         main road)."""
         logic = traci.trafficlight.getAllProgramLogics(tls)[0]
+        check_yellow_follows([p.state for p in logic.phases])
         links = traci.trafficlight.getControlledLinks(tls)
         mapping = {}
         for idx, phase in enumerate(logic.phases):
