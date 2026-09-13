@@ -26,6 +26,11 @@ Agents decide asynchronously: after a change an agent is busy for 13 s, after a
 keep only 5 s. step() applies the actions of the agents that were asked, then
 runs the simulation until the next agent is ready.
 
+Every episode starts with an empty network, so the first WARMUP_S seconds are a
+warm-up: the controller runs and agents act and learn as usual, but the metrics
+only cover the episode_s seconds after it. Otherwise the lightly loaded first
+minutes would make every controller look better than it is.
+
 Programs:
     'agent'    - RL agents own the signal, greens are held until changed
     'fixed'    - the fixed cycle stored in the .net.xml
@@ -66,6 +71,7 @@ MIN_GREEN_S = 10
 MAX_GREEN_S = 60            # same cap as the actuated baseline (maxDur)
 YELLOW_S = 3
 DECISION_S = 5
+WARMUP_S = 300              # seconds simulated before the measured window starts
 KEEP, SWITCH = 0, 1
 
 
@@ -82,13 +88,15 @@ def check_yellow_follows(states):
 
 
 class TrafficEnv:
-    def __init__(self, scenario, program='agent', episode_s=1200, gui=False, record=False, routes=None):
+    def __init__(self, scenario, program='agent', episode_s=1200, gui=False, record=False, routes=None,
+                 warmup_s=WARMUP_S):
         self.name = scenario
         self.sc = SCENARIOS[scenario]
         self.ids = list(self.sc['intersections'])
         self.mode = self.sc['action_mode']
         self.program = program
-        self.episode_s = episode_s
+        self.episode_s = episode_s    # length of the measured window
+        self.warmup_s = warmup_s
         self.gui = gui
         self.routes = routes or self.sc['routes']     # override for demand sweeps
         self.record = record          # keep a per-second log of observations (used by SEMMA)
@@ -210,12 +218,14 @@ class TrafficEnv:
         traci.simulationStep()
         self.t += 1
         queues = {tls: self._queue(tls) for tls in self.ids}
+        measured = self.t > self.warmup_s
         for i in self.ids:
             for j in self.ids:
                 self._acc[i][j] += queues[j]
             self._acc_n[i] += 1
-        self.queue_trace.append(sum(traci.edge.getLastStepHaltingNumber(e)
-                                    for tls in self.ids for e in self._edges[tls]))
+        if measured:
+            self.queue_trace.append(sum(traci.edge.getLastStepHaltingNumber(e)
+                                        for tls in self.ids for e in self._edges[tls]))
         if self.record:
             for tls, o in self.observe().items():
                 edge_queue = sum(traci.edge.getLastStepHaltingNumber(e) for e in self._edges[tls])
@@ -227,7 +237,7 @@ class TrafficEnv:
                                      **{f'lane_{k}': v for k, v in enumerate(o['lanes'])}})
 
     def done(self):
-        return self.t >= self.episode_s
+        return self.t >= self.warmup_s + self.episode_s
 
     def _run_until_ready(self):
         while not self.done():
@@ -249,7 +259,8 @@ class TrafficEnv:
             self._pending[tls] = (self.t + YELLOW_S, target_phase)
         self._next_decision[tls] = self.t + YELLOW_S + MIN_GREEN_S
         self._green_since[tls] = self.t + YELLOW_S
-        self.switches += 1
+        if self.t >= self.warmup_s:
+            self.switches += 1
 
     def step(self, actions):
         """Apply {tls: action} for the ready agents, then run until the next decision.
@@ -296,10 +307,16 @@ class TrafficEnv:
         traci.close()
         all_trips = ET.parse(self._tripinfo).getroot().findall('tripinfo')
         shutil.rmtree(self._tmp, ignore_errors=True)
+        # The measured vehicles are those due to depart after the warm-up. SUMO gives the
+        # departure delay, also for vehicles that never entered (delay up to the end).
+        def due(t):
+            depart = float(t.get('depart'))
+            return (depart if depart >= 0 else self.t) - float(t.get('departDelay', 0))
+        arrived = sum(1 for t in all_trips if float(t.get('arrival')) >= self.warmup_s)
+        all_trips = [t for t in all_trips if due(t) >= self.warmup_s]
         trips = [t for t in all_trips if float(t.get('depart')) >= 0]   # vehicles that got into the network
         wait = [float(t.get('waitingTime')) for t in trips]
         travel = [float(t.get('duration')) for t in trips]
-        arrived = sum(1 for t in trips if float(t.get('arrival')) >= 0)
         # Total delay counts every vehicle, including those still queued outside the network
         # (depart = -1): time stopped + time waiting to enter. Otherwise a controller that
         # starves an arm until its cars cannot even enter would look better, not worse.
