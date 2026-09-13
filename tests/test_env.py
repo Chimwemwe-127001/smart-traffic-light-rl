@@ -14,7 +14,7 @@ import pytest
 pytest.importorskip('sumo')
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from traffic_rl.baselines import FixedTime, RandomPolicy
-from traffic_rl.env import MAX_GREEN_S, MIN_GREEN_S, YELLOW_S, TrafficEnv, check_yellow_follows
+from traffic_rl.env import MAX_GREEN_S, MIN_GREEN_S, WARMUP_S, YELLOW_S, TrafficEnv, check_yellow_follows
 from traffic_rl.runner import run_episode
 
 
@@ -143,3 +143,12 @@ def test_every_green_must_be_followed_by_its_yellow():
                 ['rryy', 'GGrr', 'yyrr', 'rrGG']):                      # the last phase is a green
         with pytest.raises(ValueError):
             check_yellow_follows(bad)
+
+
+def test_metrics_skip_the_warm_up():
+    env = random_episode('single', seed=6, episode_s=300)
+    assert env.t == WARMUP_S + 300
+    assert len(env.queue_trace) == 300                       # queue measured after the warm-up only
+    recs = [r for r in env.records if r['tls'] == 'Node2']
+    yellow_starts = [r['t'] for prev, r in zip(recs, recs[1:]) if r['green'] == -1 and prev['green'] != -1]
+    assert env.switches == sum(1 for t in yellow_starts if t - 1 >= WARMUP_S) > 0
