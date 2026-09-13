@@ -113,11 +113,13 @@ OPPOSITE = {'N': 'S', 'E': 'W', 'S': 'N', 'W': 'E'}
 LEFT = {'N': 'E', 'E': 'S', 'S': 'W', 'W': 'N'}
 RIGHT = {'N': 'W', 'E': 'N', 'S': 'E', 'W': 'S'}
 TURN_SPLIT = {'straight': 0.6, 'left': 0.2, 'right': 0.2}
-# Arrivals per arm (veh/h) in three 400 s periods: N-S heavy, balanced, E-W heavy.
+# Arrivals per arm (veh/h): a 300 s warm-up (not measured) at the first period's
+# rates, then three 400 s periods: N-S heavy, balanced, E-W heavy.
 FOUR_WAY_DEMAND = [
-    (0, 400, {'N': 450, 'S': 350, 'E': 150, 'W': 150}),
-    (400, 800, {'N': 275, 'S': 275, 'E': 275, 'W': 275}),
-    (800, 1200, {'N': 150, 'S': 150, 'E': 450, 'W': 350}),
+    (0, 300, {'N': 450, 'S': 350, 'E': 150, 'W': 150}),
+    (300, 700, {'N': 450, 'S': 350, 'E': 150, 'W': 150}),
+    (700, 1100, {'N': 275, 'S': 275, 'E': 275, 'W': 275}),
+    (1100, 1500, {'N': 150, 'S': 150, 'E': 450, 'W': 350}),
 ]
 
 
@@ -158,7 +160,8 @@ def write_four_way_routes(folder, name):
              '    <vType id="car" accel="2.6" decel="4.5" sigma="0.5" length="5" minGap="2.5" '
              'maxSpeed="13.89" guiShape="passenger"/>',
              '    <!-- Random arrivals. Turning split 60% straight, 20% left, 20% right.',
-             '         0-400 s N-S heavy, 400-800 s balanced, 800-1200 s E-W heavy. -->']
+             '         0-300 s warm-up at the first-period rates, then 300-700 s N-S heavy,',
+             '         700-1100 s balanced, 1100-1500 s E-W heavy. -->']
     for begin, end, per_arm in FOUR_WAY_DEMAND:
         for a in FOUR_WAY_ARMS:
             for turn, to in (('straight', OPPOSITE[a]), ('left', LEFT[a]), ('right', RIGHT[a])):
