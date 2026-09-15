@@ -1,0 +1,437 @@
+{
+  "method": "Webster (1958) cycle and splits from saturation flows measured in SUMO (headways from the 5th queued vehicle on) and demand averaged over the measured window",
+  "measurement": {
+    "red_s": 60,
+    "green_s": 20,
+    "yellow_s": 3,
+    "cycles": 30,
+    "offered_veh_h_lane": 1800
+  },
+  "saturation": {
+    "single": {
+      "Node2": [
+        {
+          "Node2_7_SB": {
+            "saturation_veh_h_lane": 1857,
+            "saturation_headway_s": 1.939,
+            "startup_lost_s": 1.14,
+            "clearance_lost_s": 2.22,
+            "lanes": 3,
+            "headways": 492
+          }
+        },
+        {
+          "Node1_2_EB": {
+            "saturation_veh_h_lane": 1848,
+            "saturation_headway_s": 1.948,
+            "startup_lost_s": 1.15,
+            "clearance_lost_s": 1.94,
+            "lanes": 3,
+            "headways": 481
+          }
+        }
+      ]
+    },
+    "corridor": {
+      "Node2": [
+        {
+          "Node7_2_SB": {
+            "saturation_veh_h_lane": 1871,
+            "saturation_headway_s": 1.924,
+            "startup_lost_s": 1.25,
+            "clearance_lost_s": 2.13,
+            "lanes": 2,
+            "headways": 328
+          }
+        },
+        {
+          "Node1_2_EB": {
+            "saturation_veh_h_lane": 1865,
+            "saturation_headway_s": 1.93,
+            "startup_lost_s": 1.21,
+            "clearance_lost_s": 2.08,
+            "lanes": 3,
+            "headways": 488
+          }
+        }
+      ],
+      "Node5": [
+        {
+          "Node9_5_SB": {
+            "saturation_veh_h_lane": 1865,
+            "saturation_headway_s": 1.931,
+            "startup_lost_s": 1.14,
+            "clearance_lost_s": 2.36,
+            "lanes": 2,
+            "headways": 331
+          }
+        },
+        {
+          "Node2_5_EB": {
+            "saturation_veh_h_lane": 1849,
+            "saturation_headway_s": 1.947,
+            "startup_lost_s": 1.15,
+            "clearance_lost_s": 2.09,
+            "lanes": 3,
+            "headways": 486
+          }
+        }
+      ]
+    },
+    "four_way": {
+      "C": [
+        {
+          "N2C": {
+            "saturation_veh_h_lane": 1581,
+            "saturation_headway_s": 2.277,
+            "startup_lost_s": 0.0,
+            "clearance_lost_s": 2.47,
+            "lanes": 1,
+            "headways": 137
+          }
+        },
+        {
+          "E2C": {
+            "saturation_veh_h_lane": 1631,
+            "saturation_headway_s": 2.207,
+            "startup_lost_s": 0.3,
+            "clearance_lost_s": 2.56,
+            "lanes": 1,
+            "headways": 140
+          }
+        },
+        {
+          "S2C": {
+            "saturation_veh_h_lane": 1610,
+            "saturation_headway_s": 2.236,
+            "startup_lost_s": 0.19,
+            "clearance_lost_s": 2.63,
+            "lanes": 1,
+            "headways": 140
+          }
+        },
+        {
+          "W2C": {
+            "saturation_veh_h_lane": 1627,
+            "saturation_headway_s": 2.213,
+            "startup_lost_s": 0.28,
+            "clearance_lost_s": 2.56,
+            "lanes": 1,
+            "headways": 141
+          }
+        }
+      ]
+    },
+    "lusaka": {
+      "C": [
+        {
+          "E2C": {
+            "saturation_veh_h_lane": 1828,
+            "saturation_headway_s": 1.969,
+            "startup_lost_s": 1.14,
+            "clearance_lost_s": 2.47,
+            "lanes": 2,
+            "headways": 324
+          },
+          "W2C": {
+            "saturation_veh_h_lane": 1814,
+            "saturation_headway_s": 1.984,
+            "startup_lost_s": 1.03,
+            "clearance_lost_s": 2.34,
+            "lanes": 2,
+            "headways": 320
+          }
+        },
+        {
+          "E2C": {
+            "saturation_veh_h_lane": 1573,
+            "saturation_headway_s": 2.289,
+            "startup_lost_s": 0.38,
+            "clearance_lost_s": 2.54,
+            "lanes": 1,
+            "headways": 128
+          },
+          "W2C": {
+            "saturation_veh_h_lane": 1474,
+            "saturation_headway_s": 2.443,
+            "startup_lost_s": 2.65,
+            "clearance_lost_s": 2.51,
+            "lanes": 1,
+            "headways": 70
+          }
+        },
+        {
+          "N2C": {
+            "saturation_veh_h_lane": 1276,
+            "saturation_headway_s": 2.821,
+            "startup_lost_s": 0.0,
+            "clearance_lost_s": 2.81,
+            "lanes": 1,
+            "headways": 84
+          },
+          "S2C": {
+            "saturation_veh_h_lane": 1293,
+            "saturation_headway_s": 2.785,
+            "startup_lost_s": 0.0,
+            "clearance_lost_s": 3.0,
+            "lanes": 1,
+            "headways": 79
+          }
+        }
+      ]
+    }
+  },
+  "plans": {
+    "single": {
+      "file": "networks/single/webster.add.xml",
+      "Node2": {
+        "Y": 0.3599,
+        "L": 6.45,
+        "webster_cycle_s": 22.9,
+        "cycle_used_s": 22.9,
+        "cycle_run_s": 26,
+        "phases": [
+          {
+            "phase": 0,
+            "state": "GGGGGrrrr",
+            "flow_ratio_y": {
+              "Node2_7_SB": 0.1795
+            },
+            "critical": "Node2_7_SB",
+            "lost_s": 3.36,
+            "green_s": 10
+          },
+          {
+            "phase": 2,
+            "state": "rrrrrGGGG",
+            "flow_ratio_y": {
+              "Node1_2_EB": 0.1804
+            },
+            "critical": "Node1_2_EB",
+            "lost_s": 3.09,
+            "green_s": 10
+          }
+        ]
+      }
+    },
+    "corridor": {
+      "file": "networks/corridor/webster.add.xml",
+      "Node2": {
+        "Y": 0.2677,
+        "L": 6.67,
+        "webster_cycle_s": 20.5,
+        "cycle_used_s": 20.5,
+        "cycle_run_s": 26,
+        "phases": [
+          {
+            "phase": 0,
+            "state": "GGGGrrrr",
+            "flow_ratio_y": {
+              "Node7_2_SB": 0.1069
+            },
+            "critical": "Node7_2_SB",
+            "lost_s": 3.38,
+            "green_s": 10
+          },
+          {
+            "phase": 2,
+            "state": "rrrrGGGG",
+            "flow_ratio_y": {
+              "Node1_2_EB": 0.1609
+            },
+            "critical": "Node1_2_EB",
+            "lost_s": 3.29,
+            "green_s": 10
+          }
+        ]
+      },
+      "Node5": {
+        "Y": 0.2695,
+        "L": 6.74,
+        "webster_cycle_s": 20.7,
+        "cycle_used_s": 20.7,
+        "cycle_run_s": 26,
+        "phases": [
+          {
+            "phase": 0,
+            "state": "GGGGrrrr",
+            "flow_ratio_y": {
+              "Node9_5_SB": 0.1072
+            },
+            "critical": "Node9_5_SB",
+            "lost_s": 3.5,
+            "green_s": 10
+          },
+          {
+            "phase": 2,
+            "state": "rrrrGGGG",
+            "flow_ratio_y": {
+              "Node2_5_EB": 0.1622
+            },
+            "critical": "Node2_5_EB",
+            "lost_s": 3.24,
+            "green_s": 10
+          }
+        ]
+      }
+    },
+    "corridor_heavy": {
+      "file": "networks/corridor/webster_heavy.add.xml",
+      "Node2": {
+        "Y": 0.3972,
+        "L": 6.67,
+        "webster_cycle_s": 24.9,
+        "cycle_used_s": 24.9,
+        "cycle_run_s": 28,
+        "phases": [
+          {
+            "phase": 0,
+            "state": "GGGGrrrr",
+            "flow_ratio_y": {
+              "Node7_2_SB": 0.147
+            },
+            "critical": "Node7_2_SB",
+            "lost_s": 3.38,
+            "green_s": 10
+          },
+          {
+            "phase": 2,
+            "state": "rrrrGGGG",
+            "flow_ratio_y": {
+              "Node1_2_EB": 0.2502
+            },
+            "critical": "Node1_2_EB",
+            "lost_s": 3.29,
+            "green_s": 12
+          }
+        ]
+      },
+      "Node5": {
+        "Y": 0.3999,
+        "L": 6.74,
+        "webster_cycle_s": 25.2,
+        "cycle_used_s": 25.2,
+        "cycle_run_s": 28,
+        "phases": [
+          {
+            "phase": 0,
+            "state": "GGGGrrrr",
+            "flow_ratio_y": {
+              "Node9_5_SB": 0.1475
+            },
+            "critical": "Node9_5_SB",
+            "lost_s": 3.5,
+            "green_s": 10
+          },
+          {
+            "phase": 2,
+            "state": "rrrrGGGG",
+            "flow_ratio_y": {
+              "Node2_5_EB": 0.2524
+            },
+            "critical": "Node2_5_EB",
+            "lost_s": 3.24,
+            "green_s": 12
+          }
+        ]
+      }
+    },
+    "four_way": {
+      "file": "networks/four_way/webster.add.xml",
+      "C": {
+        "Y": 0.6822,
+        "L": 10.99,
+        "webster_cycle_s": 67.6,
+        "cycle_used_s": 67.6,
+        "cycle_run_s": 68,
+        "phases": [
+          {
+            "phase": 0,
+            "state": "rrrrrrGGGrrr",
+            "flow_ratio_y": {
+              "N2C": 0.1844
+            },
+            "critical": "N2C",
+            "lost_s": 2.47,
+            "green_s": 15
+          },
+          {
+            "phase": 2,
+            "state": "rrrGGGrrrrrr",
+            "flow_ratio_y": {
+              "E2C": 0.1788
+            },
+            "critical": "E2C",
+            "lost_s": 2.86,
+            "green_s": 15
+          },
+          {
+            "phase": 4,
+            "state": "GGGrrrrrrrrr",
+            "flow_ratio_y": {
+              "S2C": 0.1603
+            },
+            "critical": "S2C",
+            "lost_s": 2.82,
+            "green_s": 13
+          },
+          {
+            "phase": 6,
+            "state": "rrrrrrrrrGGG",
+            "flow_ratio_y": {
+              "W2C": 0.1586
+            },
+            "critical": "W2C",
+            "lost_s": 2.84,
+            "green_s": 13
+          }
+        ]
+      }
+    },
+    "lusaka": {
+      "file": "networks/lusaka/webster.add.xml",
+      "C": {
+        "Y": 0.7354,
+        "L": 9.34,
+        "webster_cycle_s": 71.8,
+        "cycle_used_s": 71.8,
+        "cycle_run_s": 76,
+        "phases": [
+          {
+            "phase": 0,
+            "state": "rrrGGGgrrrGGGg",
+            "flow_ratio_y": {
+              "E2C": 0.4258,
+              "W2C": 0.2861
+            },
+            "critical": "E2C",
+            "lost_s": 3.61,
+            "green_s": 37
+          },
+          {
+            "phase": 2,
+            "state": "rrrrrrGrrrrrrG",
+            "flow_ratio_y": {
+              "E2C": 0.0746,
+              "W2C": 0.053
+            },
+            "critical": "E2C",
+            "lost_s": 2.92,
+            "green_s": 10
+          },
+          {
+            "phase": 4,
+            "state": "GGgrrrrGGgrrrr",
+            "flow_ratio_y": {
+              "N2C": 0.235,
+              "S2C": 0.1548
+            },
+            "critical": "N2C",
+            "lost_s": 2.81,
+            "green_s": 20
+          }
+        ]
+      }
+    }
+  }
+}
