@@ -28,7 +28,7 @@ import sys
 import numpy as np
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from traffic_rl.baselines import Actuated, FixedTime, LongestQueueFirst, RandomPolicy
+from traffic_rl.baselines import Actuated, FixedTime, LongestQueueFirst, RandomPolicy, Webster
 from traffic_rl.dqn import DQN
 from traffic_rl.metrics import bootstrap_ci, paired_difference, percent_change
 from traffic_rl.multi_agent import CoordinatedQLearning
@@ -70,7 +70,8 @@ def key(scenario):
 
 
 def controllers(scenario):
-    base = {'Fixed-time': FixedTime(), 'Actuated': Actuated(), 'Random': RandomPolicy(seed=7, scenario=scenario)}
+    base = {'Fixed-time (hand-set)': FixedTime(), 'Fixed-time (Webster)': Webster(), 'Actuated': Actuated(),
+            'Random': RandomPolicy(seed=7, scenario=scenario)}
     if scenario in V11:
         return {**base, 'Longest queue first': LongestQueueFirst(scenario),
                 'Q-learning (untrained)': QLearning(scenario=scenario),
@@ -188,7 +189,8 @@ def main():
     sweep = {}
     for scale, routes in SCENARIOS['lusaka']['demand_sweep'].items():
         ctrls = {k: v for k, v in controllers('lusaka').items()
-                 if k in ('Fixed-time', 'Actuated', 'Longest queue first', 'Q-learning (trained)', 'DQN (trained)')}
+                 if k in ('Fixed-time (hand-set)', 'Fixed-time (Webster)', 'Actuated', 'Longest queue first',
+                          'Q-learning (trained)', 'DQN (trained)')}
         sweep[scale] = evaluate('lusaka', ctrls, per_seed, label=f'lusaka_x{scale:.2f}', routes=routes)
     sweep[1.0] = {k: v for k, v in runs['lusaka'].items() if k in sweep[0.75]}
 
@@ -220,6 +222,7 @@ def main():
                 row[k] = paired_difference(runs[sc][f'{name} (trained)'][k], runs[sc][baseline][k])
             out.append(row)
         return out
+    vs_webster = versus('Fixed-time (Webster)', LEARNERS)
     vs_actuated = versus('Actuated', LEARNERS)
     vs_lqf = versus('Longest queue first', [(sc, n) for sc, n in LEARNERS if sc in V11])
 
@@ -245,7 +248,8 @@ def main():
            ('four_way', 'q_learning'), ('four_way', 'dqn'), ('lusaka', 'q_learning'), ('lusaka', 'dqn')]}
 
     rubric = score_rubric(runs, probes, td)
-    out = {'summary': summary, 'before_after': before_after, 'vs_actuated': vs_actuated, 'vs_lqf': vs_lqf,
+    out = {'summary': summary, 'before_after': before_after, 'vs_webster': vs_webster, 'vs_actuated': vs_actuated,
+           'vs_lqf': vs_lqf,
            'fairness': fairness, 'sweep': sweep_out, 'probes': probes, 'td_loss': td, 'rubric': rubric,
            'eval_seeds': EVAL_SEEDS}
     with open(os.path.join(RESULTS, 'summary.json'), 'w') as f:
@@ -272,7 +276,7 @@ def score_rubric(runs, probes, td):
             'CI below 0', f'{m:+.1f} s [{lo:+.1f}, {hi:+.1f}]', hi < 0)
     for sc, name in LEARNERS:
         a = runs[sc][f'{name} (trained)'][key(sc)]
-        for base in ('Fixed-time', 'Random'):
+        for base in ('Fixed-time (Webster)', 'Random'):
             m, lo, hi = paired_difference(a, runs[sc][base][key(sc)])
             add(f'{name} beats {base} ({sc})', f'{label(sc)}, trained minus {base}, 95% CI',
                 'CI below 0', f'{m:+.1f} s [{lo:+.1f}, {hi:+.1f}]', hi < 0)
@@ -309,10 +313,10 @@ def score_rubric(runs, probes, td):
     for sc, r in runs.items():
         for name, d in r.items():
             if '(trained)' in name:
-                ft = np.mean(r['Fixed-time']['throughput'])
+                ft = np.mean(r['Fixed-time (Webster)']['throughput'])
                 pct = 100 * np.mean(d['throughput']) / ft
                 add(f'{name.replace(" (trained)", "")} serves all demand ({sc})',
-                    'vehicles completed vs Fixed-time', 'at least 98%', f'{pct:.1f}%', pct >= 98)
+                    'vehicles completed vs Webster fixed-time', 'at least 98%', f'{pct:.1f}%', pct >= 98)
     return rows
 
 
@@ -346,7 +350,7 @@ def write_markdown(out):
         for name, d in table.items():
             cells = []
             for c in cols:
-                if c == 'switches' and name in ('Fixed-time', 'Actuated'):
+                if c == 'switches' and name in ('Fixed-time (hand-set)', 'Fixed-time (Webster)', 'Actuated'):
                     cells.append('n/a')          # SUMO runs these programs; switches are not counted
                 else:
                     cells.append(fmt(d[c], 0 if c in ('throughput', 'switches', 'backlog', 'max_delay_s') else 2))
@@ -360,7 +364,8 @@ def write_markdown(out):
         w, q = r[key(r['scenario'])], r['avg_queue']
         L.append(f'| {r["scenario"]} | {r["learner"]} | {w["before"]:.1f} | {w["after"]:.1f} | '
                  f'{w["change_pct"]:+.0f}% | {q["before"]:.2f} | {q["after"]:.2f} | {q["change_pct"]:+.0f}% |')
-    for section, title, base in (('vs_actuated', 'Trained learners vs Actuated control', 'Actuated'),
+    for section, title, base in (('vs_webster', 'Trained learners vs Webster fixed-time', 'Webster fixed-time'),
+                                 ('vs_actuated', 'Trained learners vs Actuated control', 'Actuated'),
                                  ('vs_lqf', 'Trained learners vs longest queue first', 'longest queue first')):
         L += ['', f'## {title}', '',
               f'Paired difference per seed (learner minus {base}), mean and 95% bootstrap CI. '

@@ -6,9 +6,10 @@ import os
 import sys
 
 import numpy as np
+import pytest
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from traffic_rl.baselines import LongestQueueFirst
+from traffic_rl.baselines import LongestQueueFirst, webster_cycle, webster_greens
 from traffic_rl.dqn import MLP, ReplayBuffer, DQN
 from traffic_rl.metrics import bootstrap_ci, paired_difference
 from traffic_rl.multi_agent import CoordinatedQLearning
@@ -157,3 +158,12 @@ def test_bootstrap_and_paired_difference():
     assert m == 2.5 and lo < m < hi
     d, lo, hi = paired_difference([1, 2, 3], [2, 3, 4])
     assert d == -1 and lo == hi == -1
+
+
+def test_webster_cycle_and_greens():
+    assert webster_cycle(0.6, 10) == 50                       # (1.5 x 10 + 5) / (1 - 0.6)
+    # effective green 50 - 10 = 40 s shared 1:3, plus the phase's 5 s lost time, minus the 3 s yellow
+    assert webster_greens([0.15, 0.45], [5, 5], 50) == [12, 32]
+    assert webster_greens([0.01, 0.9], [2, 2], 100) == [10, 60]    # kept within 10 to 60 s
+    with pytest.raises(ValueError):
+        webster_cycle(1.0, 10)                                 # demand above capacity

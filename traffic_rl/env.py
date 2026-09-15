@@ -35,6 +35,7 @@ Programs:
     'agent'    - RL agents own the signal, greens are held until changed
     'fixed'    - the fixed cycle stored in the .net.xml
     'actuated' - SUMO's gap-based actuated control (the common real-world upgrade)
+    'webster'  - a fixed cycle timed with Webster's method (experiments/webster.py)
 """
 import os
 import shutil
@@ -119,8 +120,8 @@ class TrafficEnv:
         self._tripinfo = os.path.join(self._tmp, 'tripinfo.xml')
         additional = [os.path.join(os.path.dirname(self.sc['cfg']),
                                    ET.parse(self.sc['cfg']).find('.//additional-files').get('value'))]
-        if self.program == 'actuated':
-            additional.append(self.sc['actuated'])
+        if self.program in ('actuated', 'webster'):
+            additional.append(self.sc[self.program])
         cmd = [sumolib.checkBinary('sumo-gui' if self.gui else 'sumo'),
                '-c', self.sc['cfg'], '-r', self.routes, '-a', ','.join(additional),
                '--seed', str(seed), '--step-length', '1', '--time-to-teleport', '-1',
@@ -142,8 +143,8 @@ class TrafficEnv:
         self._acc = {i: {j: 0.0 for j in self.ids} for i in self.ids}
         self._acc_n = {i: 0 for i in self.ids}
         for tls in self.ids:
-            if self.program == 'actuated':
-                traci.trafficlight.setProgram(tls, 'actuated')
+            if self.program in ('actuated', 'webster'):
+                traci.trafficlight.setProgram(tls, self.program)
             self._green_dir[tls] = self._map_green_phases(tls)
             self._arm_phase[tls] = {a: p for p, a in self._green_dir[tls].items()}
             self._next_decision[tls] = MIN_GREEN_S
@@ -295,7 +296,7 @@ class TrafficEnv:
         return ready, obs, self.done()
 
     def run_to_end(self):
-        """For fixed/actuated programs: nothing to decide, just simulate."""
+        """For fixed, actuated and Webster programs: nothing to decide, just simulate."""
         while not self.done():
             self._tick()
 

@@ -13,7 +13,7 @@ import pytest
 
 pytest.importorskip('sumo')
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from traffic_rl.baselines import FixedTime, RandomPolicy
+from traffic_rl.baselines import FixedTime, RandomPolicy, Webster
 from traffic_rl.env import MAX_GREEN_S, MIN_GREEN_S, WARMUP_S, YELLOW_S, TrafficEnv, check_yellow_follows
 from traffic_rl.runner import run_episode
 
@@ -152,3 +152,17 @@ def test_metrics_skip_the_warm_up():
     recs = [r for r in env.records if r['tls'] == 'Node2']
     yellow_starts = [r['t'] for prev, r in zip(recs, recs[1:]) if r['green'] == -1 and prev['green'] != -1]
     assert env.switches == sum(1 for t in yellow_starts if t - 1 >= WARMUP_S) > 0
+
+
+def test_webster_plan_runs_its_timings():
+    import json
+    with open(os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'results', 'webster.json')) as f:
+        plan = json.load(f)['plans']['four_way']['C']
+    env = TrafficEnv('four_way', program='webster', episode_s=300, record=True)
+    env.reset(seed=1)
+    env.run_to_end()
+    env.close()
+    runs = signal_runs(env.records, 'C')
+    planned = {k: p['green_s'] for k, p in enumerate(plan['phases'])}       # green index = arm N, E, S, W
+    assert all(n == planned[s] for s, n in runs if s != -1)
+    assert all(n == YELLOW_S for s, n in runs if s == -1)

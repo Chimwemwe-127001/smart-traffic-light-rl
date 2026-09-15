@@ -13,8 +13,36 @@ def queue_reward(tls, queues, neighbor=None, neighbor_weight=0.0):
 
 
 class FixedTime:
-    """The fixed cycle stored in the network file."""
+    """The hand-set fixed cycle stored in the network file (e.g. 42 s per arm)."""
     program = 'fixed'
+
+
+MAX_CYCLE_S = 120           # a common practical upper limit on the cycle length
+
+
+def webster_cycle(Y, L):
+    """Webster's (1958) optimum cycle length in seconds: C0 = (1.5 L + 5) / (1 - Y).
+    Y: sum over phases of the critical flow ratio y = demand / saturation flow.
+    L: lost time per cycle (start-up plus clearance, summed over the phases)."""
+    if Y >= 1:
+        raise ValueError(f'Y = {Y:.2f}: demand exceeds what any fixed cycle can serve')
+    return (1.5 * L + 5) / (1 - Y)
+
+
+def webster_greens(y, lost, cycle, yellow=3, min_green=10, max_green=60):
+    """Displayed green per phase. The effective green time in the cycle (cycle - L) is
+    shared in proportion to y, and displayed green = effective green + the phase's lost
+    time - yellow. Rounded to whole seconds and kept within [min_green, max_green]."""
+    effective = cycle - sum(lost)
+    return [int(min(max_green, max(min_green, round(effective * yi / sum(y) + li - yellow))))
+            for yi, li in zip(y, lost)]
+
+
+class Webster:
+    """Fixed-time plan timed with Webster's method from measured saturation flows and the
+    scenario's average demand (networks/*/webster*.add.xml, made by experiments/webster.py).
+    The fixed-time plan a traffic engineer would install; the fair fixed-time baseline."""
+    program = 'webster'
 
 
 class Actuated:

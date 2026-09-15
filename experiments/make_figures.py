@@ -23,7 +23,8 @@ LOGS = os.path.join(RESULTS, 'logs')
 FIG = os.path.join(RESULTS, 'figures')
 
 INK, MUTED, GRID = '#0b0b0b', '#52514e', '#e4e3df'
-COLORS = {'Fixed-time': '#8a8983', 'Actuated': '#52514e', 'Random': '#c3c2b7',
+COLORS = {'Fixed-time (hand-set)': '#b3b2aa', 'Fixed-time (Webster)': '#8a8983', 'Actuated': '#52514e',
+          'Random': '#d8d7d0',
           'Longest queue first': '#7d93ad',
           'Q-learning': '#2a78d6', 'Independent QL': '#2a78d6',
           'DQN': '#eb6834', 'Coordinated QL': '#1baf7a'}
@@ -35,6 +36,9 @@ LEARNERS = {'single': [('q_learning', 'Q-learning'), ('dqn', 'DQN')],
             'corridor_heavy': [('q_learning', 'Independent QL'), ('coordinated', 'Coordinated QL')]}
 LEARNERS_V11 = {'four_way': [('q_learning', 'Q-learning'), ('dqn', 'DQN')],
                 'lusaka': [('q_learning', 'Q-learning'), ('dqn', 'DQN')]}
+BASELINES = ['Fixed-time (hand-set)', 'Fixed-time (Webster)', 'Random', 'Actuated']
+SHORT = {'Fixed-time (hand-set)': 'Fixed-time\nhand-set', 'Fixed-time (Webster)': 'Fixed-time\nWebster',
+         'Longest queue first': 'Longest\nqueue first'}
 
 plt.rcParams.update({'font.size': 10, 'axes.edgecolor': MUTED, 'axes.labelcolor': INK,
                      'xtick.color': MUTED, 'ytick.color': MUTED, 'axes.spines.top': False,
@@ -93,9 +97,10 @@ def learning_curve(summary, sc, learners, baselines, metric):
 
 def learning_curves(summary):
     for sc, learners in LEARNERS.items():
-        learning_curve(summary, sc, learners, ('Fixed-time', 'Actuated'), 'avg_wait_s')
+        learning_curve(summary, sc, learners, ('Fixed-time (Webster)', 'Actuated'), 'avg_wait_s')
     for sc, learners in LEARNERS_V11.items():
-        learning_curve(summary, sc, learners, ('Fixed-time', 'Actuated', 'Longest queue first'), 'avg_delay_s')
+        learning_curve(summary, sc, learners, ('Fixed-time (Webster)', 'Actuated', 'Longest queue first'),
+                       'avg_delay_s')
 
 
 def before_after(summary):
@@ -129,7 +134,7 @@ def head_to_head(summary):
     fig, axes = plt.subplots(1, 3, figsize=(15, 4.6), sharey=False)
     for ax, sc in zip(axes, LEARNERS):
         table = summary['summary'][sc]
-        names = ['Fixed-time', 'Random', 'Actuated'] + [n for n in table if n.endswith('(trained)')]
+        names = BASELINES + [n for n in table if n.endswith('(trained)')]
         means = [table[n]['avg_wait_s'][0] for n in names]
         err = [[table[n]['avg_wait_s'][0] - table[n]['avg_wait_s'][1] for n in names],
                [table[n]['avg_wait_s'][2] - table[n]['avg_wait_s'][0] for n in names]]
@@ -139,8 +144,8 @@ def head_to_head(summary):
         for i, m in enumerate(means):
             ax.annotate(f'{m:.1f}', (i, m + err[1][i]), xytext=(0, 3), textcoords='offset points',
                         ha='center', fontsize=8.5, color=INK)
-        ax.set_xticks(range(len(names)), [n.replace(' (trained)', '').replace(' ', '\n', 1) for n in names],
-                      fontsize=8.5)
+        ax.set_xticks(range(len(names)), [SHORT.get(n, n.replace(' (trained)', '').replace(' ', '\n', 1))
+                                          for n in names], fontsize=8.5)
         ax.set_title(TITLES[sc], color=INK)
     axes[0].set_ylabel('avg waiting time per vehicle (s)')
     fig.suptitle('Head to head on held-out traffic (mean and 95% CI over 10 seeds)', color=INK)
@@ -188,11 +193,10 @@ def bars_with_ci(ax, table, names, metric):
     for i, m in enumerate(means):
         ax.annotate(f'{m:.0f}' if m >= 100 else f'{m:.1f}', (i, m + err[1][i]), xytext=(0, 3),
                     textcoords='offset points', ha='center', fontsize=8.5, color=INK)
-    short = {'Longest queue first': 'Longest\nqueue first'}
-    ax.set_xticks(range(len(names)), [short.get(n, n.replace(' (trained)', '')) for n in names], fontsize=8.5)
+    ax.set_xticks(range(len(names)), [SHORT.get(n, n.replace(' (trained)', '')) for n in names], fontsize=8.5)
 
 
-V11_ORDER = ['Fixed-time', 'Random', 'Actuated', 'Longest queue first', 'Q-learning (trained)', 'DQN (trained)']
+V11_ORDER = BASELINES + ['Longest queue first', 'Q-learning (trained)', 'DQN (trained)']
 
 
 def head_to_head_v11(summary):

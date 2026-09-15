@@ -27,6 +27,7 @@ SCENARIOS = {
         'cfg': os.path.join(NETWORKS, 'single', 'RL.sumocfg'),
         'routes': os.path.join(NETWORKS, 'single', 'RL.rou.xml'),
         'actuated': os.path.join(NETWORKS, 'single', 'actuated.add.xml'),
+        'webster': os.path.join(NETWORKS, 'single', 'webster.add.xml'),
         'action_mode': 'switch',
         'intersections': {
             'Node2': {
@@ -43,6 +44,7 @@ SCENARIOS = {
         'cfg': os.path.join(NETWORKS, 'corridor', 'MultiAgent.sumocfg'),
         'routes': os.path.join(NETWORKS, 'corridor', 'multiagent.rou.xml'),
         'actuated': os.path.join(NETWORKS, 'corridor', 'actuated.add.xml'),
+        'webster': os.path.join(NETWORKS, 'corridor', 'webster.add.xml'),
         'action_mode': 'switch',
         'intersections': {
             'Node2': {
@@ -67,6 +69,7 @@ SCENARIOS = {
 SCENARIOS['corridor_heavy'] = dict(
     SCENARIOS['corridor'],
     routes=os.path.join(NETWORKS, 'corridor', 'multiagent_heavy.rou.xml'),
+    webster=os.path.join(NETWORKS, 'corridor', 'webster_heavy.add.xml'),      # timed for the heavy demand
 )
 
 
@@ -77,6 +80,7 @@ SCENARIOS['four_way'] = {
     'cfg': os.path.join(NETWORKS, 'four_way', 'four_way.sumocfg'),
     'routes': os.path.join(NETWORKS, 'four_way', 'four_way.rou.xml'),
     'actuated': os.path.join(NETWORKS, 'four_way', 'actuated.add.xml'),
+    'webster': os.path.join(NETWORKS, 'four_way', 'webster.add.xml'),
     'action_mode': 'select',
     'select_by': 'avg_delay_s',       # checkpoint selection metric in train.py
     'intersections': {
@@ -96,6 +100,7 @@ SCENARIOS['lusaka'] = {
     'cfg': os.path.join(LUSAKA, 'lusaka.sumocfg'),
     'routes': os.path.join(LUSAKA, 'lusaka.rou.xml'),
     'actuated': os.path.join(LUSAKA, 'actuated.add.xml'),
+    'webster': os.path.join(LUSAKA, 'webster.add.xml'),       # timed for x1.00, also used in the sweep
     'action_mode': 'select',
     'greens': 'order',
     'n_greens': 3,
