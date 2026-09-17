@@ -1,10 +1,12 @@
-﻿"""Build every figure used in the README from the logs and the evaluation.
+"""Build every figure used in the README from the logs and the evaluation.
 
     python experiments/make_figures.py
 
 Colors follow the entity, not the chart: baselines are grays, and each
 learner keeps one hue everywhere (blue = Q-learning / independent,
 orange = DQN, aqua = coordinated). Untrained = the same hue, lighter.
+Every learner was trained in several runs: curves show the mean of the runs,
+with a band from the best to the worst run.
 """
 import csv
 import json
@@ -69,17 +71,32 @@ def save(fig, name):
     print('saved', name)
 
 
+def run_logs(kind, tag, sc, runs):
+    """The logs of every training run: (episodes, list of rows per run)."""
+    per_run = [read_csv(os.path.join(LOGS, f'{kind}_{tag}_{sc}_run{r}.csv')) for r in runs]
+    return [int(r['episode']) for r in per_run[0]], per_run
+
+
+def band(ax, x, per_run, color, label, marker=None):
+    """Mean over runs as a line, best to worst run as a shaded band."""
+    y = np.array(per_run, dtype=float)
+    ax.fill_between(x, y.min(axis=0), y.max(axis=0), color=color, alpha=0.18, lw=0)
+    ax.plot(x, y.mean(axis=0), '-', marker=marker, ms=3, lw=2, color=color, label=label)
+    return y
+
+
 def learning_curve(summary, sc, learners, baselines, metric):
     """One scenario per figure: the greedy policy on validation traffic every 10
-    episodes, with the baselines' held-out test score as dashed reference lines."""
+    episodes (mean of the runs, band = best to worst run), with the baselines'
+    held-out test score as dashed reference lines."""
     label = {'avg_wait_s': 'avg waiting time per vehicle', 'avg_delay_s': 'avg delay per vehicle'}[metric]
     fig, ax = plt.subplots(figsize=(10, 4.8))
     ys = []
     for tag, name in learners:
-        rows = read_csv(os.path.join(LOGS, f'val_{tag}_{sc}.csv'))
-        y = [float(r[metric]) for r in rows]
-        ys += y
-        ax.plot([int(r['episode']) for r in rows], y, '-o', ms=3.5, lw=2, color=COLORS[name], label=name)
+        x, per_run = run_logs('val', tag, sc, summary['runs'])
+        y = band(ax, x, [[float(r[metric]) for r in rows] for rows in per_run], COLORS[name],
+                 f'{name} (mean of {len(per_run)} runs)', 'o')
+        ys += list(y.min(axis=0)) + list(y.max(axis=0))
     for base in baselines:            # in the legend, not on the lines: some sit close together
         y = summary['summary'][sc][base][metric][0]
         ys.append(y)
@@ -89,7 +106,7 @@ def learning_curve(summary, sc, learners, baselines, metric):
     ax.set_xlim(-15, 915)
     ax.set_xlabel('training episode (episode 0 = before training)')
     ax.set_ylabel(f'{label} (s, log scale)')
-    ax.set_title(f'Learning curve: {TITLES[sc]}', color=INK)
+    ax.set_title(f'Learning curve: {TITLES[sc]} (band: best to worst run)', color=INK)
     ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.16), ncol=len(learners) + len(baselines), fontsize=9)
     fig.tight_layout()
     save(fig, f'learning_curve_{sc}.png')
@@ -126,7 +143,8 @@ def before_after(summary):
     ax.legend(handles=[Patch(color='#c3c2b7', label='before training (lighter shade, initial parameters)'),
                        Patch(color=MUTED, label='after training (full color)')],
               loc='lower center', bbox_to_anchor=(0.5, 1.02), ncol=2)
-    ax.set_title('Before vs after training, held-out traffic (same seeds)', color=INK, pad=32)
+    ax.set_title(f'Before vs after training, held-out traffic (mean of {len(summary["runs"])} runs, same seeds)',
+                 color=INK, pad=32)
     save(fig, 'before_after.png')
 
 
@@ -148,30 +166,31 @@ def head_to_head(summary):
                                           for n in names], fontsize=8.5)
         ax.set_title(TITLES[sc], color=INK)
     axes[0].set_ylabel('avg waiting time per vehicle (s)')
-    fig.suptitle('Head to head on held-out traffic (mean and 95% CI over 10 seeds)', color=INK)
+    fig.suptitle('Head to head on held-out traffic (mean and 95% CI; learners: over runs and seeds)', color=INK)
     fig.tight_layout()
     save(fig, 'head_to_head.png')
 
 
-def training_diagnostics():
+def training_diagnostics(summary):
     fig, axes = plt.subplots(1, 3, figsize=(15, 4.2))
     for sc, learners in LEARNERS.items():
         for tag, label in learners:
-            rows = read_csv(os.path.join(LOGS, f'train_{tag}_{sc}.csv'))
-            ep = [int(r['episode']) for r in rows]
+            ep, per_run = run_logs('train', tag, sc, summary['runs'])
             ls = {'single': '-.', 'corridor': '-', 'corridor_heavy': ':'}[sc]
             name = f'{label} ({TITLES[sc].lower()})'
             if tag == 'dqn':
-                loss = [float(r['td_loss']) for r in rows]
-                axes[1].plot(ep, loss, lw=2, color=COLORS[label], label=name)
+                band(axes[1], ep, [[float(r['td_loss']) for r in rows] for rows in per_run], COLORS[label], name)
             else:
-                axes[2].plot(ep, [int(r['q_table_states']) for r in rows], lw=2, ls=ls,
-                             color=COLORS[label], label=name)
-            reward = np.array([float(r['total_reward']) for r in rows])
+                y = np.array([[int(r['q_table_states']) for r in rows] for rows in per_run], dtype=float)
+                axes[2].fill_between(ep, y.min(axis=0), y.max(axis=0), color=COLORS[label], alpha=0.15, lw=0)
+                axes[2].plot(ep, y.mean(axis=0), lw=2, ls=ls, color=COLORS[label], label=name)
             if sc == 'single':
-                smooth = np.convolve(reward, np.ones(10) / 10, mode='valid')
-                axes[0].plot(ep[9:], smooth, lw=2, color=COLORS[label], label=label)
+                smooth = [np.convolve([float(r['total_reward']) for r in rows], np.ones(10) / 10, mode='valid')
+                          for rows in per_run]
+                band(axes[0], ep[9:], smooth, COLORS[label], label)
     axes[0].set_title('Training reward, single intersection (10-episode mean)', color=INK)
+    fig.suptitle(f'Training diagnostics: mean of {len(summary["runs"])} runs, band = best to worst run',
+                 color=INK, y=1.02)
     axes[0].set_xlabel('episode'); axes[0].legend()
     axes[1].set_title('DQN TD loss (Huber)', color=INK)
     axes[1].set_xlabel('episode'); axes[1].legend()
@@ -205,7 +224,7 @@ def head_to_head_v11(summary):
         bars_with_ci(ax, summary['summary'][sc], V11_ORDER, 'avg_delay_s')
         ax.set_title(TITLES[sc], color=INK)
     axes[0].set_ylabel('avg delay per vehicle (s)')
-    fig.suptitle('Head to head on the new junctions (mean and 95% CI over 10 held-out seeds)', color=INK)
+    fig.suptitle('Head to head on the new junctions (mean and 95% CI; learners: over runs and seeds)', color=INK)
     fig.tight_layout()
     save(fig, 'head_to_head_v11.png')
 
@@ -216,7 +235,7 @@ def fairness(summary):
         bars_with_ci(ax, summary['summary'][sc], V11_ORDER, 'max_delay_s')
         ax.set_title(TITLES[sc], color=INK)
     axes[0].set_ylabel('worst single-vehicle delay (s)')
-    fig.suptitle('Fairness: the longest delay any one driver had (mean and 95% CI over 10 seeds)', color=INK)
+    fig.suptitle('Fairness: the longest delay any one driver had (mean and 95% CI)', color=INK)
     fig.tight_layout()
     save(fig, 'fairness_v11.png')
 
@@ -244,7 +263,7 @@ def main():
     learning_curves(summary)
     before_after(summary)
     head_to_head(summary)
-    training_diagnostics()
+    training_diagnostics(summary)
     head_to_head_v11(summary)
     fairness(summary)
     lusaka_sweep(summary)
