@@ -11,7 +11,7 @@ import pytest
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from traffic_rl.baselines import LongestQueueFirst, webster_cycle, webster_greens
 from traffic_rl.dqn import MLP, ReplayBuffer, DQN
-from traffic_rl.metrics import bootstrap_ci, paired_difference
+from traffic_rl.metrics import bootstrap_ci, bootstrap_ci_runs, paired_difference, paired_difference_runs
 from traffic_rl.multi_agent import CoordinatedQLearning
 from traffic_rl.q_learning import QLearning
 from traffic_rl.state import count_bin, discrete_state, feature_vector, DEFAULT_CONFIG
@@ -167,3 +167,25 @@ def test_webster_cycle_and_greens():
     assert webster_greens([0.01, 0.9], [2, 2], 100) == [10, 60]    # kept within 10 to 60 s
     with pytest.raises(ValueError):
         webster_cycle(1.0, 10)                                 # demand above capacity
+
+
+def test_two_level_bootstrap_over_runs_and_seeds():
+    rng = np.random.default_rng(1)
+    base = rng.normal(20, 5, 10)                                 # one baseline value per traffic seed
+    trained = base + 1 + rng.normal(0, 0.3, (5, 10))             # 5 runs, all about 1 s worse
+    m, lo, hi = paired_difference_runs(trained, base)
+    assert lo < m < hi and lo > 0 and np.isclose(m, (trained - base).mean())
+    assert paired_difference_runs(trained, base) == (m, lo, hi)  # deterministic
+    # pairing by seed removes the seed-to-seed spread
+    assert hi - lo < bootstrap_ci_runs(trained)[2] - bootstrap_ci_runs(trained)[1]
+    # runs that disagree widen the interval: here it includes 0
+    shifted = trained + np.array([[-3.0], [3.0], [0.0], [2.0], [-2.0]])
+    _, lo2, hi2 = paired_difference_runs(shifted, base)
+    assert lo2 < 0 < hi2
+    # constant data: zero width; a 1-D array is one run
+    assert bootstrap_ci_runs(np.full((5, 10), 2.0)) == (2.0, 2.0, 2.0)
+    assert bootstrap_ci_runs(base) == bootstrap_ci(base)
+    # two learners with unrelated runs are resampled separately
+    other = base + rng.normal(0, 0.3, (5, 10))
+    m3, lo3, hi3 = paired_difference_runs(trained, other, pair_runs=False)
+    assert lo3 < m3 < hi3 and lo3 > 0
