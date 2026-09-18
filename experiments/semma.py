@@ -30,7 +30,7 @@ matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from traffic_rl.env import TrafficEnv
+from traffic_rl.env import WARMUP_S, TrafficEnv
 from traffic_rl.scenarios import SCENARIOS as ALL_SCENARIOS, arms, n_actions
 
 REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -116,7 +116,8 @@ def explore(rows):
                             and r['seed'] == s] for s in SAMPLE_SEEDS])
         smooth = np.convolve(series.mean(0), np.ones(60) / 60, mode='same')
         ax.plot(np.arange(1, len(smooth) + 1), smooth, color=c, label=d)
-    for x in (400, 800):
+    ax.axvspan(0, WARMUP_S, color='0.92', label='warm-up (not measured)')
+    for x in (WARMUP_S + 400, WARMUP_S + 800):
         ax.axvline(x, color='0.5', ls='--')
     ax.set_xlabel('time (s)'); ax.set_ylabel('vehicles seen (60 s mean)')
     ax.set_title('Explore 2: demand shifts from EB to SB over the episode (single, fixed-time)')
@@ -217,6 +218,7 @@ def explore_arms(rows, sc):
                             and r['seed'] == s] for s in SAMPLE_SEEDS])
         smooth = np.convolve(series.mean(0), np.ones(60) / 60, mode='same')
         ax.plot(np.arange(1, len(smooth) + 1), smooth, color=c, lw=2, label=name)
+    ax.axvspan(0, WARMUP_S, color='0.92', label='warm-up')
     ax.set_xlabel('time (s)'); ax.set_ylabel('vehicles seen (60 s mean)')
     ax.set_title(f'{sc}: vehicles seen per arm under fixed-time control')
     ax.legend(ncol=len(names)); ax.grid(True, alpha=0.3)
@@ -319,7 +321,8 @@ def explore_counts_and_lanes(rows, sc, summary, config):
 def coverage_check(sc, reach_m):
     """Detector coverage (detector queue / real queue on the arms) with the main-road
     detectors reaching reach_m metres back. Uses a temporary detector file outside the
-    repo, so the committed network is not touched. Fixed-time control, sample seeds."""
+    repo, so the committed network is not touched. Fixed-time control, sample seeds,
+    measured after the warm-up like every other metric."""
     import tempfile
     sys.path.insert(0, os.path.join(REPO, 'networks'))
     import build_networks as bn
@@ -339,10 +342,11 @@ def coverage_check(sc, reach_m):
         traci.start([sumolib.checkBinary('sumo'), '-c', cfg['cfg'], '-a', det_file, '--seed', str(seed),
                      '--step-length', '1', '--time-to-teleport', '-1', '--no-warnings', '--no-step-log'])
         dets = traci.lanearea.getIDList()
-        for _ in range(1200):
+        for t in range(1, WARMUP_S + 1200 + 1):
             traci.simulationStep()
-            det_q += sum(traci.lanearea.getLastStepHaltingNumber(d) for d in dets)
-            edge_q += sum(traci.edge.getLastStepHaltingNumber(e) for e in edges)
+            if t > WARMUP_S:
+                det_q += sum(traci.lanearea.getLastStepHaltingNumber(d) for d in dets)
+                edge_q += sum(traci.edge.getLastStepHaltingNumber(e) for e in edges)
         traci.close()
     return float(det_q / max(1.0, edge_q))
 
