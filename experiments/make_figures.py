@@ -149,7 +149,7 @@ def before_after(summary):
 
 
 def head_to_head(summary):
-    fig, axes = plt.subplots(1, 3, figsize=(15, 4.6), sharey=False)
+    fig, axes = plt.subplots(1, 3, figsize=(17.5, 4.6), sharey=False)
     for ax, sc in zip(axes, LEARNERS):
         table = summary['summary'][sc]
         names = BASELINES + [n for n in table if n.endswith('(trained)')]
