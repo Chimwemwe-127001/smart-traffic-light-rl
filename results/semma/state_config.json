@@ -6,8 +6,8 @@
       7,
       11
     ],
-    "lane_scale": 8.0,
-    "queue_scale": 19.0,
+    "lane_scale": 9.0,
+    "queue_scale": 20.0,
     "green_time_edges": [
       20,
       40
@@ -16,12 +16,12 @@
   "four_way": {
     "count_bin_edges": [
       2,
-      4,
-      8,
-      13
+      5,
+      10,
+      14
     ],
     "lane_scale": 14.0,
-    "queue_scale": 33.0,
+    "queue_scale": 39.0,
     "green_time_edges": [
       20,
       40
@@ -29,9 +29,9 @@
   },
   "lusaka": {
     "count_bin_edges": [
-      3,
+      4,
       11,
-      45,
+      47,
       59
     ],
     "lane_scale": 34.0,

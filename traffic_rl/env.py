@@ -26,10 +26,16 @@ Agents decide asynchronously: after a change an agent is busy for 13 s, after a
 keep only 5 s. step() applies the actions of the agents that were asked, then
 runs the simulation until the next agent is ready.
 
+Every episode starts with an empty network, so the first WARMUP_S seconds are a
+warm-up: the controller runs and agents act and learn as usual, but the metrics
+only cover the episode_s seconds after it. Otherwise the lightly loaded first
+minutes would make every controller look better than it is.
+
 Programs:
     'agent'    - RL agents own the signal, greens are held until changed
     'fixed'    - the fixed cycle stored in the .net.xml
     'actuated' - SUMO's gap-based actuated control (the common real-world upgrade)
+    'webster'  - a fixed cycle timed with Webster's method (experiments/webster.py)
 """
 import os
 import shutil
@@ -66,17 +72,32 @@ MIN_GREEN_S = 10
 MAX_GREEN_S = 60            # same cap as the actuated baseline (maxDur)
 YELLOW_S = 3
 DECISION_S = 5
+WARMUP_S = 300              # seconds simulated before the measured window starts
 KEEP, SWITCH = 0, 1
 
 
+def check_yellow_follows(states):
+    """A change jumps from a green to the next phase in the program and expects its
+    yellow there (see _change). Check that every green is followed by a phase that
+    shows yellow on all its green links and green nowhere."""
+    for i, s in enumerate(states):
+        if 'y' in s or 'G' not in s:
+            continue
+        nxt = states[i + 1] if i + 1 < len(states) else ''
+        if not nxt or 'G' in nxt or 'g' in nxt or any(ch in 'Gg' and n != 'y' for ch, n in zip(s, nxt)):
+            raise ValueError(f'phase {i} ({s}) must be followed by its yellow, found {nxt}')
+
+
 class TrafficEnv:
-    def __init__(self, scenario, program='agent', episode_s=1200, gui=False, record=False, routes=None):
+    def __init__(self, scenario, program='agent', episode_s=1200, gui=False, record=False, routes=None,
+                 warmup_s=WARMUP_S):
         self.name = scenario
         self.sc = SCENARIOS[scenario]
         self.ids = list(self.sc['intersections'])
         self.mode = self.sc['action_mode']
         self.program = program
-        self.episode_s = episode_s
+        self.episode_s = episode_s    # length of the measured window
+        self.warmup_s = warmup_s
         self.gui = gui
         self.routes = routes or self.sc['routes']     # override for demand sweeps
         self.record = record          # keep a per-second log of observations (used by SEMMA)
@@ -99,8 +120,8 @@ class TrafficEnv:
         self._tripinfo = os.path.join(self._tmp, 'tripinfo.xml')
         additional = [os.path.join(os.path.dirname(self.sc['cfg']),
                                    ET.parse(self.sc['cfg']).find('.//additional-files').get('value'))]
-        if self.program == 'actuated':
-            additional.append(self.sc['actuated'])
+        if self.program in ('actuated', 'webster'):
+            additional.append(self.sc[self.program])
         cmd = [sumolib.checkBinary('sumo-gui' if self.gui else 'sumo'),
                '-c', self.sc['cfg'], '-r', self.routes, '-a', ','.join(additional),
                '--seed', str(seed), '--step-length', '1', '--time-to-teleport', '-1',
@@ -122,8 +143,8 @@ class TrafficEnv:
         self._acc = {i: {j: 0.0 for j in self.ids} for i in self.ids}
         self._acc_n = {i: 0 for i in self.ids}
         for tls in self.ids:
-            if self.program == 'actuated':
-                traci.trafficlight.setProgram(tls, 'actuated')
+            if self.program in ('actuated', 'webster'):
+                traci.trafficlight.setProgram(tls, self.program)
             self._green_dir[tls] = self._map_green_phases(tls)
             self._arm_phase[tls] = {a: p for p, a in self._green_dir[tls].items()}
             self._next_decision[tls] = MIN_GREEN_S
@@ -142,6 +163,7 @@ class TrafficEnv:
         programs where one phase serves several arms (e.g. both directions of a
         main road)."""
         logic = traci.trafficlight.getAllProgramLogics(tls)[0]
+        check_yellow_follows([p.state for p in logic.phases])
         links = traci.trafficlight.getControlledLinks(tls)
         mapping = {}
         for idx, phase in enumerate(logic.phases):
@@ -197,12 +219,14 @@ class TrafficEnv:
         traci.simulationStep()
         self.t += 1
         queues = {tls: self._queue(tls) for tls in self.ids}
+        measured = self.t > self.warmup_s
         for i in self.ids:
             for j in self.ids:
                 self._acc[i][j] += queues[j]
             self._acc_n[i] += 1
-        self.queue_trace.append(sum(traci.edge.getLastStepHaltingNumber(e)
-                                    for tls in self.ids for e in self._edges[tls]))
+        if measured:
+            self.queue_trace.append(sum(traci.edge.getLastStepHaltingNumber(e)
+                                        for tls in self.ids for e in self._edges[tls]))
         if self.record:
             for tls, o in self.observe().items():
                 edge_queue = sum(traci.edge.getLastStepHaltingNumber(e) for e in self._edges[tls])
@@ -214,7 +238,7 @@ class TrafficEnv:
                                      **{f'lane_{k}': v for k, v in enumerate(o['lanes'])}})
 
     def done(self):
-        return self.t >= self.episode_s
+        return self.t >= self.warmup_s + self.episode_s
 
     def _run_until_ready(self):
         while not self.done():
@@ -236,7 +260,8 @@ class TrafficEnv:
             self._pending[tls] = (self.t + YELLOW_S, target_phase)
         self._next_decision[tls] = self.t + YELLOW_S + MIN_GREEN_S
         self._green_since[tls] = self.t + YELLOW_S
-        self.switches += 1
+        if self.t >= self.warmup_s:
+            self.switches += 1
 
     def step(self, actions):
         """Apply {tls: action} for the ready agents, then run until the next decision.
@@ -271,7 +296,7 @@ class TrafficEnv:
         return ready, obs, self.done()
 
     def run_to_end(self):
-        """For fixed/actuated programs: nothing to decide, just simulate."""
+        """For fixed, actuated and Webster programs: nothing to decide, just simulate."""
         while not self.done():
             self._tick()
 
@@ -283,10 +308,16 @@ class TrafficEnv:
         traci.close()
         all_trips = ET.parse(self._tripinfo).getroot().findall('tripinfo')
         shutil.rmtree(self._tmp, ignore_errors=True)
+        # The measured vehicles are those due to depart after the warm-up. SUMO gives the
+        # departure delay, also for vehicles that never entered (delay up to the end).
+        def due(t):
+            depart = float(t.get('depart'))
+            return (depart if depart >= 0 else self.t) - float(t.get('departDelay', 0))
+        arrived = sum(1 for t in all_trips if float(t.get('arrival')) >= self.warmup_s)
+        all_trips = [t for t in all_trips if due(t) >= self.warmup_s]
         trips = [t for t in all_trips if float(t.get('depart')) >= 0]   # vehicles that got into the network
         wait = [float(t.get('waitingTime')) for t in trips]
         travel = [float(t.get('duration')) for t in trips]
-        arrived = sum(1 for t in trips if float(t.get('arrival')) >= 0)
         # Total delay counts every vehicle, including those still queued outside the network
         # (depart = -1): time stopped + time waiting to enter. Otherwise a controller that
         # starves an arm until its cars cannot even enter would look better, not worse.

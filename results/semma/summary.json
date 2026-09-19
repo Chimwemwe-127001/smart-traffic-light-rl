@@ -1,39 +1,39 @@
 {
   "single_approach_count": {
-    "mean": 5.697870370370371,
+    "mean": 5.824259259259259,
     "median": 4.0,
-    "p90": 12.0,
+    "p90": 13.0,
     "max": 34.0,
-    "share_zero": 0.050555555555555555
+    "share_zero": 0.05251851851851852
   },
   "corridor_approach_count": {
-    "mean": 3.100347222222222,
+    "mean": 3.165962962962963,
     "median": 2.0,
     "p90": 7.0,
-    "max": 22.0,
-    "share_zero": 0.1731712962962963
+    "max": 24.0,
+    "share_zero": 0.16727777777777778
   },
   "corridor_heavy_approach_count": {
-    "mean": 5.169884259259259,
+    "mean": 5.261722222222223,
     "median": 4.0,
     "p90": 12.0,
     "max": 29.0,
-    "share_zero": 0.1094212962962963
+    "share_zero": 0.10568518518518519
   },
-  "lane_corr_within_approach": 0.7752314810686433,
-  "lane_corr_across_approach": -0.3655408709445687,
-  "single_detector_coverage": 1.1580022701475596,
-  "corridor_detector_coverage": 1.13304738902307,
-  "corridor_heavy_detector_coverage": 1.151603328871559,
-  "single_fixed_mean_queue_per_intersection": 6.841388888888889,
-  "single_actuated_mean_queue_per_intersection": 2.418888888888889,
-  "single_random_mean_queue_per_intersection": 4.1994444444444445,
-  "corridor_fixed_mean_queue_per_intersection": 3.707361111111111,
-  "corridor_actuated_mean_queue_per_intersection": 0.94,
-  "corridor_random_mean_queue_per_intersection": 2.0231944444444445,
-  "corridor_heavy_fixed_mean_queue_per_intersection": 6.5183333333333335,
-  "corridor_heavy_actuated_mean_queue_per_intersection": 1.6018055555555555,
-  "corridor_heavy_random_mean_queue_per_intersection": 3.8125,
+  "lane_corr_within_approach": 0.7909419182720017,
+  "lane_corr_across_approach": -0.3784713102651271,
+  "single_detector_coverage": 1.163594284887739,
+  "corridor_detector_coverage": 1.133431274418004,
+  "corridor_heavy_detector_coverage": 1.1513517913836302,
+  "single_fixed_mean_queue_per_intersection": 6.859333333333334,
+  "single_actuated_mean_queue_per_intersection": 2.2786666666666666,
+  "single_random_mean_queue_per_intersection": 4.688888888888889,
+  "corridor_fixed_mean_queue_per_intersection": 3.7974444444444444,
+  "corridor_actuated_mean_queue_per_intersection": 0.9674444444444444,
+  "corridor_random_mean_queue_per_intersection": 2.1175555555555556,
+  "corridor_heavy_fixed_mean_queue_per_intersection": 6.702111111111111,
+  "corridor_heavy_actuated_mean_queue_per_intersection": 1.6615555555555555,
+  "corridor_heavy_random_mean_queue_per_intersection": 3.9204444444444446,
   "modify": {
     "count_bin_edges": [
       2,
@@ -41,124 +41,124 @@
       7,
       11
     ],
-    "lane_scale": 8.0,
-    "queue_scale": 19.0,
+    "lane_scale": 9.0,
+    "queue_scale": 20.0,
     "green_time_edges": [
       20,
       40
     ]
   },
-  "n_rows": 54000,
+  "n_rows": 67500,
   "four_way": {
-    "fixed_mean_queue_N": 8.2625,
-    "fixed_mean_queue_E": 4.566944444444444,
-    "fixed_mean_queue_S": 2.709722222222222,
-    "fixed_mean_queue_W": 2.731388888888889,
-    "actuated_mean_queue_N": 1.596111111111111,
-    "actuated_mean_queue_E": 1.478611111111111,
-    "actuated_mean_queue_S": 1.5402777777777779,
-    "actuated_mean_queue_W": 1.48,
-    "random_mean_queue_N": 8.596111111111112,
-    "random_mean_queue_E": 5.708055555555555,
-    "random_mean_queue_S": 6.338888888888889,
-    "random_mean_queue_W": 3.1955555555555555,
+    "fixed_mean_queue_N": 10.370444444444445,
+    "fixed_mean_queue_E": 3.9682222222222223,
+    "fixed_mean_queue_S": 3.458222222222222,
+    "fixed_mean_queue_W": 2.905777777777778,
+    "actuated_mean_queue_N": 1.6564444444444444,
+    "actuated_mean_queue_E": 1.5342222222222222,
+    "actuated_mean_queue_S": 1.5788888888888888,
+    "actuated_mean_queue_W": 1.2975555555555556,
+    "random_mean_queue_N": 11.576444444444444,
+    "random_mean_queue_E": 5.264,
+    "random_mean_queue_S": 8.705333333333334,
+    "random_mean_queue_W": 3.274888888888889,
     "arm_count_N": {
-      "mean": 6.504444444444444,
+      "mean": 7.608518518518519,
       "p90": 14.0,
       "max": 14.0,
-      "share_zero": 0.0999074074074074
+      "share_zero": 0.0768888888888889
     },
     "arm_count_E": {
-      "mean": 4.536481481481482,
-      "p90": 12.0,
+      "mean": 4.329037037037037,
+      "p90": 11.0,
       "max": 14.0,
-      "share_zero": 0.15731481481481482
+      "share_zero": 0.16318518518518518
     },
     "arm_count_S": {
-      "mean": 4.601666666666667,
-      "p90": 12.0,
+      "mean": 5.482222222222222,
+      "p90": 13.0,
       "max": 14.0,
-      "share_zero": 0.13268518518518518
+      "share_zero": 0.11014814814814815
     },
     "arm_count_W": {
-      "mean": 3.507222222222222,
+      "mean": 3.353851851851852,
       "p90": 8.0,
       "max": 14.0,
-      "share_zero": 0.1412962962962963
+      "share_zero": 0.18822222222222224
     },
     "approach_count": {
-      "mean": 4.7874537037037035,
-      "median": 3.0,
-      "p90": 12.0,
+      "mean": 5.193407407407407,
+      "median": 4.0,
+      "p90": 14.0,
       "max": 14.0
     },
-    "detector_coverage": 0.9337251851211571,
+    "detector_coverage": 0.8875626106804927,
     "modify": {
       "count_bin_edges": [
         2,
-        4,
-        8,
-        13
+        5,
+        10,
+        14
       ],
       "lane_scale": 14.0,
-      "queue_scale": 33.0,
+      "queue_scale": 39.0,
       "green_time_edges": [
         20,
         40
       ]
     },
-    "lane_corr_across_arms": 0.06369603463792212,
-    "n_rows": 10800
+    "lane_corr_across_arms": 0.1293610655111094,
+    "n_rows": 13500
   },
   "lusaka": {
-    "fixed_mean_queue_W": 9.15,
-    "fixed_mean_queue_E": 28.16,
-    "fixed_mean_queue_N": 4.063611111111111,
-    "fixed_mean_queue_S": 1.3563888888888889,
-    "actuated_mean_queue_W": 6.073333333333333,
-    "actuated_mean_queue_E": 27.62,
-    "actuated_mean_queue_N": 2.951111111111111,
-    "actuated_mean_queue_S": 1.7327777777777778,
-    "random_mean_queue_W": 30.941111111111113,
-    "random_mean_queue_E": 34.28527777777778,
-    "random_mean_queue_N": 3.062222222222222,
-    "random_mean_queue_S": 1.0808333333333333,
+    "fixed_mean_queue_W": 10.327111111111112,
+    "fixed_mean_queue_E": 29.73777777777778,
+    "fixed_mean_queue_N": 4.255111111111111,
+    "fixed_mean_queue_S": 1.3484444444444443,
+    "actuated_mean_queue_W": 6.930888888888889,
+    "actuated_mean_queue_E": 29.372888888888887,
+    "actuated_mean_queue_N": 3.129111111111111,
+    "actuated_mean_queue_S": 1.7313333333333334,
+    "random_mean_queue_W": 32.431555555555555,
+    "random_mean_queue_E": 34.86,
+    "random_mean_queue_N": 2.9584444444444444,
+    "random_mean_queue_S": 1.1511111111111112,
     "arm_count_W": {
-      "mean": 27.363055555555555,
+      "mean": 29.183481481481483,
       "p90": 60.0,
       "max": 68.0,
-      "share_zero": 0.002777777777777778
+      "share_zero": 0.0022222222222222222
     },
     "arm_count_E": {
-      "mean": 48.6487962962963,
+      "mean": 50.0822962962963,
       "p90": 63.0,
       "max": 68.0,
-      "share_zero": 0.004166666666666667
+      "share_zero": 0.0033333333333333335
     },
     "arm_count_N": {
-      "mean": 5.0841666666666665,
+      "mean": 5.24237037037037,
       "p90": 10.0,
       "max": 14.0,
-      "share_zero": 0.06712962962962964
+      "share_zero": 0.055407407407407405
     },
     "arm_count_S": {
-      "mean": 2.0970370370370373,
+      "mean": 2.1294074074074074,
       "p90": 5.0,
       "max": 8.0,
-      "share_zero": 0.20629629629629628
+      "share_zero": 0.1985925925925926
     },
     "approach_count": {
-      "mean": 20.79826388888889,
+      "mean": 21.659388888888888,
       "median": 9.0,
       "p90": 59.0,
       "max": 68.0
     },
-    "detector_coverage": 1.2332144518530004,
+    "detector_coverage": 1.231446579744176,
     "modify": {
       "count_bin_edges": [
-        3,
+        4,
         11,
-        45,
+        47,
         59
       ],
       "lane_scale": 34.0,
@@ -168,12 +168,12 @@
         40
       ]
     },
-    "lane_corr_within_arm": 0.8456518091519097,
-    "lane_corr_across_arms": 0.12251177798731312,
-    "n_rows": 10800,
+    "lane_corr_within_arm": 0.8158374269790014,
+    "lane_corr_across_arms": 0.1064523945910097,
+    "n_rows": 13500,
     "coverage_check": {
-      "105m": 0.7541214863353876,
-      "250m": 1.2325259380606912
+      "105m": 0.705007562662057,
+      "250m": 1.2291864736387208
     }
   }
 }
