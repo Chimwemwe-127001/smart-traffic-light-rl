@@ -36,7 +36,9 @@ four phases: EB green, EB yellow, SB green, SB yellow.
 
 Four kinds of control appear in this repo:
 
-- **Fixed-time**: the cycle runs on a timer, whatever the traffic.
+- **Fixed-time**: the cycle runs on a timer, whatever the traffic. There are two
+  plans: the hand-set one stored in each network, and one timed with Webster's
+  method (below), which is what a traffic engineer would install.
 - **Actuated**: a green is extended while cars keep arriving and ends when the gap between cars gets too long. This is what many real cities use. See `networks/*/actuated.add.xml`.
 - **Longest queue first**: always serve the phase with the most cars waiting. A simple adaptive rule in the spirit of max-pressure control (Varaiya, 2013). It is strong on average but can starve a quiet road.
 - **RL agents**: learn when to switch, or which phase to serve, from what the detectors see.
@@ -50,6 +52,28 @@ green at a time (split phasing), and the agent chooses which arm to serve next
 (4 actions) instead of just keep or switch. At the Lusaka junction the program
 has three greens: the main road both ways (right turns give way), protected
 right turns, then the side roads; the agent chooses among those.
+
+**Timing a fixed plan: Webster's method** (Webster 1958). Two quantities
+describe what a green can do:
+
+- **Saturation flow** s: the rate at which a queue discharges once it is moving,
+  in vehicles per hour of green per lane. It is measured from the time gaps
+  (headways) between queued cars crossing the stop line, from the 5th car on,
+  because the first few are still speeding up (the Highway Capacity Manual's
+  field method).
+- **Lost time**: the part of each phase no car uses. The first cars react and
+  accelerate (start-up lost time), and most of the yellow is not used
+  (clearance lost time).
+
+For each phase, the **flow ratio** y = demand / (s x lanes) says how busy it is.
+With Y = the sum of y over the phases and L = the total lost time per cycle,
+Webster's cycle length, which approximately minimizes delay, is C0 = (1.5 L + 5) / (1 - Y), and
+the green time is shared in proportion to y. `experiments/webster.py` measures
+s and the lost times in SUMO itself and writes the plans
+(`networks/*/webster.add.xml`). It needs Y < 1: if demand is above what any
+cycle can serve, no fixed plan can keep up. A single plan uses the average
+demand, so it cannot follow demand that shifts from one road to another; that
+is the case for adaptive control.
 
 Every controller must respect **minimum green** (10 s here, drivers need time
 to react) and **yellow clearance** (never jump from green straight to the
@@ -179,13 +203,31 @@ needs junctions that cooperate.
 
 - **Held-out seeds**: training uses seeds 0-899 (900 episodes for every
   agent), the SEMMA sample 900-902, the final evaluation 1000-1009 and
-  validation 2000-2002. The ranges never overlap. A result on traffic the agent trained
+  validation 2000-2009. The ranges never overlap. A result on traffic the agent trained
   on proves nothing.
+- **Warm-up**: every episode starts with empty roads. The first 300 s run as
+  usual (agents act and learn) but are left out of every metric, so the
+  lightly loaded start does not flatter any controller. The measured window is
+  the 1,200 s after it.
+- **Training runs vs traffic seeds**: two different sources of randomness.
+  Traffic seeds decide which cars arrive when. A training run is one complete
+  training from scratch; its seed decides the initial weights, the exploration
+  and the order of the training traffic. One run can be lucky or unlucky, so
+  every learner is trained in 5 independent runs (Henderson et al. 2018) and all
+  5 are evaluated.
 - **Paired comparison**: every controller sees the same 10 seeds, so the
   difference per seed removes most traffic-to-traffic noise.
 - **Bootstrap confidence intervals** (Efron and Tibshirani 1993): resample the
   10 per-seed results 10,000 times to get a 95% interval without assuming a
   normal distribution.
+- **Two-level (hierarchical) bootstrap**: for a learner, each resample first
+  picks 5 training runs with replacement, then 10 traffic seeds with
+  replacement. The interval then covers both "which traffic" and "which training
+  run", and a learner whose runs disagree gets a wide interval. See
+  `traffic_rl/metrics.py`.
+- **Checkpoint selection**: the model kept from each run is the checkpoint with
+  the best score on the 10 validation seeds, never on the test seeds. With too
+  few validation seeds the choice overfits them (a lesson from v1.2).
 - **Before vs after**: the same agent with its initial parameters versus after
   training. This isolates what learning added.
 - **Metrics the agent did not optimize**: it is trained on queue length, but we
@@ -219,6 +261,11 @@ needs junctions that cooperate.
 | Reward shaping | extra reward terms that steer behavior (the neighbor share) |
 | Non-stationarity | the environment changes because other agents are learning |
 | Minimum green | shortest allowed green time |
+| Saturation flow | vehicles per hour a lane discharges while its queue is moving |
+| Lost time | seconds of a phase that no car uses (start-up and unused yellow) |
+| Webster's method | the classic way to time a fixed cycle from flows and saturation flows |
+| Warm-up | the first minutes of a simulation, left out of the metrics |
+| Training run | one full training from scratch with its own seed |
 
 ## 11. Further reading
 
@@ -226,4 +273,6 @@ needs junctions that cooperate.
 - Mnih et al. (2015), Human-level control through deep reinforcement learning, *Nature*.
 - Wei et al. (2019), A survey on traffic signal control methods, arXiv:1904.08117.
 - Chu et al. (2019), Multi-agent deep RL for large-scale traffic signal control, *IEEE T-ITS*.
+- Webster, F. V. (1958), *Traffic Signal Settings*, Road Research Technical Paper 39, HMSO.
+- Henderson et al. (2018), Deep reinforcement learning that matters, *AAAI*.
 - SUMO documentation: TraCI, lane-area detectors, actuated traffic lights.

@@ -1,5 +1,19 @@
 # Changelog
 
+## 2.0.0 (2026-09-19)
+
+The evaluation protocol changed, so the numbers are not comparable with 1.x.
+
+- A fair fixed-time baseline: `experiments/webster.py` measures saturation flow and lost time in SUMO (headways from the 5th queued car, the Highway Capacity Manual field method) and times each network's plan with Webster's method; both fixed-time plans are reported and the rubric uses Webster's
+- Every learner is trained in 5 independent runs (`experiments/train_all.py`), all 5 are evaluated, and confidence intervals resample both training runs and traffic seeds (a two-level bootstrap in `traffic_rl/metrics.py`)
+- Checkpoints are selected on 10 validation seeds (2000-2009) instead of 3
+- Every episode starts with a 300 s warm-up that the metrics leave out; the shifting demand patterns start after it
+- The environment checks that every green is followed by its yellow
+- SEMMA re-run with the warm-up (bins moved by one or two vehicles); the Lusaka lane correlations were labelled the wrong way round in `docs/SEMMA.md` and are corrected
+- Results: the DQN beats Webster and actuated control on the single intersection, the four-way and Lusaka, and longest-queue-first on both new junctions (Lusaka: 40.2 s vs 98.0 s for actuated control), in every one of its 5 runs; on the steady corridor, Webster's plan is as good as or better than every learner; coordination still does not help; 58 of 76 rubric checks pass
+- New finding: the Lusaka DQN is at its best between episodes 100 and 400 and then drifts; checkpoint selection protects the final models
+- Old single-run models and logs moved out of the repository (they remain in the git history)
+
 ## 1.2.2 (2026-09-10)
 
 - Lusaka demand sources corrected: the 31,000 veh/day figure is from 2009 (quoted by Choongo 2020) and is daily traffic, not AADT; the peak factors K and D are marked as assumed, not taken from the Highway Capacity Manual
