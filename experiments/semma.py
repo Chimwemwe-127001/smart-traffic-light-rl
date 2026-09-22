@@ -36,7 +36,7 @@ from traffic_rl.scenarios import SCENARIOS as ALL_SCENARIOS, arms, n_actions
 REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 OUT = os.path.join(REPO, 'results', 'semma')
 SCENARIOS = ['single', 'corridor', 'corridor_heavy']           # v1 study, one shared config ("default")
-NEW_SCENARIOS = ['four_way', 'lusaka']                           # v1.1, one config each
+NEW_SCENARIOS = ['four_way', 'manda_hill']                       # part 2, one config each
 PROGRAMS = ['fixed', 'actuated', 'random']
 SAMPLE_SEEDS = [900, 901, 902]          # not used for training or evaluation
 
@@ -203,7 +203,7 @@ def modify(rows, summary):
     return config
 
 
-# ------------------------------------------------- v1.1: four-way and Lusaka
+# ---------------------------------------------- part 2: four-way and Manda Hill
 
 def explore_arms(rows, sc):
     """Per-arm exploration for one of the new junctions."""
@@ -333,8 +333,12 @@ def coverage_check(sc, reach_m):
     names = arms(sc, 'C')
     net_file = cfg['cfg'].replace('.sumocfg', '.net.xml')
     tmp = tempfile.mkdtemp(prefix='coverage_')
-    reach = {f'{a}2C': reach_m for a in bn.MAIN_ARMS} if sc == 'lusaka' else {f'{a}2C': reach_m for a in names}
-    bn.write_detectors(sumolib.net.readNet(net_file), tmp, [[f'{a}2C'] for a in names], reach=reach)
+    net = sumolib.net.readNet(net_file)
+    if sc == 'manda_hill':      # continuous detectors from the stop line back through the widening
+        bn.write_chain_detectors(net, tmp, [(a, net.getEdge(f'{a}_up').getLaneNumber(),
+                                             net.getEdge(f'{a}2C').getLaneNumber()) for a in names], reach_m)
+    else:
+        bn.write_detectors(net, tmp, [[f'{a}2C'] for a in names], reach={f'{a}2C': reach_m for a in names})
     det_file = os.path.join(tmp, 'det.add.xml')
     edges = [e for a in cfg['intersections']['C']['approaches'].values() for e in a['edges']]
     det_q = edge_q = 0.0
@@ -387,9 +391,10 @@ def main():
             explore_counts_and_lanes(rows, sc, s, config[sc])
             s['n_rows'] = sum(1 for r in rows if r['scenario'] == sc)
             summary[sc] = s
-        # The Lusaka detector decision, reproduced: coverage with the original 105 m
-        # detectors vs the 250 m detectors now used on Great East Road
-        summary['lusaka']['coverage_check'] = {f'{m}m': coverage_check('lusaka', m) for m in (105, 250)}
+        summary.pop('lusaka', None)          # the retired Lufubu Road junction
+        config.pop('lusaka', None)
+        # How much of the real queue the Manda Hill detectors see, with 105 m or 250 m of reach
+        summary['manda_hill']['coverage_check'] = {f'{m}m': coverage_check('manda_hill', m) for m in (105, 250)}
 
     with open(os.path.join(OUT, 'state_config.json'), 'w') as f:
         json.dump(config, f, indent=2)

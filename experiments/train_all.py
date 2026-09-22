@@ -19,7 +19,7 @@ LEARNERS = [('q_learning', 'single'), ('dqn', 'single'),
             ('q_learning', 'corridor'), ('coordinated', 'corridor'),
             ('q_learning', 'corridor_heavy'), ('coordinated', 'corridor_heavy'),
             ('q_learning', 'four_way'), ('dqn', 'four_way'),
-            ('q_learning', 'lusaka'), ('dqn', 'lusaka')]
+            ('q_learning', 'manda_hill'), ('dqn', 'manda_hill')]
 
 
 def train(agent, scenario, run, episodes):
@@ -35,11 +35,13 @@ def main():
     ap.add_argument('--runs', type=int, default=5)
     ap.add_argument('--episodes', type=int, default=900)
     ap.add_argument('--jobs', type=int, default=max(1, (os.cpu_count() or 2) - 2))
+    ap.add_argument('--scenarios', nargs='+', help='only these scenarios (default: all)')
     args = ap.parse_args()
 
     # the slow scenarios first, so the pool is not left waiting on them at the end
-    order = {'lusaka': 0, 'corridor_heavy': 1, 'corridor': 2, 'four_way': 3, 'single': 4}
-    jobs = sorted([(a, s, r) for r in range(args.runs) for a, s in LEARNERS], key=lambda j: order[j[1]])
+    order = {'manda_hill': 0, 'corridor_heavy': 1, 'corridor': 2, 'four_way': 3, 'single': 4}
+    jobs = sorted([(a, s, r) for r in range(args.runs) for a, s in LEARNERS
+                   if not args.scenarios or s in args.scenarios], key=lambda j: order[j[1]])
     print(f'{len(jobs)} jobs on {args.jobs} workers', flush=True)
     failed, start = 0, time.time()
     with ThreadPoolExecutor(args.jobs) as pool:

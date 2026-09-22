@@ -13,8 +13,8 @@ Protocol
 
 Scenarios
     v1:   single, corridor, corridor_heavy
-    v1.1: four_way (one lane each way, split phasing) and lusaka
-          (Great East Road / Lufubu Road, plus a demand sweep x0.75 / x1.25)
+    part 2: four_way (one lane each way, split phasing) and manda_hill
+          (Great East Road / Manda Hill, Lusaka, plus a demand sweep x0.75 / x1.25)
 
 Outputs:
     results/evaluation.csv   one row per (scenario, controller, run, seed)
@@ -49,7 +49,7 @@ LOGS = os.path.join(RESULTS, 'logs')
 EVAL_SEEDS = list(range(1000, 1010))
 RUNS = list(range(5))
 V1 = ['single', 'corridor', 'corridor_heavy']
-V11 = ['four_way', 'lusaka']
+V11 = ['four_way', 'manda_hill']
 METRICS = ['avg_queue', 'avg_wait_s', 'avg_travel_s', 'throughput', 'backlog', 'switches', 'avg_delay_s', 'max_delay_s']
 LABELS = {'avg_queue': 'Avg queue (veh)', 'avg_wait_s': 'Avg wait (s)', 'avg_travel_s': 'Avg travel time (s)',
           'throughput': 'Throughput (veh)', 'backlog': 'Backlog (veh)', 'switches': 'Switches',
@@ -58,12 +58,12 @@ TITLES = {'single': 'Single intersection (shifting demand)',
           'corridor': 'Corridor, 2 intersections, normal demand',
           'corridor_heavy': 'Corridor, 2 intersections, heavy demand',
           'four_way': 'Four-way junction, one lane each way, split phasing',
-          'lusaka': 'Lusaka: Great East Road / Lufubu Road, estimated morning peak'}
+          'manda_hill': 'Lusaka: Great East Road / Manda Hill, estimated morning peak'}
 LEARNERS = [('single', 'Q-learning'), ('single', 'DQN'),
             ('corridor', 'Independent QL'), ('corridor', 'Coordinated QL'),
             ('corridor_heavy', 'Independent QL'), ('corridor_heavy', 'Coordinated QL'),
             ('four_way', 'Q-learning'), ('four_way', 'DQN'),
-            ('lusaka', 'Q-learning'), ('lusaka', 'DQN')]
+            ('manda_hill', 'Q-learning'), ('manda_hill', 'DQN')]
 TAG = {'Q-learning': 'q_learning', 'Independent QL': 'q_learning', 'DQN': 'dqn', 'Coordinated QL': 'coordinated'}
 WEBSTER, HAND_SET = 'Fixed-time (Webster)', 'Fixed-time (hand-set)'
 NOT_COUNTED = (HAND_SET, WEBSTER, 'Actuated')        # SUMO runs these programs; switches are not counted
@@ -132,14 +132,17 @@ PROBES = {
         ('E busy, others empty, E has green', make_obs('C', [1] * 4, [0, 12, 0, 0], 1, 4), 1),
         ('S busy, W light, S has green', make_obs('C', [1] * 4, [0, 0, 12, 2], 2, 4), 2),
     ]),
-    # lusaka: arms W, E, N, S; greens 0 main road, 1 main-road right turns, 2 side roads
-    'lusaka': ('C', [
-        ('Main road busy, side roads empty, side roads have green',
-         make_obs('C', [2, 2, 1, 1], [30, 40, 0, 0], 2, 3), 0),
-        ('Side roads busy, main road light, main road has green',
-         make_obs('C', [2, 2, 1, 1], [2, 3, 12, 6], 0, 3), 2),
-        ('Main road busy, side roads empty, main road has green',
-         make_obs('C', [2, 2, 1, 1], [30, 40, 0, 0], 0, 3), 0),
+    # manda_hill: arms W, E (Great East Road), N (Manchinchi Rd), S (Addis Ababa Dr), with 4, 4, 3, 3
+    # detectors; greens 0 main road, 1 main-road right turns, 2 Manchinchi, 3 Addis Ababa
+    'manda_hill': ('C', [
+        ('Great East Rd busy, side roads empty, Manchinchi has green',
+         make_obs('C', [4, 4, 3, 3], [40, 50, 0, 0], 2, 4), 0),
+        ('Addis Ababa busy, others light, Great East Rd has green',
+         make_obs('C', [4, 4, 3, 3], [3, 4, 1, 25], 0, 4), 3),
+        ('Manchinchi busy, others light, Addis Ababa has green',
+         make_obs('C', [4, 4, 3, 3], [3, 4, 25, 1], 3, 4), 2),
+        ('Great East Rd busy, side roads empty, Great East Rd has green',
+         make_obs('C', [4, 4, 3, 3], [40, 50, 0, 0], 0, 4), 0),
     ]),
 }
 
@@ -147,8 +150,8 @@ PROBES = {
 def action_name(scenario, k):
     if scenario == 'single':
         return ['keep', 'switch'][k]
-    if scenario == 'lusaka':
-        return ['main road', 'main-road right turns', 'side roads'][k]
+    if scenario == 'manda_hill':
+        return ['Great East Rd', 'Great East Rd right turns', 'Manchinchi Rd', 'Addis Ababa Dr'][k]
     return f'serve {"NESW"[k]}'
 
 
@@ -226,12 +229,13 @@ def main():
     per_seed = []
     with ProcessPoolExecutor(args.jobs) as pool:
         runs = {sc: evaluate(pool, sc, all_names(sc), per_seed) for sc in V1 + V11}
-        # Lusaka demand sweep: the estimated peak is uncertain, so repeat at x0.75 and x1.25.
+        # Manda Hill demand sweep: the estimated peak is uncertain, so repeat at x0.75 and x1.25.
         # Every plan and agent stays as designed or trained for x1.00.
         sweep_names = [HAND_SET, WEBSTER, 'Actuated', 'Longest queue first', 'Q-learning (trained)', 'DQN (trained)']
-        sweep = {scale: evaluate(pool, 'lusaka', sweep_names, per_seed, label=f'lusaka_x{scale:.2f}', routes=routes)
-                 for scale, routes in SCENARIOS['lusaka']['demand_sweep'].items()}
-    sweep[1.0] = {k: v for k, v in runs['lusaka'].items() if k in sweep_names}
+        sweep = {scale: evaluate(pool, 'manda_hill', sweep_names, per_seed, label=f'manda_hill_x{scale:.2f}',
+                                 routes=routes)
+                 for scale, routes in SCENARIOS['manda_hill']['demand_sweep'].items()}
+    sweep[1.0] = {k: v for k, v in runs['manda_hill'].items() if k in sweep_names}
 
     with open(os.path.join(RESULTS, 'evaluation.csv'), 'w', newline='') as f:
         w = csv.DictWriter(f, fieldnames=['scenario', 'controller', 'run', 'seed'] + METRICS)
@@ -395,7 +399,7 @@ def write_markdown(out):
          'Every episode has a 300 s warm-up that the metrics leave out. Generated by `experiments/evaluate.py`.', '']
     L += ['**Metrics.** Wait = time stopped, for vehicles that entered the network. Delay = time stopped '
           'plus time queued before entering, for every vehicle, including those still outside at the end. '
-          'The new junctions (four-way, Lusaka) are judged on delay, because a controller that starves an arm '
+          'The new junctions (four-way, Manda Hill) are judged on delay, because a controller that starves an arm '
           'can push its queue outside the network, where wait would not see it.', '',
           '**Fixed-time plans.** "Hand-set" is the plan stored in the network. "Webster" is timed with '
           "Webster's method from saturation flows measured in SUMO (`experiments/webster.py`, "
@@ -454,7 +458,7 @@ def write_markdown(out):
             L.append(f'| {name} | {fmt(d["max_delay_s"], 0)} | '
                      + ' | '.join(f'{d["arm_delay"].get(a, 0):.1f}' for a in arms) + ' |')
         L.append('')
-    L += ['## Lusaka demand sweep', '',
+    L += ['## Manda Hill demand sweep', '',
           'The peak volumes are estimates, so every controller is also tested at 75% and 125% of them. '
           'The Webster plan and the agents stay as designed or trained for 100%.', '',
           '| Demand | Controller | Avg delay (s) | Worst delay (s) | Avg wait (s) | Throughput (veh) | Backlog (veh) |',
