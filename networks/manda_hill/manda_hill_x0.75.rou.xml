@@ -1,0 +1,16 @@
+<routes>
+    <vType id="car" accel="2.6" decel="4.5" sigma="0.5" length="5" minGap="2.5" maxSpeed="22.22" guiShape="passenger"/>
+    <!-- Morning peak, random arrivals, demand x0.75. See networks/build_networks.py
+         for how the volumes were derived. Left turns take the slip roads where they exist. -->
+    <flow id="E_left" type="car" begin="0" end="3600" probability="0.0523" from="E_up" to="S_out" departLane="best"/>
+    <flow id="E_through" type="car" begin="0" end="3600" probability="0.2441" from="E_up" to="W_out" departLane="best"/>
+    <flow id="E_right" type="car" begin="0" end="3600" probability="0.0523" from="E_up" to="C2N" departLane="best"/>
+    <flow id="W_left" type="car" begin="0" end="3600" probability="0.0232" from="W_up" to="C2N" departLane="best"/>
+    <flow id="W_through" type="car" begin="0" end="3600" probability="0.1744" from="W_up" to="E_out" departLane="best"/>
+    <flow id="W_right" type="car" begin="0" end="3600" probability="0.0349" from="W_up" to="S_out" departLane="best"/>
+    <flow id="N_left" type="car" begin="0" end="3600" probability="0.0375" from="N_up" to="E_out" departLane="best"/>
+    <flow id="N_through" type="car" begin="0" end="3600" probability="0.0875" from="N_up" to="S_out" departLane="best"/>
+    <flow id="S_left" type="car" begin="0" end="3600" probability="0.0365" from="S_up" to="W_out" departLane="best"/>
+    <flow id="S_through" type="car" begin="0" end="3600" probability="0.0583" from="S_up" to="C2N" departLane="best"/>
+    <flow id="S_right" type="car" begin="0" end="3600" probability="0.0510" from="S_up" to="E_out" departLane="best"/>
+</routes>

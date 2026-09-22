@@ -1,0 +1,21 @@
+<edges>
+    <!-- Lanes and speeds from the OSM tags; straight arms, dual carriageways -->
+    <edge id="W_up" from="W" to="Wb" numLanes="3" speed="22.22" priority="3"/>
+    <edge id="W2C" from="Wb" to="C" numLanes="4" speed="16.67" priority="3" shape="-80.15,-59.93 -14.24,-6.41"/>
+    <edge id="C2W" from="C" to="Wm" numLanes="3" speed="16.67" priority="3" shape="-9.20,-12.62 -24.65,-25.17"/>
+    <edge id="W_out" from="Wm" to="Wo" numLanes="3" speed="16.67" priority="3"/>
+    <edge id="E_up" from="E" to="Eb" numLanes="3" speed="16.67" priority="3"/>
+    <edge id="E2C" from="Eb" to="C" numLanes="4" speed="16.67" priority="3" shape="72.35,53.59 14.24,6.41"/>
+    <edge id="C2E" from="C" to="Em" numLanes="3" speed="16.67" priority="3" shape="9.20,12.62 24.65,25.17"/>
+    <edge id="E_out" from="Em" to="Eo" numLanes="3" speed="16.67" priority="3"/>
+    <edge id="N_up" from="N" to="Nb" numLanes="1" speed="13.89" priority="3"/>
+    <edge id="N2C" from="Nb" to="C" numLanes="3" speed="13.89" priority="3" shape="-41.68,52.59 -10.97,16.67"/>
+    <edge id="C2N" from="C" to="No" numLanes="1" speed="13.89" priority="3" shape="-14.77,13.42 -196.88,226.38"/>
+    <edge id="S_up" from="S" to="Sb" numLanes="3" speed="16.67" priority="3"/>
+    <edge id="S2C" from="Sb" to="C" numLanes="3" speed="16.67" priority="3" shape="59.39,-73.29 10.97,-16.67"/>
+    <edge id="C2S" from="C" to="Sm" numLanes="2" speed="16.67" priority="3" shape="14.77,-13.42 24.65,-24.98"/>
+    <edge id="S_out" from="Sm" to="So" numLanes="2" speed="16.67" priority="3"/>
+    <edge id="E_slip" from="Eb" to="Sm" numLanes="1" speed="8.33" priority="1" shape="81.05,42.88 22.94,-4.30 22.25,-4.88 21.66,-5.43 21.17,-5.94 20.77,-6.43 20.46,-6.87 20.26,-7.29 20.15,-7.67 20.13,-8.02 20.21,-8.33 20.39,-8.61 30.27,-20.17"/>
+    <edge id="N_slip" from="Nb" to="Em" numLanes="1" speed="8.33" priority="1" shape="-33.63,59.48 -2.91,23.56 -2.21,22.78 -1.55,22.11 -0.91,21.55 -0.32,21.11 0.24,20.78 0.77,20.57 1.26,20.47 1.71,20.48 2.13,20.61 2.52,20.85 17.97,33.40"/>
+    <edge id="S_slip" from="Sb" to="Wm" numLanes="1" speed="8.33" priority="1" shape="51.33,-80.18 2.91,-23.56 2.21,-22.78 1.55,-22.11 0.91,-21.55 0.32,-21.11 -0.24,-20.78 -0.77,-20.57 -1.26,-20.47 -1.71,-20.48 -2.13,-20.61 -2.52,-20.85 -17.97,-33.40"/>
+</edges>

@@ -1,0 +1,18 @@
+<nodes>
+    <node id="C" x="0" y="0" type="traffic_light"/>
+    <node id="W" x="-235.42" y="-185.99" type="priority"/>  <!-- Great East Road from the city (eastbound) -->
+    <node id="Wb" x="-80.15" y="-59.93" type="priority"/>
+    <node id="Wo" x="-230.38" y="-192.20" type="priority"/>
+    <node id="Wm" x="-24.65" y="-25.17" type="priority"/>
+    <node id="E" x="188.84" y="148.17" type="priority"/>  <!-- Great East Road from Manda Hill Mall (westbound) -->
+    <node id="Eb" x="72.35" y="53.59" type="priority"/>
+    <node id="Eo" x="183.80" y="154.38" type="priority"/>
+    <node id="Em" x="24.65" y="25.17" type="priority"/>
+    <node id="N" x="-193.08" y="229.63" type="priority"/>  <!-- Manchinchi Road -->
+    <node id="Nb" x="-41.68" y="52.59" type="priority"/>
+    <node id="No" x="-196.88" y="226.38" type="priority"/>
+    <node id="S" x="193.08" y="-229.63" type="priority"/>  <!-- Addis Ababa Drive -->
+    <node id="Sb" x="59.39" y="-73.29" type="priority"/>
+    <node id="So" x="196.88" y="-226.38" type="priority"/>
+    <node id="Sm" x="24.65" y="-24.98" type="priority"/>
+</nodes>
