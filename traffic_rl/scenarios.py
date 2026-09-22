@@ -11,6 +11,7 @@ action_mode
     'select' - any number of arms, one arm green at a time (split phasing),
                action k = serve arm k next
 """
+import json
 import os
 
 REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -92,33 +93,41 @@ SCENARIOS['four_way'] = {
 }
 
 
-# Great East Road / Lufubu Road, Lusaka: the signalized crossroads rebuilt on its
-# real OpenStreetMap geometry. Three greens chosen by position in the program:
-# 0 main road (right turns yield), 1 protected main-road right turns, 2 side roads.
-LUSAKA = os.path.join(NETWORKS, 'lusaka')
-SCENARIOS['lusaka'] = {
-    'cfg': os.path.join(LUSAKA, 'lusaka.sumocfg'),
-    'routes': os.path.join(LUSAKA, 'lusaka.rou.xml'),
-    'actuated': os.path.join(LUSAKA, 'actuated.add.xml'),
-    'webster': os.path.join(LUSAKA, 'webster.add.xml'),       # timed for x1.00, also used in the sweep
+# Great East Road / Manda Hill, Lusaka: the signalized junction of Great East Road
+# with Manchinchi Road and Addis Ababa Drive, built from its OpenStreetMap data by
+# networks/build_networks.py. Four greens chosen by position in the program, every
+# turn protected: 0 Great East Road through and left, 1 Great East Road right turns,
+# 2 Manchinchi Road, 3 Addis Ababa Drive. Free left turns use slip roads that the
+# signal does not control. The arms, their edges and detectors are written by the
+# builder to arms.json.
+MANDA = os.path.join(NETWORKS, 'manda_hill')
+with open(os.path.join(MANDA, 'arms.json')) as _f:
+    _MANDA_ARMS = json.load(_f)
+SCENARIOS['manda_hill'] = {
+    'cfg': os.path.join(MANDA, 'manda_hill.sumocfg'),
+    'routes': os.path.join(MANDA, 'manda_hill.rou.xml'),
+    'actuated': os.path.join(MANDA, 'actuated.add.xml'),
+    'webster': os.path.join(MANDA, 'webster.add.xml'),        # timed for x1.00, also used in the sweep
     'action_mode': 'select',
     'greens': 'order',
-    'n_greens': 3,
+    'n_greens': 4,
     'select_by': 'avg_delay_s',
-    'phase_arms': [['W', 'E'], ['W', 'E'], ['N', 'S']],     # arms each green serves (used by LQF)
-    'demand_sweep': {s: os.path.join(LUSAKA, f'lusaka_x{s:.2f}.rou.xml') for s in (0.75, 1.25)},
+    'phase_arms': [['W', 'E'], ['W', 'E'], ['N'], ['S']],     # arms each green serves
+    'demand_sweep': {s: os.path.join(MANDA, f'manda_hill_x{s:.2f}.rou.xml') for s in (0.75, 1.25)},
     'intersections': {
         'C': {
-            'approaches': {
-                'W': arm(['W2C_0', 'W2C_1'], ['W2C']),     # Great East Road, eastbound
-                'E': arm(['E2C_0', 'E2C_1'], ['E2C']),     # Great East Road, westbound (towards the city)
-                'N': arm(['N2C_0'], ['N2C']),              # Lufubu Road
-                'S': arm(['S2C_0'], ['S2C']),              # East Park Mall access
-            },
+            # W: Great East Road from the city, E: from Manda Hill Mall, N: Manchinchi Road, S: Addis Ababa Drive
+            'approaches': {a: arm(v['detectors'], v['approach']) for a, v in _MANDA_ARMS.items()},
             'neighbor': None,
         },
     },
 }
+# The detector lanes each green serves, as positions in the observation (arms W, E, N, S in
+# order, lanes kerb first). On Great East Road the median-side lane is the right-turn lane.
+_n = [len(v['detectors']) for v in _MANDA_ARMS.values()]
+_w, _e = list(range(0, _n[0])), list(range(_n[0], _n[0] + _n[1]))
+SCENARIOS['manda_hill']['phase_lanes'] = [_w[:-1] + _e[:-1], [_w[-1], _e[-1]],
+                                          list(range(sum(_n[:2]), sum(_n[:3]))), list(range(sum(_n[:3]), sum(_n)))]
 
 
 def arms(scenario, tls):
