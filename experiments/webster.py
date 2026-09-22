@@ -73,11 +73,15 @@ def movement_links(net, tls):
 
 
 def phase_of(links, greens):
-    """The green that gives this movement priority (G), else the one where it may go after giving way (g)."""
-    for mark in 'Gg':
-        for k, (_, state) in enumerate(greens):
-            if all(state[idx] == mark for _, idx in links):
-                return k
+    """The green that shows this movement green on all its lanes with priority (G) on at least one,
+    else the one where it may go after giving way (g) on all its lanes."""
+    for k, (_, state) in enumerate(greens):
+        marks = [state[idx] for _, idx in links]
+        if all(m in 'Gg' for m in marks) and 'G' in marks:
+            return k
+    for k, (_, state) in enumerate(greens):
+        if all(state[idx] == 'g' for _, idx in links):
+            return k
     raise ValueError(f'movement never gets green: {links}')
 
 
