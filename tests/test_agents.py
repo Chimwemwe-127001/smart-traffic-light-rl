@@ -146,11 +146,13 @@ def test_v1_state_is_unchanged_by_the_arm_generalization():
 def test_longest_queue_first_serves_the_busiest_green():
     lqf = LongestQueueFirst('four_way')
     assert lqf.act('C', four_way_obs((1, 7, 3, 0), green=0)) == 1
-    lusaka = LongestQueueFirst('lusaka')              # arms W, E, N, S; greens: main, main rights, side
-    o = {'C': {'counts': [10, 12, 4, 1]}}
-    assert lusaka.act('C', o) == 0                    # main road busiest; tie with the rights phase goes to main
-    o = {'C': {'counts': [2, 1, 9, 3]}}
-    assert lusaka.act('C', o) == 2                    # side roads busiest
+    # Manda Hill counts the lanes each green serves: W and E have 4 lanes (the last turns right), N and S 3
+    manda = LongestQueueFirst('manda_hill')
+    lanes = lambda w, e, n, s: {'C': {'lanes': w + e + n + s}}
+    assert manda.act('C', lanes([3, 3, 3, 1], [3, 3, 3, 1], [1, 1, 1], [0, 0, 1])) == 0   # through traffic busiest
+    assert manda.act('C', lanes([1, 1, 0, 8], [0, 1, 1, 9], [1, 1, 1], [0, 0, 1])) == 1   # right-turn lanes busiest
+    assert manda.act('C', lanes([1, 1, 0, 1], [0, 1, 1, 1], [6, 6, 5], [0, 0, 1])) == 2   # Manchinchi Road busiest
+    assert manda.act('C', lanes([1, 1, 0, 1], [0, 1, 1, 1], [1, 1, 1], [7, 6, 6])) == 3   # Addis Ababa Drive busiest
 
 
 def test_bootstrap_and_paired_difference():

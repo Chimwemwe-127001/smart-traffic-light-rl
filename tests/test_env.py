@@ -107,7 +107,7 @@ def test_four_way_fixed_plan_gives_each_arm_30_seconds_in_turn():
     assert greens[:4] in ([0, 1, 2, 3], [1, 2, 3, 0], [2, 3, 0, 1], [3, 0, 1, 2])   # N, E, S, W order
 
 
-@pytest.mark.parametrize('name', ['four_way', 'lusaka'])
+@pytest.mark.parametrize('name', ['four_way', 'manda_hill'])
 def test_new_networks_drive_on_the_left(name):
     """Zambia drives on the left: on every arm, the incoming lanes sit on the driver's left."""
     import sumolib
