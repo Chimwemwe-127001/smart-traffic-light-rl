@@ -1,0 +1,47 @@
+<connections>
+    <!-- Lane-by-lane turns from the OSM turn:lanes tags; slip roads give way -->
+    <connection from="C2W" to="W_out" fromLane="0" toLane="0"/>
+    <connection from="C2W" to="W_out" fromLane="1" toLane="1"/>
+    <connection from="C2W" to="W_out" fromLane="2" toLane="2"/>
+    <connection from="W_up" to="W2C" fromLane="0" toLane="0"/>
+    <connection from="W_up" to="W2C" fromLane="1" toLane="1"/>
+    <connection from="W_up" to="W2C" fromLane="1" toLane="2"/>
+    <connection from="W_up" to="W2C" fromLane="2" toLane="3"/>
+    <connection from="C2E" to="E_out" fromLane="0" toLane="0"/>
+    <connection from="C2E" to="E_out" fromLane="1" toLane="1"/>
+    <connection from="C2E" to="E_out" fromLane="2" toLane="2"/>
+    <connection from="E_up" to="E2C" fromLane="0" toLane="0"/>
+    <connection from="E_up" to="E2C" fromLane="1" toLane="1"/>
+    <connection from="E_up" to="E2C" fromLane="1" toLane="2"/>
+    <connection from="E_up" to="E2C" fromLane="2" toLane="3"/>
+    <connection from="N_up" to="N2C" fromLane="0" toLane="0"/>
+    <connection from="N_up" to="N2C" fromLane="0" toLane="1"/>
+    <connection from="N_up" to="N2C" fromLane="0" toLane="2"/>
+    <connection from="C2S" to="S_out" fromLane="0" toLane="0"/>
+    <connection from="C2S" to="S_out" fromLane="1" toLane="1"/>
+    <connection from="S_up" to="S2C" fromLane="0" toLane="0"/>
+    <connection from="S_up" to="S2C" fromLane="1" toLane="1"/>
+    <connection from="S_up" to="S2C" fromLane="2" toLane="2"/>
+    <connection from="E_up" to="E_slip" fromLane="0" toLane="0"/>
+    <connection from="E_slip" to="S_out" fromLane="0" toLane="0"/>
+    <connection from="N_up" to="N_slip" fromLane="0" toLane="0"/>
+    <connection from="N_slip" to="E_out" fromLane="0" toLane="0"/>
+    <connection from="S_up" to="S_slip" fromLane="0" toLane="0"/>
+    <connection from="S_slip" to="W_out" fromLane="0" toLane="0"/>
+    <connection from="W2C" to="C2N" fromLane="0" toLane="0"/>
+    <connection from="W2C" to="C2E" fromLane="0" toLane="0"/>
+    <connection from="W2C" to="C2E" fromLane="1" toLane="1"/>
+    <connection from="W2C" to="C2E" fromLane="2" toLane="2"/>
+    <connection from="W2C" to="C2S" fromLane="3" toLane="1"/>
+    <connection from="E2C" to="C2W" fromLane="0" toLane="0"/>
+    <connection from="E2C" to="C2W" fromLane="1" toLane="1"/>
+    <connection from="E2C" to="C2W" fromLane="2" toLane="2"/>
+    <connection from="E2C" to="C2N" fromLane="3" toLane="0"/>
+    <connection from="N2C" to="C2S" fromLane="0" toLane="0"/>
+    <connection from="N2C" to="C2S" fromLane="1" toLane="0"/>
+    <connection from="N2C" to="C2S" fromLane="2" toLane="1"/>
+    <connection from="S2C" to="C2N" fromLane="0" toLane="0"/>
+    <connection from="S2C" to="C2N" fromLane="1" toLane="0"/>
+    <connection from="S2C" to="C2E" fromLane="1" toLane="2"/>
+    <connection from="S2C" to="C2E" fromLane="2" toLane="2"/>
+</connections>

@@ -1,0 +1,17 @@
+<additional>
+    <!-- One continuous detector per stop-line lane, reaching the stop line -->
+    <laneAreaDetector id="W2C_0" lanes="W_up_0 W2C_0" pos="171.2" endPos="80.1" friendlyPos="true" file="/dev/null" period="1000"/>
+    <laneAreaDetector id="W2C_1" lanes="W_up_1 W2C_1" pos="171.2" endPos="80.1" friendlyPos="true" file="/dev/null" period="1000"/>
+    <laneAreaDetector id="W2C_2" lane="W2C_2" pos="0.1" endPos="80.1" friendlyPos="true" file="/dev/null" period="1000"/>
+    <laneAreaDetector id="W2C_3" lanes="W_up_2 W2C_3" pos="171.2" endPos="80.1" friendlyPos="true" file="/dev/null" period="1000"/>
+    <laneAreaDetector id="E2C_0" lanes="E_up_0 E2C_0" pos="111.2" endPos="70.1" friendlyPos="true" file="/dev/null" period="1000"/>
+    <laneAreaDetector id="E2C_1" lanes="E_up_1 E2C_1" pos="111.2" endPos="70.1" friendlyPos="true" file="/dev/null" period="1000"/>
+    <laneAreaDetector id="E2C_2" lane="E2C_2" pos="0.1" endPos="70.1" friendlyPos="true" file="/dev/null" period="1000"/>
+    <laneAreaDetector id="E2C_3" lanes="E_up_2 E2C_3" pos="111.2" endPos="70.1" friendlyPos="true" file="/dev/null" period="1000"/>
+    <laneAreaDetector id="N2C_0" lanes="N_up_0 N2C_0" pos="166.1" endPos="42.0" friendlyPos="true" file="/dev/null" period="1000"/>
+    <laneAreaDetector id="N2C_1" lane="N2C_1" pos="0.1" endPos="42.0" friendlyPos="true" file="/dev/null" period="1000"/>
+    <laneAreaDetector id="N2C_2" lane="N2C_2" pos="0.1" endPos="42.0" friendlyPos="true" file="/dev/null" period="1000"/>
+    <laneAreaDetector id="S2C_0" lanes="S_up_0 S2C_0" pos="166.0" endPos="69.2" friendlyPos="true" file="/dev/null" period="1000"/>
+    <laneAreaDetector id="S2C_1" lanes="S_up_1 S2C_1" pos="166.0" endPos="69.2" friendlyPos="true" file="/dev/null" period="1000"/>
+    <laneAreaDetector id="S2C_2" lanes="S_up_2 S2C_2" pos="166.0" endPos="69.2" friendlyPos="true" file="/dev/null" period="1000"/>
+</additional>

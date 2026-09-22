@@ -32,12 +32,12 @@ COLORS = {'Fixed-time (hand-set)': '#b3b2aa', 'Fixed-time (Webster)': '#8a8983',
           'DQN': '#eb6834', 'Coordinated QL': '#1baf7a'}
 TITLES = {'single': 'Single intersection', 'corridor': 'Corridor, normal demand',
           'corridor_heavy': 'Corridor, heavy demand', 'four_way': 'Four-way, one lane each way',
-          'lusaka': 'Lusaka, Great East Rd / Lufubu Rd'}
+          'manda_hill': 'Lusaka, Great East Rd / Manda Hill'}
 LEARNERS = {'single': [('q_learning', 'Q-learning'), ('dqn', 'DQN')],
             'corridor': [('q_learning', 'Independent QL'), ('coordinated', 'Coordinated QL')],
             'corridor_heavy': [('q_learning', 'Independent QL'), ('coordinated', 'Coordinated QL')]}
 LEARNERS_V11 = {'four_way': [('q_learning', 'Q-learning'), ('dqn', 'DQN')],
-                'lusaka': [('q_learning', 'Q-learning'), ('dqn', 'DQN')]}
+                'manda_hill': [('q_learning', 'Q-learning'), ('dqn', 'DQN')]}
 BASELINES = ['Fixed-time (hand-set)', 'Fixed-time (Webster)', 'Random', 'Actuated']
 SHORT = {'Fixed-time (hand-set)': 'Fixed-time\nhand-set', 'Fixed-time (Webster)': 'Fixed-time\nWebster',
          'Longest queue first': 'Longest\nqueue first'}
@@ -126,7 +126,7 @@ def before_after(summary):
     x = np.arange(len(rows))
     w = 0.38
     short = {'single': 'Single\nintersection', 'corridor': 'Corridor\nnormal', 'corridor_heavy': 'Corridor\nheavy',
-             'four_way': 'Four-way\n(delay)', 'lusaka': 'Lusaka\n(delay)'}
+             'four_way': 'Four-way\n(delay)', 'manda_hill': 'Manda Hill\n(delay)'}
     for i, r in enumerate(rows):
         c = COLORS[r['learner']]
         metric = 'avg_delay_s' if r['scenario'] in LEARNERS_V11 else 'avg_wait_s'
@@ -200,7 +200,7 @@ def training_diagnostics(summary):
     save(fig, 'training_diagnostics.png')
 
 
-# ------------------------------------------------------ v1.1: four-way and Lusaka
+# ------------------------------------------------- part 2: four-way and Manda Hill
 
 def bars_with_ci(ax, table, names, metric):
     means = [table[n][metric][0] for n in names]
@@ -240,7 +240,7 @@ def fairness(summary):
     save(fig, 'fairness_v11.png')
 
 
-def lusaka_sweep(summary):
+def manda_hill_sweep(summary):
     sweep = summary['sweep']
     scales = sorted(sweep, key=float)
     fig, ax = plt.subplots(figsize=(8, 4.6))
@@ -251,9 +251,9 @@ def lusaka_sweep(summary):
     ax.set_xticks([float(s) for s in scales], [f'x{float(s):.2f}' for s in scales])
     ax.set_xlabel('demand, relative to the estimated morning peak')
     ax.set_ylabel('avg delay per vehicle (s)')
-    ax.set_title('Lusaka: how each controller copes as demand grows', color=INK)
+    ax.set_title('Manda Hill: how each controller copes as demand grows', color=INK)
     ax.legend(loc='upper left', fontsize=9)
-    save(fig, 'lusaka_sweep.png')
+    save(fig, 'manda_hill_sweep.png')
 
 
 def main():
@@ -266,7 +266,7 @@ def main():
     training_diagnostics(summary)
     head_to_head_v11(summary)
     fairness(summary)
-    lusaka_sweep(summary)
+    manda_hill_sweep(summary)
 
 
 if __name__ == '__main__':

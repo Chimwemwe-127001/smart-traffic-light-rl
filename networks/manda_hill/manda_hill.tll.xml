@@ -1,0 +1,13 @@
+<tlLogics>
+    <!-- Assumed plan: main road 40 s, main-road rights 12 s, Manchinchi 18 s, Addis Ababa 20 s, 3 s yellow after each -->
+    <tlLogic id="C" type="static" programID="0" offset="0">
+        <phase duration="40" state="rrrrGGGrrrrGGGGr"/>
+        <phase duration="3" state="rrrryyyrrrryyyyr"/>
+        <phase duration="12" state="rrrrrrrGrrrrrrrG"/>
+        <phase duration="3" state="rrrrrrryrrrrrrry"/>
+        <phase duration="18" state="rrrrrrrrGgGrrrrr"/>
+        <phase duration="3" state="rrrrrrrryyyrrrrr"/>
+        <phase duration="20" state="GgGgrrrrrrrrrrrr"/>
+        <phase duration="3" state="yyyyrrrrrrrrrrrr"/>
+    </tlLogic>
+</tlLogics>

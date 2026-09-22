@@ -75,8 +75,8 @@ class LongestQueueFirst:
     (Varaiya, 2013), using only the detectors the agents also see. It keeps
     the current green while that phase is still the busiest; the environment
     applies the same min and max green rules as for the agents. For 'select'
-    scenarios only. A tie goes to the earlier phase, so at Lusaka the
-    protected right-turn phase is never chosen and right turns wait for gaps.
+    scenarios only. Where two greens serve the same arms (Manda Hill: through
+    traffic, then right turns), it counts only the lanes each green serves.
     """
     program = 'agent'
 
@@ -87,10 +87,15 @@ class LongestQueueFirst:
         # arm indices served by each green, in green order
         self.phase_arms = [[names.index(a) for a in group] for group in sc['phase_arms']] \
             if 'phase_arms' in sc else [[k] for k in range(len(names))]
+        self.phase_lanes = sc.get('phase_lanes')      # detector lanes served by each green, if given
 
     def act(self, tls, obs, explore=False):
-        counts = obs[tls]['counts']
-        pressure = [sum(counts[a] for a in group) for group in self.phase_arms]
+        if self.phase_lanes:
+            lanes = obs[tls]['lanes']
+            pressure = [sum(lanes[i] for i in group) for group in self.phase_lanes]
+        else:
+            counts = obs[tls]['counts']
+            pressure = [sum(counts[a] for a in group) for group in self.phase_arms]
         return int(np.argmax(pressure))
 
     def reward(self, tls, queues):

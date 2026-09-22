@@ -1,0 +1,67 @@
+{
+  "W": {
+    "description": "Great East Road from the city (eastbound)",
+    "approach": [
+      "W_up",
+      "W2C"
+    ],
+    "exit": [
+      "C2W",
+      "W_out"
+    ],
+    "detectors": [
+      "W2C_0",
+      "W2C_1",
+      "W2C_2",
+      "W2C_3"
+    ]
+  },
+  "E": {
+    "description": "Great East Road from Manda Hill Mall (westbound)",
+    "approach": [
+      "E_up",
+      "E2C"
+    ],
+    "exit": [
+      "C2E",
+      "E_out"
+    ],
+    "detectors": [
+      "E2C_0",
+      "E2C_1",
+      "E2C_2",
+      "E2C_3"
+    ]
+  },
+  "N": {
+    "description": "Manchinchi Road",
+    "approach": [
+      "N_up",
+      "N2C"
+    ],
+    "exit": [
+      "C2N"
+    ],
+    "detectors": [
+      "N2C_0",
+      "N2C_1",
+      "N2C_2"
+    ]
+  },
+  "S": {
+    "description": "Addis Ababa Drive",
+    "approach": [
+      "S_up",
+      "S2C"
+    ],
+    "exit": [
+      "C2S",
+      "S_out"
+    ],
+    "detectors": [
+      "S2C_0",
+      "S2C_1",
+      "S2C_2"
+    ]
+  }
+}

@@ -1,7 +1,7 @@
 <configuration>
     <input>
-        <net-file value="lusaka.net.xml"/>
-        <route-files value="lusaka.rou.xml"/>
+        <net-file value="manda_hill.net.xml"/>
+        <route-files value="manda_hill.rou.xml"/>
         <additional-files value="det.add.xml"/>
     </input>
     <report>
