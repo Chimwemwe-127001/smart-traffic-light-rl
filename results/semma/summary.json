@@ -110,70 +110,70 @@
     "lane_corr_across_arms": 0.1293610655111094,
     "n_rows": 13500
   },
-  "lusaka": {
-    "fixed_mean_queue_W": 10.327111111111112,
-    "fixed_mean_queue_E": 29.73777777777778,
-    "fixed_mean_queue_N": 4.255111111111111,
-    "fixed_mean_queue_S": 1.3484444444444443,
-    "actuated_mean_queue_W": 6.930888888888889,
-    "actuated_mean_queue_E": 29.372888888888887,
-    "actuated_mean_queue_N": 3.129111111111111,
-    "actuated_mean_queue_S": 1.7313333333333334,
-    "random_mean_queue_W": 32.431555555555555,
-    "random_mean_queue_E": 34.86,
-    "random_mean_queue_N": 2.9584444444444444,
-    "random_mean_queue_S": 1.1511111111111112,
+  "manda_hill": {
+    "fixed_mean_queue_W": 6.760222222222223,
+    "fixed_mean_queue_E": 17.654222222222224,
+    "fixed_mean_queue_N": 5.227333333333333,
+    "fixed_mean_queue_S": 7.202,
+    "actuated_mean_queue_W": 7.249555555555555,
+    "actuated_mean_queue_E": 10.137777777777778,
+    "actuated_mean_queue_N": 5.343111111111111,
+    "actuated_mean_queue_S": 7.129111111111111,
+    "random_mean_queue_W": 18.21977777777778,
+    "random_mean_queue_E": 32.596444444444444,
+    "random_mean_queue_N": 4.057777777777778,
+    "random_mean_queue_S": 7.840222222222223,
     "arm_count_W": {
-      "mean": 29.183481481481483,
-      "p90": 60.0,
-      "max": 68.0,
-      "share_zero": 0.0022222222222222222
+      "mean": 14.430666666666667,
+      "p90": 32.0,
+      "max": 52.0,
+      "share_zero": 0.008518518518518519
     },
     "arm_count_E": {
-      "mean": 50.0822962962963,
-      "p90": 63.0,
-      "max": 68.0,
-      "share_zero": 0.0033333333333333335
+      "mean": 23.549777777777777,
+      "p90": 44.0,
+      "max": 55.0,
+      "share_zero": 0.005333333333333333
     },
     "arm_count_N": {
-      "mean": 5.24237037037037,
-      "p90": 10.0,
-      "max": 14.0,
-      "share_zero": 0.055407407407407405
+      "mean": 7.32437037037037,
+      "p90": 14.0,
+      "max": 25.0,
+      "share_zero": 0.032074074074074074
     },
     "arm_count_S": {
-      "mean": 2.1294074074074074,
-      "p90": 5.0,
-      "max": 8.0,
-      "share_zero": 0.1985925925925926
+      "mean": 10.457851851851851,
+      "p90": 19.0,
+      "max": 45.0,
+      "share_zero": 0.018074074074074076
     },
     "approach_count": {
-      "mean": 21.659388888888888,
-      "median": 9.0,
-      "p90": 59.0,
-      "max": 68.0
+      "mean": 13.940666666666667,
+      "median": 10.0,
+      "p90": 31.0,
+      "max": 55.0
     },
-    "detector_coverage": 1.231446579744176,
+    "detector_coverage": 0.9946426639696829,
     "modify": {
       "count_bin_edges": [
-        4,
+        6,
         11,
-        47,
-        59
+        18,
+        32
       ],
-      "lane_scale": 34.0,
-      "queue_scale": 137.0,
+      "lane_scale": 15.0,
+      "queue_scale": 105.0,
       "green_time_edges": [
         20,
         40
       ]
     },
-    "lane_corr_within_arm": 0.8158374269790014,
-    "lane_corr_across_arms": 0.1064523945910097,
+    "lane_corr_within_arm": 0.5672589225383639,
+    "lane_corr_across_arms": 0.0817686123113795,
     "n_rows": 13500,
     "coverage_check": {
-      "105m": 0.705007562662057,
-      "250m": 1.2291864736387208
+      "105m": 0.9869430434752855,
+      "250m": 1.105523202102252
     }
   }
 }
