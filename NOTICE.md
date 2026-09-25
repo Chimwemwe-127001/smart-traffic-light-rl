@@ -14,9 +14,9 @@ contains but was first adapted from.
 
 ## Map data
 
-`networks/lusaka/east_park.osm.xml` and the Lusaka network built from it use map
-data © OpenStreetMap contributors, available under the Open Database License
-(ODbL): https://www.openstreetmap.org/copyright
+`networks/manda_hill/manda_hill.osm.xml` and the Manda Hill network built from it
+use map data © OpenStreetMap contributors, available under the Open Database
+License (ODbL): https://www.openstreetmap.org/copyright
 
 ## This project
 
