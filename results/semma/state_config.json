@@ -27,15 +27,15 @@
       40
     ]
   },
-  "lusaka": {
+  "manda_hill": {
     "count_bin_edges": [
-      4,
+      6,
       11,
-      47,
-      59
+      18,
+      32
     ],
-    "lane_scale": 34.0,
-    "queue_scale": 137.0,
+    "lane_scale": 15.0,
+    "queue_scale": 105.0,
     "green_time_edges": [
       20,
       40

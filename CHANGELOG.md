@@ -1,5 +1,17 @@
 # Changelog
 
+## 3.0.0 (2026-09-26)
+
+The Part 2 case study moved to a new junction, so the Lusaka results of 2.x are replaced, not updated.
+
+- The Great East Road / Lufubu Road junction is retired: its signals were switched off in 2021 and OpenStreetMap shows none there today. Its network, models, logs and figures are removed from the repository (they remain in the git history and under tag v2.0.0)
+- New case study: Great East Road / Manchinchi Road / Addis Ababa Drive at Manda Hill, a working signalized junction, built from an OpenStreetMap extract (`networks/manda_hill/`): three lanes each way on Great East Road, turn lanes at the stop line, and free left slip roads that give way
+- A four-green program with every turn protected (Great East Road, its right turns, Manchinchi Road, Addis Ababa Drive); permitted right turns jammed the junction
+- Lane-area detectors run without a gap from the stop line back through the widening (one SUMO detector over the connected lanes); SEMMA coverage 99% at 105 m
+- Longest queue first counts only the lanes each green serves, so two greens on the same arms no longer tie
+- Demand estimated from the same sources as before and swept at x0.75 and x1.25
+- Results at Manda Hill: the DQN averages 16.6 s against 24.2 s for Webster's plan and 25.9 s for actuated control, in every one of its 5 runs; tabular Q-learning (42.8 s) is worse than every baseline except random; at x1.25 the DQN and Webster come out close, but the DQN's worst delay grows to 574 s; 55 of 76 rubric checks pass
+
 ## 2.0.0 (2026-09-19)
 
 The evaluation protocol changed, so the numbers are not comparable with 1.x.

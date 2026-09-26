@@ -66,11 +66,11 @@ written to `results/semma/state_config.json` and read by the agents at run time.
 The DQN keeps all six lane counts: a neural network can use the lane detail
 that the table cannot afford.
 
-## Part 2: the four-way and Lusaka junctions
+## Part 2: the four-way and Manda Hill junctions
 
 The same steps were repeated for the two new junctions
 (`python experiments/semma.py --groups v1.1`, output `detector_samples_v1_1.csv.gz`
-and the `four_way_*` and `lusaka_*` figures). Each junction gets its own config,
+and the `four_way_*` and `manda_hill_*` figures). Each junction gets its own config,
 so the v1 bins above are unchanged.
 
 ### Sample
@@ -79,38 +79,38 @@ so the v1 bins above are unchanged.
 
 ### Explore
 
-**Which arm queues.** At Lusaka the westbound Great East Road arm (towards the city in the morning) holds about 30 stopped cars under both fixed-time and actuated control, against 1 to 10 on the other arms. On the four-way, fixed-time leaves the busy north arm with 10.4 stopped cars, against 1.7 under actuated control.
+**Which arm queues.** At Manda Hill, Great East Road towards the city (the E arm, westbound in the morning peak) holds the longest queue: 17.7 stopped cars on average under the hand-set fixed plan and 10.1 under actuated control, against 5 to 7 on the other arms. On the four-way, fixed-time leaves the busy north arm with 10.4 stopped cars, against 1.7 under actuated control.
 
-![Lusaka: stopped cars per arm](../results/semma/lusaka_explore_arm_queue.png)
+![Manda Hill: stopped cars per arm](../results/semma/manda_hill_explore_arm_queue.png)
 
-**Demand over time.** On the four-way the north-south peak, the balanced middle and the east-west peak are all visible in what the detectors see (`four_way_explore_arm_demand.png`). At Lusaka the westbound arm stays high for the whole peak hour (`lusaka_explore_arm_demand.png`).
+**Demand over time.** On the four-way the north-south peak, the balanced middle and the east-west peak are all visible in what the detectors see (`four_way_explore_arm_demand.png`). At Manda Hill the demand is steady through the peak hour and the city-bound arm stays highest (`manda_hill_explore_arm_demand.png`).
 
-**How many vehicles an arm sees.** The westbound Lusaka arm is bimodal: either draining (under 10 cars) or backed up far down the road (45 to 68 cars). The bin edges fall between these regimes. The side roads rarely see more than 10.
+**How many vehicles an arm sees.** The two Great East Road arms see the most: on average 24 vehicles (city-bound) and 14 (outbound), up to 55, spread over four stop-line lanes. Manchinchi Road and Addis Ababa Drive see 7 and 10 on average. The bin edges (6, 11, 18, 32) follow these counts.
 
-![Lusaka: vehicles seen per arm](../results/semma/lusaka_explore_arm_counts.png)
+![Manda Hill: vehicles seen per arm](../results/semma/manda_hill_explore_arm_counts.png)
 
-On the four-way, the spike at 14 vehicles is a full 105 m single-lane detector (about 7.5 m per car). The north arm hits it often, so on this junction too the cameras sometimes see only part of the queue. Overall coverage is still 89%, so we kept the detectors, and we note it as a limitation.
+On the four-way, the spike at 14 vehicles is a full 105 m single-lane detector (about 7.5 m per car). The north arm hits it often, so on this junction the cameras sometimes see only part of the queue. Overall coverage is still 89%, so we kept the detectors, and we note it as a limitation.
 
 ![Four-way: vehicles seen per arm](../results/semma/four_way_explore_arm_counts.png)
 
-**Lanes of one arm move together.** At Lusaka the two lanes of each Great East Road arm are strongly correlated (0.95 on the eastbound arm, 0.68 on the westbound arm; mean over all arms 0.82), and correlation across arms is low (mean 0.11). (Up to v1.2.1 this page had the two arms the wrong way round.) So the Q-learning state uses one count per arm, as in v1. The DQN still gets every lane.
+**Lanes of one arm move together, but less on Great East Road.** On Manchinchi Road and Addis Ababa Drive the lanes of an arm are strongly correlated (0.76). On Great East Road they are only moderately correlated (0.44 and 0.50), because its stop-line lanes serve different turns: the median-side lane is a right-turn lane with its own green. Correlation across arms is low (0.08). The Q-learning state still uses one count per arm, as in v1, to keep the table small; the DQN gets every lane, so it can see the right-turn queue separately.
 
-![Lusaka: lane correlation](../results/semma/lusaka_explore_lane_correlation.png)
+![Manda Hill: lane correlation](../results/semma/manda_hill_explore_lane_correlation.png)
 
-**Data quality, again.** `experiments/semma.py` re-runs fixed-time control with two detector lengths (a temporary detector file, the committed network is not touched):
+**Data quality, again.** Every Manda Hill detector runs without a break from the stop line back through the widening onto the normal road (one SUMO detector over the connected lanes). `experiments/semma.py` checks how much of the real queue on the approaches the detectors see, with two lengths (a temporary detector file, the committed network is not touched):
 
-| Great East Road detectors | Coverage (detector queue / real queue) |
+| Manda Hill detectors | Coverage (detector queue / real queue) |
 |---|---|
-| 105 m, as on the v1 junctions | **71%** |
-| 250 m, as used now | 123% |
+| 105 m, as used | **99%** |
+| 250 m | 111% |
 
-Both are measured after the warm-up, over the sample seeds. With 105 m the counts saturated at 28 (2 lanes x 14 cars) and almost 30% of the queue was invisible. With 250 m the detectors see the whole queue. The value sits above 100% for the same halting-threshold reason as in v1.
+Both are measured after the warm-up, over the sample seeds. With three lanes each way and a working signal, the queues rarely reach back more than 105 m, so the 105 m detectors see almost the whole queue and were kept. The value sits above 100% for the same halting-threshold reason as in v1.
 
 ### Modify
 
-Bin edges 2, 5, 10, 14 (four-way) and 4, 11, 47, 59 (Lusaka), lane scales 14 and 34, queue scales 39 and 137, all from the same percentile rules as v1, written per junction to `state_config.json`.
+Bin edges 2, 5, 10, 14 (four-way) and 6, 11, 18, 32 (Manda Hill), lane scales 14 and 15, queue scales 39 and 105, all from the same percentile rules as v1, written per junction to `state_config.json`.
 
-**What changed in 2.0.0.** Adding the warm-up changed the sample (longer runs that start from empty roads), so the study was run again before training. The decisions did not change; a few edges and scales moved by one or two vehicles (v1 scales 8 and 19 became 9 and 20; four-way edges 2, 4, 8, 13 became 2, 5, 10, 14; the first Lusaka edge 3 became 4).
+**What changed in 2.0.0 and 3.0.0.** Adding the warm-up in 2.0.0 changed the sample, so the study was run again; a few edges and scales moved by one or two vehicles. In 3.0.0 the Lufubu Road junction was retired and Manda Hill studied from scratch; the four-way results did not change.
 
 ## 4. Model
 

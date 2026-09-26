@@ -49,9 +49,23 @@ that crosses oncoming traffic. A test checks that every arm drives on the left.
 
 **Split phasing and phase selection.** At the four-way junction one arm gets
 green at a time (split phasing), and the agent chooses which arm to serve next
-(4 actions) instead of just keep or switch. At the Lusaka junction the program
-has three greens: the main road both ways (right turns give way), protected
-right turns, then the side roads; the agent chooses among those.
+(4 actions) instead of just keep or switch. At the Manda Hill junction in Lusaka
+the program has four greens: Great East Road both ways (through and left),
+Great East Road right turns, Manchinchi Road, then Addis Ababa Drive; the agent
+chooses among those. Every turn there is protected, and the free left turns use
+slip roads that the signal does not control.
+
+**Protected vs permitted turns.** A permitted ("give way") right turn may enter
+the junction on green and wait inside it for a gap in oncoming traffic. In the
+first Manda Hill model the waiting cars were still inside the junction when the
+lights changed, blocked the next movement, and the junction locked up for good
+(gridlock). Protecting every turn (its own green, nobody waits inside) fixed it.
+Real controllers use all-red clearance times for the same reason.
+
+**Lane-area detectors across a widening.** Where a road widens before the stop
+line, SUMO joins the two road pieces with a short connector. A detector on each
+piece leaves a blind spot of about 10 m. One detector over the chain of connected
+lanes (SUMO's multi-lane detector) covers the whole approach without a gap.
 
 **Timing a fixed plan: Webster's method** (Webster 1958). Two quantities
 describe what a green can do:
